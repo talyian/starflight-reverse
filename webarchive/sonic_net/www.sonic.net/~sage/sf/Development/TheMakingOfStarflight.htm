@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+
+<HEAD>
+	<META HTTP-EQUIV="Content-Type" CONTENT="text/html;CHARSET=iso-8859-1">
+	<TITLE>The Making of Starflight</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF">
+
+<P ALIGN="CENTER"><FONT SIZE="5"><BR>
+<IMG SRC="../../Images/Starflight.jpg" WIDTH="100" HEIGHT="101" ALIGN="BOTTOM" BORDER="0"><BR>
+<BR>
+The Making of Starflight</FONT></P>
+<P ALIGN="CENTER"><FONT SIZE="2">Updated March 7, 2003</FONT><FONT SIZE="4"><BR>
+<BR>
+</FONT><A HREF="http://www.sonic.net/~sage">Home</A> • <A HREF="../../Links.htm">Links</A>
+• <A HREF="../../Papers.htm">Articles</A></P>
+<CENTER>
+<P>
+<HR>
+</P>
+</CENTER>
+
+
+<BLOCKQUOTE>
+	<P><FONT SIZE="4">Starflight Development: <BR>
+	<BR>
+	Starflight was a huge game development effort for its time, taking 3 1/2 years to
+	complete and more than 18 man-years of work. <BR>
+	<BR>
+	Rod McConnell of Binary Systems has generously agreed to allow the publication of
+	Starflight design documents. The documents published below are just a small fraction
+	of the working documents we used to make the game.<BR>
+	<BR>
+	Starflight source code is still being recovered from floppy disks and printouts but
+	you can see what there is so far here: </FONT><A HREF="../src/"><FONT SIZE="4">www.sonic.net/~sage/sf/src</FONT></A><FONT
+	SIZE="4">.<BR>
+	<BR>
+	The comments on this website are meant to put this material in context as best I
+	remember it. Many people contributed to the final product and I would like to give
+	credit to each one. If you have anything you would like to share on the history of
+	Starflight I would appreciate hearing from you.<BR>
+	<BR>
+	-- Tim Lee <BR>
+	contact email: sage@sonic.net</FONT></P>
+
+</BLOCKQUOTE>
+
+<CENTER>
+<P>
+<HR>
+
+<TABLE BORDER="1" CELLPADDING="10" CELLSPACING="0" WIDTH="90%" BGCOLOR="#DCE6C5">
+	<TR>
+		<TD WIDTH="104%" BGCOLOR="#DCE6C5"><FONT SIZE="4" COLOR="#7F6E2A">Binary Systems Document Log </FONT><FONT SIZE="4">--
+			</FONT><A HREF="DocumentLog.pdf">DocumentLog.pdf</A><FONT SIZE="4" COLOR="#7F6E2A">
+			(492KB)<BR>
+			<BR>
+			</FONT><FONT SIZE="4">This is the main index for Starflight design documents. Most
+			of the documents we used are listed here. The working title for Starflight during
+			development was &quot;Starquest&quot;.</FONT></TD>
+	</TR>
+	<TR>
+		<TD WIDTH="104%"><FONT SIZE="4" COLOR="#7F6E2A">[62] Playfield Specification </FONT><FONT SIZE="4">--
+			</FONT><A HREF="62_PlayfieldSpec.pdf">62_PlayfieldSpec.pdf</A><FONT SIZE="4" COLOR="#7F6E2A">
+			(132KB)<BR>
+			<BR>
+			</FONT><FONT SIZE="4">The scope of the playing field in Starflight.</FONT></TD>
+	</TR>
+	<TR>
+		<TD WIDTH="104%"><FONT SIZE="4" COLOR="#7F6E2A">[85] 3D Planet Specification </FONT><FONT SIZE="4">--
+			</FONT><A HREF="85_3DPlanetSpec.pdf">85_3DPlanetSpec.pdf</A><FONT SIZE="4" COLOR="#7F6E2A">
+			(944KB)</FONT><BR>
+			<FONT SIZE="4" COLOR="#7F6E2A"><BR>
+			</FONT><FONT SIZE="4">Specification and design of the 3D planet.</FONT></TD>
+	</TR>
+	<TR>
+		<TD WIDTH="104%"><FONT SIZE="4" COLOR="#7F6E2A">[211] Calling Modules </FONT><FONT SIZE="4">-- </FONT><A
+			HREF="211_CallingModules.pdf">211_CallingModules.pdf</A><FONT SIZE="4" COLOR="#7F6E2A">
+			(124KB)<BR>
+			<BR>
+			</FONT><FONT SIZE="4">A design for how to call Forth subroutines in overlays saved
+			on disk.</FONT></TD>
+	</TR>
+	<TR>
+		<TD WIDTH="104%"><FONT SIZE="4" COLOR="#7F6E2A">[220] Phrase Compiler Modifications </FONT><FONT SIZE="4">--
+			</FONT><A HREF="220_PhraseCompilerMods.pdf">220_PhraseCompilerMods.pdf</A><FONT SIZE="4"
+			COLOR="#7F6E2A"> (88KB)<BR>
+			<BR>
+			</FONT><FONT SIZE="4">Some changes Bob made to the phrase compiler in the Conversation
+			Module.</FONT></TD>
+	</TR>
+	<TR>
+		<TD WIDTH="104%"><FONT SIZE="4" COLOR="#7F6E2A">Display System 12-3-84 </FONT><FONT SIZE="4">-- </FONT><A
+			HREF="DisplaySystem03Dec84.pdf">DisplaySystem03Dec84.pdf</A><FONT SIZE="4" COLOR="#7F6E2A">
+			(480KB)<BR>
+			<BR>
+			</FONT><FONT SIZE="4">A description of how the world was to be displayed with coordinate
+			systems used.</FONT></TD>
+	</TR>
+	<TR>
+		<TD WIDTH="104%"><FONT SIZE="4" COLOR="#7F6E2A">Conversation Module Description </FONT><FONT SIZE="4">--
+			</FONT><A HREF="ConversationModule.pdf"><FONT SIZE="4">ConversationModule.pdf</FONT></A><FONT
+			SIZE="4" COLOR="#7F6E2A"> (475KB)<BR>
+			<BR>
+			</FONT><FONT SIZE="4">This document describes the top-level design of the Conversation
+			Module. You'll see references to Ambient Designs which was the original name for
+			Binary Systems. <BR>
+			<BR>
+			The Conversation Module supported player interaction with intelligent characters
+			that are encountered in the course of the game.<BR>
+			<BR>
+			This module rests on a foundation provided by Paul Reiche who developed the basic
+			plan for character conversations in his game &quot;Murder on the Zindernouf&quot;.
+			Paul very generously donated a couple of weeks of his own time and many great ideas
+			during the development of Starflight. The concept of a &quot;player posture&quot;
+			is due to Paul.<BR>
+			<BR>
+			Greg Johnson designed the story line, wrote communication rules and the dialog. Tim
+			Lee helped with the technical design and organization.<BR>
+			<BR>
+			The prototype programming for the phrase compiler for the Communications subsystem
+			was done by Rich Duggan. <BR>
+			<BR>
+			Alec Kercso re-architected the prototype and considerably extended it into the final
+			implementation used in the game.</FONT></TD>
+	</TR>
+	<TR>
+		<TD WIDTH="104%"><FONT SIZE="4" COLOR="#7F6E2A">IBM-PC Resource Utilization </FONT><FONT SIZE="4">--
+			</FONT><A HREF="IBM-PCResourceUtilization.pdf"><FONT SIZE="4">IBM-PCResourceUtilization.pdf</FONT></A><FONT
+			SIZE="4" COLOR="#7F6E2A"> (563KB)</FONT><FONT SIZE="4"><BR>
+			<BR>
+			How the memory and disk storage is used in Starflight on the IBM-PC.</FONT></TD>
+	</TR>
+	<TR>
+		<TD WIDTH="104%"><FONT SIZE="4" COLOR="#7F6E2A">Object Handling System </FONT><FONT SIZE="4">-- </FONT><A
+			HREF="ObjectHandlingSystem.pdf"><FONT SIZE="4">ObjectHandlingSystem.pdf</FONT></A><FONT
+			SIZE="4" COLOR="#7F6E2A"> (1.2MB)</FONT><BR>
+			<BR>
+			<FONT SIZE="4">How game objects are organized in Starflight.</FONT></TD>
+	</TR>
+	<TR>
+		<TD WIDTH="104%"><FONT SIZE="4" COLOR="#7F6E2A">Object Records </FONT><FONT SIZE="4">-- </FONT><A
+			HREF="ObjectRecords.pdf"><FONT SIZE="4">ObjectRecords.pdf</FONT></A><FONT SIZE="4"
+			COLOR="#7F6E2A"> (2.1MB)</FONT><BR>
+			<BR>
+			<FONT SIZE="4">Data record formats for game objects in Starflight. Some of these
+			records were changed in the final version.</FONT></TD>
+	</TR>
+</TABLE>
+
+</CENTER>
+
+</BODY>
+
+</HTML>

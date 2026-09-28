@@ -1,0 +1,1 @@
+07.29.01 Tim Lee About sf1debug.zipsf1debug.zip contains Build 186 of Starflight with the debugger and symbols.  Build 186 is very close to the final shipping versionof the original Starflight prior to the addition of EGA display support.

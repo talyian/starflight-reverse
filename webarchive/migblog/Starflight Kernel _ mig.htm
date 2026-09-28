@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<!--[if IE 6]>
+<html id="ie6" dir="ltr" lang="en-US">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" dir="ltr" lang="en-US">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" dir="ltr" lang="en-US">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html dir="ltr" lang="en-US"><script id="bug.surrogate.31">function quantserve(){}</script><script src="Starflight%20Kernel%20_%20mig_files/ados.htm" async="" type="text/javascript"></script><script id="bug.surrogate.1">var urchinTracker=function(){},_gaq={push:function(){try {if(arguments[0][0]=='_link')window.location.href=arguments[0][1]}catch(er){}}},_gat={_createTracker:function(){}, _getTracker:function(){return{__noSuchMethod__:function(){},_link:function(o){if(o)location.href=o;},_linkByPost:function(){return true;},_getLinkerUrl:function(o){return o;},_trackEvent:function(){}}}};</script><!--<![endif]--><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<title>Starflight Kernel | mig</title>
+<link rel="profile" href="http://gmpg.org/xfn/11">
+<link rel="stylesheet" type="text/css" media="all" href="Starflight%20Kernel%20_%20mig_files/style.css">
+<!--[if lt IE 9]>
+<script src="http://migblog.blog.com/wp-content/themes/twentyeleven/js/html5.js" type="text/javascript"></script>
+<![endif]-->
+<meta name="robots" content="index,follow">
+<meta name="description" content="The game kernel (STARFLT.COM) is actually a FORTH interpreter configured to automatically run a pre-defined word on startup. This interpreter seems to be a custom FORTH tailored for Starflight, as ...">
+<meta property="og:site_name" content="mig">
+<meta property="fb:admins" content="1603534407,548395722,1608520869,695330763">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Starflight Kernel">
+<meta property="og:url" content="http://migblog.blog.com/starflight-home/starflight_kernel/">
+<meta property="og:description" content="The game kernel (STARFLT.COM) is actually a FORTH interpreter configured to automatically run a pre-defined word on startup. This interpreter seems to be a custom FORTH tailored for Starflight, as ...">
+<meta property="og:image" content="http://blog.com/wp-content/avatars/blog/default-avatar-80.png">
+<link rel="alternate" type="application/rss+xml" title="mig » Feed" href="http://migblog.blog.com/feed/">
+<link rel="alternate" type="application/rss+xml" title="mig » Comments Feed" href="http://migblog.blog.com/comments/feed/">
+<link rel="alternate" type="application/rss+xml" title="mig » Starflight Kernel Comments Feed" href="http://migblog.blog.com/starflight-home/starflight_kernel/feed/">
+<link rel="stylesheet" id="admin-bar-css" href="Starflight%20Kernel%20_%20mig_files/admin-bar.css" type="text/css" media="all">
+<link rel="stylesheet" id="blogcom-admin-bar-css" href="Starflight%20Kernel%20_%20mig_files/blogcom-admin-bar.css" type="text/css" media="all">
+<link rel="stylesheet" id="NextGEN-css" href="Starflight%20Kernel%20_%20mig_files/nggallery.css" type="text/css" media="screen">
+<link rel="stylesheet" id="shutter-css" href="Starflight%20Kernel%20_%20mig_files/shutter-reloaded.css" type="text/css" media="screen">
+<link rel="stylesheet" id="yui-cssreset-context-css" href="Starflight%20Kernel%20_%20mig_files/cssreset-context.css" type="text/css" media="all">
+<link rel="stylesheet" id="blogcom_oauth_comments_style-css" href="Starflight%20Kernel%20_%20mig_files/base.css" type="text/css" media="all">
+<link rel="stylesheet" id="blogcom_oauth_comments_twitter_style-css" href="Starflight%20Kernel%20_%20mig_files/twitter.css" type="text/css" media="all">
+<link rel="stylesheet" id="blogcom_oauth_comments_google_style-css" href="Starflight%20Kernel%20_%20mig_files/google.css" type="text/css" media="all">
+<link rel="stylesheet" id="blogcom_oauth_comments_browserid_style-css" href="Starflight%20Kernel%20_%20mig_files/browserid.css" type="text/css" media="all">
+<link rel="stylesheet" id="blogcom_oauth_comments_facebook_style-css" href="Starflight%20Kernel%20_%20mig_files/facebook.css" type="text/css" media="all">
+<script src="Starflight%20Kernel%20_%20mig_files/ados.js" async="" type="text/javascript"></script><script type="text/javascript" src="Starflight%20Kernel%20_%20mig_files/l10n.js"></script>
+<script type="text/javascript" src="Starflight%20Kernel%20_%20mig_files/jquery.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var shutterSettings = {
+	msgLoading: "L O A D I N G",
+	msgClose: "Click to Close",
+	imageCount: "1"
+};
+/* ]]> */
+</script>
+<script type="text/javascript" src="Starflight%20Kernel%20_%20mig_files/shutter-reloaded.js"></script>
+<script type="text/javascript" src="Starflight%20Kernel%20_%20mig_files/swfobject.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var ngg_ajax = {
+	path: "http://migblog.blog.com/wp-content/mu-plugins/nextgen-gallery/",
+	callback: "http://migblog.blog.com/index.php?callback=ngg-ajax",
+	loading: "loading"
+};
+/* ]]> */
+</script>
+<script type="text/javascript" src="Starflight%20Kernel%20_%20mig_files/ngg.js"></script>
+<script type="text/javascript" src="Starflight%20Kernel%20_%20mig_files/comment-reply.js"></script>
+<script type="text/javascript" src="Starflight%20Kernel%20_%20mig_files/base.js"></script>
+<script type="text/javascript" src="Starflight%20Kernel%20_%20mig_files/twitter.js"></script>
+<script type="text/javascript" src="Starflight%20Kernel%20_%20mig_files/google.js"></script>
+<script type="text/javascript" src="Starflight%20Kernel%20_%20mig_files/browserid.js"></script>
+<script type="text/javascript" src="Starflight%20Kernel%20_%20mig_files/include.js"></script>
+<script type="text/javascript" src="Starflight%20Kernel%20_%20mig_files/facebook.js"></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://migblog.blog.com/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://migblog.blog.com/wp-includes/wlwmanifest.xml"> 
+<link rel="index" title="mig" href="http://migblog.blog.com/">
+<link rel="up" title="Starflight" href="http://migblog.blog.com/starflight-home/">
+<link rel="prev" title="Starflight" href="http://migblog.blog.com/starflight-home/">
+<link rel="next" title="Starflight Filesystem" href="http://migblog.blog.com/starflight-home/starflight_filesystem/">
+<link rel="canonical" href="http://migblog.blog.com/starflight-home/starflight_kernel/">
+<script type="text/javascript" src="Starflight%20Kernel%20_%20mig_files/audio-player.htm"></script>
+<script type="text/javascript">AudioPlayer.setup("http://migblog.blog.com/wp-content/mu-plugins/audio-player/assets/player.swf?ver=20100116115547", {width:"290",animation:"yes",encode:"yes",initialvolume:"60",remaining:"no",noinfo:"no",buffer:"5",checkpolicy:"no",rtl:"no",bg:"E5E5E5",text:"333333",leftbg:"CCCCCC",lefticon:"333333",volslider:"666666",voltrack:"FFFFFF",rightbg:"B4B4B4",rightbghover:"999999",righticon:"333333",righticonhover:"FFFFFF",track:"FFFFFF",loader:"009900",border:"CCCCCC",tracker:"DDDDDD",skip:"666666",pagebg:"FFFFFF",transparentpagebg:"yes"});</script>
+<script type="text/javascript"><!--
+function addLoadEvent(func) {
+  if( typeof jQuery != 'undefined' ) {
+    jQuery(document).ready( func );
+  } else if( typeof Prototype != 'undefined' ) {
+    Event.observe( window, 'load', func );
+  } else {
+    var oldonload = window.onload;
+    if (typeof window.onload != 'function') {
+      window.onload = func;
+    } else {
+      window.onload = function() {
+        if (oldonload)
+          oldonload();
+        
+        func();
+      }
+    }
+  }
+}
+function wphc(){
+	var wphc_data = [1881633066,2099670328,2067362668,2083150639,1732015137,1751133225,859530554,1881240635,1797808403,728316268,712981880,662319740,1665016951,1981179684,946437165,595338353,578695290,678441080,1730967148,858224185,1881240635,1797808403,859055223,1881240635,2116445971,1983738172,863120740]; 
+
+	for (var i=0; i<wphc_data.length; i++){
+		wphc_data[i]=wphc_data[i]^323552332;
+	}
+
+	var a = new Array(wphc_data.length); 
+	for (var i=0; i<wphc_data.length; i++) { 
+		a[i] = String.fromCharCode(wphc_data[i] & 0xFF, wphc_data[i]>>>8 & 0xFF, wphc_data[i]>>>16 & 0xFF, wphc_data[i]>>>24 & 0xFF);
+	}
+
+	return eval(a.join('')); 
+}
+addLoadEvent(function(){var el=document.getElementById('wphc_value');if(el)el.value=wphc();});
+//--></script>
+<link rel="icon" href="http://migblog.blog.com/favicon.ico" type="image/x-icon">
+<link rel="shortcut icon" href="http://migblog.blog.com/favicon.ico" type="image/x-icon">
+	<style type="text/css">
+			#site-title,
+		#site-description {
+			position: absolute !important;
+			clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+			clip: rect(1px, 1px, 1px, 1px);
+		}
+		</style>
+	<style type="text/css" media="print">#wpadminbar { display:none; }</style>
+<style type="text/css">
+	html { margin-top: 28px !important; }
+	* html body { margin-top: 28px !important; }
+</style>
+			<script type="text/javascript">var p="http",d="static";if(document.location.protocol=="https:"){p+="s";d="engine";}var z=document.createElement("script");z.type="text/javascript";z.async=true;z.src=p+"://"+d+".adzerk.net/ados.js";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(z,s);</script>
+			<script type="text/javascript">
+			var ados = ados || {};
+			ados.run = ados.run || [];
+			ados.run.push(function() {
+
+			ados_add_placement(4912, 21632, "azk71839", 9).setZone(17080);
+
+							ados_setKeywords('search');
+					
+			ados_load();
+			});</script>
+			
+	<!--
+		-->
+
+			<script type="text/javascript">
+			var _gaq = _gaq || [];
+
+						_gaq.push(
+				['_setAccount', 'UA-235880-1'],
+                				['_trackPageview'],
+				['_trackPageLoadTime']
+			);
+			
+						_gaq.push(
+				['t2._setAccount', 'UA-46439908-1'],
+				['t2._trackPageview'],
+				['t2._trackPageLoadTime']
+			);
+			
+			(function() {
+				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+				ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+			})();
+		</script>
+	<style>@-webkit-keyframes popepuufnhhuvbdudyjiivodgqoyezphjyclwbl {50% {-webkit-transform:scale(1.2);}100% {-webkit-transform:scale(1);}}@keyframes popepuufnhhuvbdudyjiivodgqoyezphjyclwbl {50% {-webkit-transform:scale(1.2);transform:scale(1.2);}100% {-webkit-transform:scale(1);transform:scale(1);}}#epuufnhhuvbdudyjiivodgqoyezphjyclwbl{padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;border:solid 2px #fff !important;color:#fff !important;display:block !important;height:auto !important;margin:0 !important;opacity:0.9 !important;padding:7px 10px !important;position:fixed !important;visibility:visible !important;width:auto !important;z-index:2147483647 !important;-moz-border-radius:5px !important;border-radius:5px !important;-moz-box-shadow:0px 0px 20px #000 !important;box-shadow:0px 0px 20px #000 !important;}.epuufnhhuvbdudyjiivodgqoyezphjyclwbl-blocked{padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;color:#AAA !important;display:inline !important;text-decoration:line-through !important;}#epuufnhhuvbdudyjiivodgqoyezphjyclwbl br{display:block !important;padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;}#epuufnhhuvbdudyjiivodgqoyezphjyclwbl span{background:transparent !important;padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;}#epuufnhhuvbdudyjiivodgqoyezphjyclwbl div{padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;border:0 !important;margin:0 !important;padding:0 !important;width:auto !important;letter-spacing:normal !important;font:13px Arial,Helvetica !important;text-align:left !important;text-shadow:none !important;text-transform:none !important;word-spacing:normal !important;}#epuufnhhuvbdudyjiivodgqoyezphjyclwbl a{padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;font-weight:normal !important;background:none !important;text-decoration:underline !important;color:#fff !important;}a#epuufnhhuvbdudyjiivodgqoyezphjyclwbl-gear{padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;text-decoration:none !important;position:absolute !important;display:none !important;font-size:20px !important;width:20px !important;height:20px !important;line-height:20px !important;text-align:center !important;background-color:rgba(255,255,255,.8) !important;background-image:url(resource://firefox-at-ghostery-dot-com/ghostery/data/images/gear.svg) !important;background-size:16px 16px !important;background-position:center center !important;background-repeat:no-repeat !important;text-decoration:none !important;}a#epuufnhhuvbdudyjiivodgqoyezphjyclwbl-gear:hover{-webkit-animation-name:popepuufnhhuvbdudyjiivodgqoyezphjyclwbl !important;animation-name:popepuufnhhuvbdudyjiivodgqoyezphjyclwbl !important;-webkit-animation-duration:0.3s !important;animation-duration:0.3s !important;}#epuufnhhuvbdudyjiivodgqoyezphjyclwbl:hover #epuufnhhuvbdudyjiivodgqoyezphjyclwbl-gear{text-decoration:none !important;display:inline-block !important;}#epuufnhhuvbdudyjiivodgqoyezphjyclwbl hr{visibility:hidden !important;padding:0;margin:0;font:13px Arial,Helvetica;text-transform:none;font-size: 100%;vertical-align:baseline;line-height:normal;color:#fff;position:static;height:1em;}@media print{#epuufnhhuvbdudyjiivodgqoyezphjyclwbl{display:none !important;}}</style></head>
+
+<body class="page page-id-16 page-child parent-pageid-15 page-template page-template-default admin-bar single-author singular two-column right-sidebar">
+<div id="page" class="hfeed">
+	<header id="branding" role="banner">
+			<hgroup>
+				<h1 id="site-title"><span><a href="http://migblog.blog.com/" title="mig" rel="home">mig</a></span></h1>
+				<h2 id="site-description">A little bit of everything</h2>
+			</hgroup>
+
+						<a href="http://migblog.blog.com/">
+									<img src="Starflight%20Kernel%20_%20mig_files/mig.jpg" alt="" width="1000" height="288">
+							</a>
+			
+							<div class="only-search with-image">
+					<form method="get" id="searchform" action="http://migblog.blog.com/">
+		<label for="s" class="assistive-text">Search</label>
+		<input class="field" name="s" id="s" placeholder="Search" type="text">
+		<input class="submit" name="submit" id="searchsubmit" value="Search" type="submit">
+	</form>
+				</div>
+			
+			<nav id="access" role="navigation">
+				<h3 class="assistive-text">Main menu</h3>
+								<div class="skip-link"><a class="assistive-text" href="#content" title="Skip to primary content">Skip to primary content</a></div>
+				<div class="skip-link"><a class="assistive-text" href="#secondary" title="Skip to secondary content">Skip to secondary content</a></div>
+								<div class="menu"><ul><li><a href="http://migblog.blog.com/" title="Home">Home</a></li><li class="page_item page-item-15 current_page_ancestor current_page_parent"><a href="http://migblog.blog.com/starflight-home/" title="Starflight">Starflight</a><ul class="children"><li class="page_item page-item-17"><a href="http://migblog.blog.com/starflight-home/starflight_filesystem/" title="Starflight Filesystem">Starflight Filesystem</a><ul class="children"><li class="page_item page-item-25"><a href="http://migblog.blog.com/starflight-home/starflight_filesystem/dir_txt/" title="dir.txt">dir.txt</a></li></ul></li><li class="page_item page-item-18"><a href="http://migblog.blog.com/starflight-home/starflight_images/" title="Starflight Images">Starflight Images</a></li><li class="page_item page-item-24"><a href="http://migblog.blog.com/starflight-home/starflight_instances/" title="Starflight Instances">Starflight Instances</a><ul class="children"><li class="page_item page-item-26"><a href="http://migblog.blog.com/starflight-home/starflight_instances/instance_txt/" title="instance.txt">instance.txt</a></li><li class="page_item page-item-27"><a href="http://migblog.blog.com/starflight-home/starflight_instances/strings_txt/" title="strings.txt">strings.txt</a></li></ul></li><li class="page_item page-item-16 current_page_item"><a href="http://migblog.blog.com/starflight-home/starflight_kernel/" title="Starflight Kernel">Starflight Kernel</a></li></ul></li></ul></div>
+			</nav><!-- #access -->
+	</header><!-- #branding -->
+
+
+	<div id="main">
+
+		<div id="primary">
+			<div id="content" role="main">
+
+				
+				
+<article id="post-16" class="post-16 page type-page status-publish hentry">
+	<header class="entry-header">
+		<h1 class="entry-title">Starflight Kernel</h1>
+	</header><!-- .entry-header -->
+
+	<div class="entry-content">
+		<p>
+The game kernel (STARFLT.COM) is actually a FORTH interpreter configured to automatically run a pre-defined word on startup.<br>
+This interpreter seems to be a custom FORTH tailored for Starflight, as this startup message shows:
+</p>
+<pre>FORTHOUGHT (P) (C) Copyright Fantasia Systems Inc. 1982,1983,1984
+Version 2.52 for Binary Systems for the IBM PC
+</pre>
+<p>
+Binary Systems is the company that released Starflight. FORTHOUGHT may have existed as a standalone product,<br>
+but I could not find references to it. <a href="http://www.fantasiasystems.com/">Fantasia Systems</a> still exists,<br>
+although I think they do not work with FORTH anymore.
+</p>
+<p>
+Dissecting the interpreter revealed a FORTH dictionary of 1956 words, of which 1750 were coded in FORTH and 206 in x86 Assembly.<br>
+Because of the way the dictionary is implemented it is not trivial to trace all the words, so there may be a few more.<br>
+Another feature is that not all words are named. The process of generating the final kernel may have striped some word names,<br>
+but it is not clear why some names were removed and other names remained. Of the total 1956 words, 276 are unamed.<br>
+The remaining 1680 words are named, but it seems they employed some obfuscation method to hide the names:<br>
+every character of word names was XOR’ed with 0x7F. This process can be reversed and the interpreter remains functional after<br>
+decoding the word names.
+</p>
+<p>
+About the interpreter itself this is what I found:
+</p>
+<ul>
+<li>It obviously predates the 1994 <a href="http://www.taygeta.com/forth/dpans.htm">ANS FORTH</a> standard, but may be FORTH-79 compatible.</li>
+<li>It uses <a href="http://en.wikipedia.org/wiki/Threaded_code">Indirect Threaded Code (ITC)</a>.</li>
+<li>Cells are 16-bits wide.</li>
+<li>The parameter stack is implemented with the x86 hardware stack, so register SP points to the stack top.</li>
+<li>The return stack is implemented with register BP.</li>
+<li>The instruction pointer is implemented with register SI.</li>
+<li>Control flow words are implemented with BRANCH and 0BRANCH words.</li>
+</ul>
+<p>
+As an example, here is the Assembly definition of the FORTH word “@” (fetch):
+</p>
+<pre>POP     BX              ; pops the address from the parameter stack
+PUSH    WORD PTR [BX]   ; pushes the cell contained in the address
+LODSW
+MOV     BX,AX
+JMP     WORD PTR [BX]
+</pre>
+<p>
+The code starting with LODSW is in FORTH jargon known as the NEXT routine.<br>
+It fetches the next FORTH word pointed to by the instruction pointer (SI) and jumps to its code field.<br>
+Also as an example, here is the colon definition of the FORTH word MAX, reconstructed from the dictionary:
+</p>
+<pre>: MAX 2DUP &lt; IF SWAP THEN DROP ;
+</pre>
+<p>
+A directory entry for a named colon definition has the following fields:
+</p>
+<ul>
+<li>Link field: 2 bytes pointing back to the name field of the previous FORTH word in the vocabulary.</li>
+<li>Name field: the first byte is used as follows: bit 7 is always 1, 
+bit 6 the IMMEDIATE flag, bit 5 is the SMUDGE flag, bits 0-4 store the 
+word length. Then there is a variable number of bytes, each one XOR’ed 
+with 0x7F. The last byte of the word name is OR’ed with 0×80 to signal 
+the name end.</li>
+<li>Code field: 2 bytes pointing to the machine language code to run this word.</li>
+<li>Parameter field: variable number of code field addresses, each one 
+occupying 2 bytes. The last one is always the code field address of word
+ EXIT.</li>
+</ul>
+<p>
+An unamed word has only a code field and a parameter field, meaning that
+ unamed words can not be followed by other words in vocabulary. In a 
+machine language word, the code field points to the parameter field, and
+ the parameter field has x86 assembly code ended the the NEXT routine.
+</p>
+<p>
+The first word executed by the interpreter is a unamed word (unamed 
+words are shown here as a 4 digit hex number surrounded brackets, and 
+number literals are shown in hex).<br>
+Its colon definition is:
+</p>
+<pre>:
+  (SETUP) (CS?) DS ! f2d2 PSW ! 701 OPERATOR 74 CMOVE
+  DP @ INITIAL-DP ! 'FORTH CONTEXT ! DEFINITIONS FREEZE
+  AUTO-LIMIT AUTO-CACHE
+  SP! RP! SET-BUFFERS AUTO-SCREEN
+
+  BOOT-HOOK @ ?DUP IF
+    EXECUTE
+  THEN
+  BOOT-LOAD @ ?DUP IF
+    LOAD
+  THEN
+
+  ABORT
+;
+</pre>
+<p>
+Of importance here is the section that tests the variable BOOT-HOOK. If 
+the cell stored in this variable is not zero, it is assumed<br>
+to contain the address of a FORTH word to be EXECUTEd. In the kernel shipped with Starflight the variable BOOT-HOOK contains<br>
+the address of a word named LET-THERE-BE-STARFLIGHT. As the name implies, this word starts the game.
+</p>
+<p>
+If the kernel is patched to zero this variable, the interpreter will not
+ execute it and will proceed up to the last word, which is ABORT.<br>
+Contrary to what is seems, in FORTH the word ABORT does not quit the interpreter, but starts an endless loop that reads a line<br>
+from the terminal, parses and interprets it. There is only one more step to transform the original Starflight kernel into a<br>
+general purpose FORTH interpreter.
+</p>
+<p>
+It seems the authors patched a FORTH word named QUIT to alter its 
+behavior. QUIT is called by ABORT, and it is QUIT which actually<br>
+runs the read-parse-interpret loop. But in the original kernel the first word of QUIT was changed to BYE. When BYE is run the<br>
+interpreter exits. This means that the interpreter will exit when it reaches ABORT in the above definition. So I patched QUIT<br>
+to restore its original behavior and the interpreter gave me the default FORTH prompt:
+</p>
+<pre>FORTHOUGHT (P) (C) Copyright Fantasia Systems Inc. 1982,1983,1984
+Version 2.52 for Binary Systems for the IBM PC
+ ok
+</pre>
+<p>
+To be sure I ran some simple FORTH words. In this case I typed “2 3 + .”, which means “print the result<br>
+of 2 + 3″ and the reply was “5″, as expected:
+</p>
+<pre>FORTHOUGHT (P) (C) Copyright Fantasia Systems Inc. 1982,1983,1984
+Version 2.52 for Binary Systems for the IBM PC
+ ok
+2 3 + . 5  ok
+</pre>
+<p>
+As a final test, at the prompt I executed the word LET-THERE-BE-STARFLIGHT and the game started normally.<br>
+This interpreter is fully functional, but there are some caveats. Because of space constraints (the whole interpreter had to<br>
+fit in a 64K segment) an overlay system was built into Starflight. While the STARFLT.COM kernel is always in memory,<br>
+code overlays stored in STARA.COM and STARB.COM are loaded and unloaded on demand. The FORTH dictionary is patched after<br>
+an overlay is loaded so that its words are linked to the kernel words. After an overlay is no longer needed, it is removed<br>
+from memory and the dictionary is restored to its original form. For 
+example, the code that handles the destruction of the Crystal<br>
+Planet is stored in a overlay, since it is needed only at the game finale.</p>
+			</div><!-- .entry-content -->
+	<footer class="entry-meta">
+			</footer><!-- .entry-meta -->
+</article><!-- #post-16 -->
+
+					<div id="comments">
+	
+	
+	
+									<div id="respond">
+				<h3 id="reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="http://migblog.blog.com/starflight-home/starflight_kernel/#respond" style="display:none;">Cancel</a></small></h3>
+														<div class="yui3-cssreset" id="comment-placeholder-44242"><span>					<form action="http://migblog.blog.com/wp-comments-post.php" method="post" id="commentform">
+						<div id="comment-providers">
+ <div id="comment-providers-select-message">
+  <p>Choose how to leave your comment</p>
+ </div>
+ <ul id="all-comment-providers">
+<li>
+<a id="comment-provider-link-default" class="comment-provider-selected" href="#"><img src="Starflight%20Kernel%20_%20mig_files/selector_004.png"></a>
+</li>
+<li>
+<a id="comment-provider-link-blogcom_oauth_comments_twitter" href="#"><img src="Starflight%20Kernel%20_%20mig_files/selector_002.png"></a>
+</li>
+<li>
+<a id="comment-provider-link-blogcom_oauth_comments_google" href="#"><img src="Starflight%20Kernel%20_%20mig_files/selector_003.png"></a>
+</li>
+<li>
+<a id="comment-provider-link-blogcom_oauth_comments_facebook" href="#"><img src="Starflight%20Kernel%20_%20mig_files/selector.png"></a>
+</li>
+ </ul>
+ <div id="comment-provider-default" class="comment-provider"><span id="blogcom-oauth-comments-identity-default" class="blogcom-oauth-comments-identity"><p class="comment-form-author"><label for="author">Name</label> <input id="author" name="author" size="30" type="text"></p><p class="comment-form-email"><label for="email">E-mail</label> <input readonly="readonly" id="email" name="email" size="30" type="text"><input value="browserid" name="oauth_provider" type="hidden"><input value="" name="browserid_assertion" id="assertion" type="hidden"><a title="Sign-in with Mozilla Persona" id="browserid" href="#"><img src="Starflight%20Kernel%20_%20mig_files/button.png" alt="Sign-in with Mozilla Persona"></a></p></span><span id="blogcom-oauth-comments-identity-twitter" class="blogcom-oauth-comments-identity"></span><span id="blogcom-oauth-comments-identity-google" class="blogcom-oauth-comments-identity"></span><span id="blogcom-oauth-comments-identity-facebook" class="blogcom-oauth-comments-identity"></span>
+													<p class="comment-notes">To prevent comment spam, you must verify you own your email address using <a href="https://browserid.org/about">Mozilla Persona (Browserid)</a> by clicking the green Sign In button. </p>							
+
+												<p class="comment-form-comment"><label for="comment">Comment</label><textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>												<p class="form-submit">
+							<input name="submit" id="submit" value="Post Comment" type="submit">
+							<input name="comment_post_ID" value="16" id="comment_post_ID" type="hidden">
+<input name="comment_parent" id="comment_parent" value="0" type="hidden">
+						</p>
+						<input id="wphc_value" name="wphc_value" value="1356162083" type="hidden"><noscript><div><small>Our anti-spam system needs JavaScript to work, but your browser has it disabled. Your comment will be marked as spam!</small></div></noscript> </div>
+
+
+
+					
+										
+</div></form></span></div>
+<script type="text/javascript">
+jQuery(document).ready(function(){
+jQuery.ajax({
+ type: "post",url: '/wp-content/mu-plugins/blogcom-oauth-comments/ajax.php' ,data: { action: 'bc_commentform', postid: 16, _ajax_nonce: 'bc09b59528' },
+ success: function(html){ 
+  jQuery("#comment-placeholder-44242").html(html); 
+    if (window.wphc) jQuery('#wphc_value').each(function(idx, el) { el.value = wphc(); });
+
+  },
+ error: function(jqXHR, textStatus, errorThrown) {
+   //window.console.log(jqXHR, textStatus, errorThrown);
+  }
+ }); 
+});
+</script>
+							</div><!-- #respond -->
+						
+</div><!-- #comments -->
+
+			</div><!-- #content -->
+		</div><!-- #primary -->
+
+
+	</div><!-- #main -->
+
+	<footer id="colophon" role="contentinfo">
+
+			
+
+			<div id="site-generator">
+								Powered by <a href="http://blog.com/">Blog.com</a>				<!--<a href="http://wordpress.org/" title="Semantic Personal Publishing Platform" rel="generator">Proudly powered by WordPress</a>-->
+			</div>
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+<script type="text/javascript" src="Starflight%20Kernel%20_%20mig_files/admin-bar.js"></script>
+
+            <script type="text/javascript">
+                _qoptions={
+                qacct:"p-b3DDIGtNmjMZA"
+                };
+            </script>
+            
+            <noscript>
+            <img src="http://pixel.quantserve.com/pixel/p-b3DDIGtNmjMZA.gif" style="display: none;" border="0" height="1" width="1" alt="Quantcast"/>
+            </noscript>
+            		
+
+		
+
+
+<div id="wpadminbar">
+			<div class="quicklinks">
+				<ul>
+													
+		<li id="wp-admin-bar-site" class="">
+			<a href="http://blog.com/">&nbsp;</a>
+
+			
+					</li>													
+		<li id="wp-admin-bar-login" class="">
+			<a href="http://blog.com/wp-login.php">Login</a>
+
+			
+					</li>													
+		<li id="wp-admin-bar-sign-up" class="">
+			<a href="http://blog.com/wp-signup.php">Create Blog</a>
+
+			
+					</li>													
+		<li id="wp-admin-bar-random-blog" class="">
+			<a href="http://blog.com/?random">Random Blog</a>
+
+			
+					</li>													
+		<li id="wp-admin-bar-report-blog" class="">
+			<a href="http://support.blog.com/category/reports-dmca-complaints">Report Blog</a>
+
+			
+					</li>									</ul>
+			</div>
+
+			<!--
+			<div id="adminbarsearch-wrap" class="quicklinks">
+												<ul>
+					<li style="float: right;">
+						<a href="#" onclick="if (document.getElementById('adminbar-search').value == 'Search Blog.com') { document.getElementById('adminbar-search').value = ''; } document.adminbarsearch.submit(); return false;">Go!</a>
+					</li>
+				</ul>
+				<form action="http://blog.com/search" method="get" id="adminbarsearch" name="adminbarsearch">
+					<input class="adminbar-input" name="qs" id="adminbar-search" type="text" value="Search Blog.com" maxlength="150" onblur="if (this.value == '') {this.value = 'Search Blog.com';" onfocus="if (this.value == 'Search Blog.com') {this.value = '';}" />
+				</form>
+			</div>
+			-->
+		</div></body></html>

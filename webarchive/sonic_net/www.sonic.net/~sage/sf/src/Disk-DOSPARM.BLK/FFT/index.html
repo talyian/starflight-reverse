@@ -1,0 +1,229 @@
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                \ system load screen for FFT                          rfg12sep84                                                                7 34 thru                                                       \ 6 load                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ( add common tools to PCforth  game system           12/28/83 )  FORTH DEFINITIONS DECIMAL                                      : sb save-buffers ;                                             \ : ?FIND  FIND ; IMMEDIATE                                                                                                     : IFSO  NOT IF [COMPILE] \ THEN ; IMMEDIATE                     : IFNOT NOT [COMPILE] IFSO ; IMMEDIATE                                                                                          : !CSP SP@ CSP ! ;                                              : :: HERE >R  [ ' QUIT CFA @ ] LITERAL ,  !CSP                      ] BEGIN INTERPRET STATE @ WHILE CR QUERY REPEAT                 SMUDGE R@ 2+ EXECUTE R> DP ! ;                               DECIMAL                                                                                                                                                                                                                                                        \ sawtooth array                                      rfg12sep84decimal                                                         64 100 xvector sawtooth                                                                                                         : saw sawtooth 8 +                                                    64 0 do i 100 * over i 4 * + ! loop drop ;                                                                                saw                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             \ data for IBM over 1983, by week                     rfg12sep84                                                                100 64 xvector IBM                                              9663   9913   9463   9738   9738   9638   9863   10038          10224  10075  9988   10213  10163  10388  11013  11725          11700  11763  11650  11063  11300  11400  11425  12113          12300  12100  12150  12013  12438  12038  12975  11850          12250  11783  11975  12225  12313  12663  12688  13225          13175  12700  12800  12225  12688  12350  12100  11788          12225  12088  12363  12200  0      0      0      0              0      0      0      0      0      0      0      0                                                                              100 64 ibm vector!                                              \  ibm fft ibm plotmag                                                                                                                                                                          \ square and square root                              rfg12sep84( from Klaxon Suralis, via 4th Dimensions )                     : d2* 2dup d+ ;                                                                                                                 : easy-bits                                                       0 do >r d2* d2* r@ - dup 0<                                         if r@ + r> 2* 1-                                                else    r> 2* 3 +                                               then loop ;                                                                                                               : 2's-bit                                                         >r d2* dup 0<                                                   if d2* r@ - r> 1+ else d2* r@ 2dup u<                             if drop r> 1- else - r> 1+ then                               then ;                                                                                                                        \ sqr and sqrt                                        rfg12sep84                                                                : 1's-bit                                                          >r dup 0<                                                        if 2drop r> 1+                                                  else d2* 32768 r@ du< 0= r> +                                   then ;                                                                                                                      : sqrt                                                             0 1 8 easy-bits rot drop 6 easy-bits                            2's-bit 1's-bit ;                                                                                                            : sqr dup m* ;                                                                                                                                                                                                                                                  \ complex data types and operations                   rfg12sep842 constant wsize \ i guess                                      : x@ 2@ ;                                                       : x! 2! ;                                                                                                                       : xvariable                                                         create wsize 2* here over  \ two elements per complex #                0 fill allot                                             does> ;                                                                                                                     : xconstant  \ x ---                                                create here wsize 2* 2dup                                              0 fill allot x!                                          does> x@ ;                                                                                                                                                                                  \ complex stack words                                 rfg12sep84                                                                : xdup   2dup ;                                                 : xswap  2swap ;                                                : xdrop  2drop ;                                                : xover  2 over ;                                               : x2dup  2over 2over ;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          \ complex add,subtract,magnitude                      rfg12sep84                                                                : x+ rot + >r + r> ;                                            : x- rot swap - >r - r> ;                                       : x2/ 2/ swap 2/ swap ;                                         : |x|^2 sqr rot sqr d+ ;                                        : |x| |x|^2 sqrt ;                                              : x' swap negate swap ;                                         : x0= 0= swap 0= and ;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          \ complex multiply                                    rfg12sep84                                                                : x*                                                               >r x2dup                                                        rot r@ */                                                       rot rot r@ */ -                                                 r> swap >r >r                                                   rot rot r@ */                                                   rot rot r> */ +                                                 r> ;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         \ more complex operations                             rfg12sep84                                                                : x*!                                                              over >r >r                                                      x@ rot x@ r>                                                    x*  r> x! ;                                                                                                                  : x/  >r xswap xover                                                  x' r@ x*                                                        xswap |x| dup r@ */                                             swap over r@ swap */                                            rot rot r> swap */ swap ;                                                                                                                                                                                                                                                                                                 "	¡tª1)/ "	¡t)/ ^¡t ÚçêPOLY-W…Z∂êïÄ9â _êÑ@CR”Zß_{≤_{À_{÷_{·_{ˇa{
+b{™]{∑]{¿_{Ó_{ .ëÑ!CR”ZÓ_¡t¿_¡t∑]¡t™]¡t
+b¡tˇa¡t·_¡t÷_¡tÀ_¡t≤_¡tß_¡t “èÇ$ÆZ”
+-,‚
+ (◊ úëèPOLY-E“ZÔ&Ô&3ëß_{-,)/ É	≤_{Z71ª1)/ Ô"	ª1"ëjë ØëáPOS.PX‘ZÔ&Ô&Ô&Ô&3ëª1ª1ª1ª1Z7Qê∑ëjë eëÜWINDO◊Z-,Vb¡t)/ Ô˘1-,<b¡t"	0b¡t-,Ib¡t‚
+)/˘ˇÔ)/ É	1"	#b¡tb¡t ZÔ&3ëO¿_¡tÜÜ<b{#b{)/ "	Qêª1üëjë ZÔ&3ëO¿_¡tÜÜ<b{b{Qêª1üëjë ÁëàWLINE-’Z)/ O¸<b{b{‚
+0b{#b{‚
+<b{b{Ôä®%‡ˇTí ëäWLINE-ƒZ)/ O¸<b{b{”
+0b{#b{<b{b{Ôä®%‚ˇzí €çÉGC“Z)/˘ˇß_Œt<b{≤_¡t úíàWSHORT≈ZVb{Z7)/ #bŒt#b{<b{Ôë)/ˇˇIbŒt ÷íÜCTINI‘ZÜÜO¿_¡tÃV
+} ìàCTWINDœZ)/2 )/ )/ )/& í XìÜCTPOSÆZ>+jb¡t`b¡tZ7)/ Ô)/ "	)/2 ˘1)/ ÔÉ	Qê qìáCTERAS≈Z™]{)/3 )/ ])/ú ±W"ëOOòì
+} (ìÑCTC“ZOjb{”
+)/ å0òì ÚìäTTY-SC“Z)/ O¸)/ )/1 )/õ )/ )/ )/2 Ôä®%‰ˇ ∆ìÑ.TTŸZÜÜîO)/ òì◊ ëìäVIEWSC“Z)/ O¸.”
+)/√ 1)/D hà)/L ."	)/√ 1)/D hà®%⁄ˇ)/ O¸)/ )/D ."	)/K 1hà)/ )/¿ ."	)/ 1hà)/K )/¿ ."	)/D 1hà®%¬ˇ)/J )/¿ )/ 1hà ZlO¸.”
+O1)/4 hà)/ù ."	O1)/4 hà®%ﬁˇ)/ )/4 )/ú )/4 hà)/ O)/ú Ohà ZlO¸)/Q ."	)/} 1)/∆ hà)/ù ."	)/} 1)/∆ hà®%÷ˇ)/S )/∆ )/ú )/∆ hà)/S )/} )/ú )/} hà ZlO¸)/Z ."	)/7 1)/z hà)/ù ."	)/7 1)/z hà®%÷ˇ)/\ )/z )/ú )/z hà)/\ )/7 )/ú )/7 hà ZÌ[·_¡t)/	 À_¡t)/ ÷_¡tO¿_¡tÓRÓ_¡t)/ O¸)/Q )/x .)/ ÔÉ	QêÂÖ®%Ëˇ)/ )/A ‰Vfê AîàSAVE-S√Zû]{ê]{É îãSCR-RE”Zê]{û]{É ZÔ&™]{)/y )/\ )/8 )/ú ª1"ë
+} íèERASE-¡ZÔ&™]{)/≈ )/S )/~ )/ú ª1"ë
+} ^ñäERASE-‘ZÔ&™]{)/3 )/ ])/ú ª1"ëOOòì
+} Z™]{Z7
+}+ÇÁÇOÇ¥Ç
+} ZîáYBUTTOŒZ)/ Ô)/R )/w ˘1É	Qê
+}O¿_¡t óä.HIGHL…ZÓRÓ_¡tó˘[·_¡t)/ À_¡t)/ ÷_¡tÂÖ .óÉ.OŒZÓRÓ_¡tó)/˛ˇß_Œtl≤_Œt)/ À_¡tl÷_¡t\·_¡tÂÖ Z)/ O¸O.>+6ó`ó®%Ùˇ ññãINIT-B’ZêóOÊa¡tWO6ó ¿ñåSHIP-CœZÿV
+}ÁÇçW
+}bî<ïñïÓîïOtñOûñŒìêó¥ó FñÑ'KEŸZpπ
+* pπ
+ æõb¡t}(Úˇõb{∞eà*¿eÍt‚à*∞eÍt}( O Z])/ˇˇ Z]O Z]] ZO)/ˇˇ ZO]êbu Z)/ˇˇ)/ˇˇ Z)/ˇˇO Z)/ˇˇ] ZOO ZOOÑbu \óà(XYSCAŒ#r	 ãòG3òH=òIEòKMòMWòOcòPoòQyò  Éò»óÜXYSCAŒZêbuÑbu˝óüò ¨óÖ?TRI«ZÑb{-,π
+ Ñbu ‰òÖ?QUI‘Zêb{-,π
+ êbu ˛òÉY/ŒZ“òZ7,Q'π
+ˆˇ°
+ Z)/] ≤_¡t)/ıˇß_Œt ÀòãCURSOR”Zßd{Ó_¡tO óòáBLD-CR”Z™]{Ô&·b{
+}Lô·_¡t¿_u”
+
+b{)/ Ô"	Ô&. (ß_¡t.”
+ (≤_¡t. (À_¡tª1)/ "	 (÷_¡tÂÖª1
+} ¯óáSET-CR”Zˇa{1 (”
+OZ7Cπ
+. ˇa{
+b{Ω&⁄0π
+ -,dôˇa{
+b¡tdô]}( ,O}(  (
+b{å0Oi0-,
+b¡tˇa¡tO DôÇ$°Z1 (”
+5u &öÇ$ΩZ]˘1˘1-, (”
+O¸1."	 (1."	 (Ω&ã
+π
+ ˘1⁄0˘1˘1µ.®%‹ˇ,+ \ôÜCHAR/ÃÓ)@ ¿ôÜLINE/”Ó) 7öÇL£%6LEôÇC£%6LExöÑMOD≈%6  õöÖ'LIN≈Z51)/P "	 íöÑCCOÃZûö{ §öÑLIN≈Zïö{ ØöÑ(GO©Zl"	Z7)/ "	ú ÖöÉGGœZO)/ ú»ö≈	»ö◊öÊö ·öÑHOM≈ZOûö¡tOïö¡t õÇ+ÃZ◊ö”
+åöå0ïö¡t √öÇ-ÃZ◊ö‚
+Oi0ïö¡t -õÇ+√Z»ö”
+ö‚
+å0ûö¡t BõÇ-√Z»ö‚
+Oi0ûö¡t nõÉLAƒZöÔò{ëu"	 ÉõÑCLAƒZ◊öáõ “öÖ<ADD“Zûõ»ö"	 ôõÑCOL”Zö»öÉ	 ®õÖLINE”Zåö◊öÉ	 ˙öÖ.>EOÃZÆõøõ® WõÜ.BLOCÀZ◊ö—õ-,π
+ ”
+O¸-,O1Êöáõö®”
+®%Óˇ, ›õÇP«ZòŒt»ö◊öõˆõïö¡tûö¡t])/ úò{≈	 ∫õÑCLRÃZ-,áõö`(muOZ7Êöö;7 "úÖ-LIN≈ZÆõøõ`(muøõ;7 lúÜ-BLOCÀZrú◊ö—õO¸”
+-,Rú®%¯ˇ, ÑúÖ.MOD≈Z)/ )/H ú©ö{π
+ ﬁInsert }( ﬁReplace MúäDISPLAŸZ)/ Oúﬁ21:SV-BUF 2:RCL  3:IL  4:XL  5:DUP  6:SPLIT  7:>L  ﬁ8:>S  9:HOLD 10:PUT≠ú ÀõÖCLEA“Z)/ Oú)/O ;7)/ Oú ›úÇMÃZZ7áõ-,˘1"	ö5u @ùÑMLDŒZöeù yùÑMLU–Zö≥0eù àùÖLHOLƒZûõµö¡(5u bùÜ(DUPL©Z—õQ'π
+ O¸)/ .É	~ù®%Ùˇ ÔõÑINSÃZ¥ù◊öRúˆõ ôùÑDUPÃZ¥ùˆõ ÁùÖSPLI‘Z—õπ
+ ¥ùrúûõö"	»ö`(mu◊ö0õˆõïö¡t ßúÇXÃZüù—õQ'π
+ O¸◊ö."	”
+çù®%Ùˇåöáõö`(muˆõ "ûÇX√ZÆõ-,-,”
+Z7øõ‚
+5u`(Z7øõ‚
+"	µt„õ ≠ùÜINSER‘Z-,ß©ö{π
+* øõ‚
+π
+ Æõ-,-,”
+øõ‚
+JuµtZõ„õ}( Æõµt}( ÆõµtZõ SûÜDELET≈Zqõ˛ö©ö{π
+ Vû}(
+ `(Æõµt*7 zûà?VISIBÃZ-,-,)/ ’&Z7)/Ä ~=( ˆùÉEOÃZûõöõ	-,π
+ ”
+)/? å0ûö¡t, ¡ûÉPU‘ZöO¸µö."	 (û⁄0π
+ ª1ª1,+{ ,®%‚ˇ©ö{-,π
+ ¥ùµöûõö5uV$π
+ ˆõ}( »öOûö¡t˛ö„õûö¡t 
+üÜCARRE‘ZOûö¡t0õ éüÑTAB¬ZZõZõZõ £üÉES√ZFùVzx1 ¥üÜRECALÃZ¶$O%ú ËûÇU–Z]%ú ƒüÑDOWŒZ)/ˇˇ%ú ‘ùÖ/MOD≈Z©ö{⁄0©ö¡t≠ú ‰üÖSTAM–%6  ıüáUSER-Iƒ%6ALLOT ID¢Z†ÉID¢Z!†)/ `(muÀA)/ å0!†Z75u\# 2†Ü>STAM–Z†{π
+ !†ò{ëu)/2 "	)/ 5u\# ◊üâEDIT-K≈#r T;Gõ=€ù  ûP2õ?Óù	 ™üHGõ@˛ù ∫üM\õ>'û<ÕüKsõSXûI‹üAtúOüQÎüBçúD4üR˝üC°ù óü;_††ÑEDI‘Zõ…„.Âú˛öæûπ
+ Åû}( â†}(Ïˇ Ò†ÑECHœ%6  Å†ÉCOÕ%6  %°ÉLP‘%6 V†Ü'PCRL∆%6´£°àPPREVCœ%6  .üÖECHOøZ°{ /°ÜPRINTøZ)°{3°{0 F°ÑEOLøZN°{‚’&Z°ã
+=( 9°áMKPRIN‘Z-,)/ ’&1)/Å ~=(⁄0π
+ ,)/.  {°ÜCOLFWƒZ-,# ("	N°Œt d°ÜP?EMI‘Z]π
+X O3°{π
+" )/ ˆ9¡tO:¡t)/ ˆ9{)/ Ä=(0)°{π
+" )/ ˆ9¡tO:¡t)/ ˆ9{)/  =(0}( ,O €°á(PEMIT©Z‚°ã
+π
+ ≈}(Ùˇ-,ˆ9¡tˇ9¡tO:¡t3°{π
+ )/ )°{π
+ ˇ9{)/ 0ˆ9¡t)/ ≈ î°ÖPEMI‘Zú°Ä°π
+ @°{Œ,P¢]«° H¢ÜPPEMI‘Z{Z7k°π
+ -,¶¢Z°π
+ Z7¡t}( ,+ †¢ÖPPAG≈Zk°π
+8 )/ P¢)/ P¢OµtO#µtON°µt@ (Q'π
+ O¸)/
+ P¢®%¯ˇZ°π
+ ‰ ¿¢ÉLF”Z-,π
+2  (”
+-,µtÃ’&Z°ã
+=(π
+ ˜¢,O}(
+ )/
+ P¢‚
+}(Ãˇ, A£áPSPACE”ZQ'π
+ O¸`(¶¢®%˙ˇ Ò¢ÖPCRL∆Z)/ P¢)/
+ P¢ (”
+-,µtZ°π
+
+ )/< }( Ã’&π
+ ˜¢M (ã£O#µtON°µt T°ÉPC“Z{k°π
+ ©£Z°π
+ ¡t…}( , É£ÉCR”ZQ'π
+ O¸ç®%¸ˇ Ò£ÉPB”Z{k°π
+ # (π
+ )/ P¢)/ˇˇ«°Z°π
+ ¡tı}( , ££ÖPBELÃZZ°π
+ G}( k°π
+ )/ P¢ 3§Ö>PRO◊Z-, (~π
+ …@ ("	}(  (É	Ã (É	”
+>8§ ë§Ö>PCOÃZ-,# (~π
+ çM ("	}( # (É	‚# (É	”
+>8;7 ¿°âPPOSIT…Z{Ô&k°π
+
+ >+Z7ó§œ§Z°π
+ ª1¡t™}( ,+ª1, m§ÖPTYP≈Z{Ô&k°π
+" >+Q'π
+ O¸-, ()/ =(¶¢”
+®%ˇ,Z°π
+ ª1¡tf}( ,+ª1, ;•ÖPRIN‘Z)/É xµt)/B kµt)/˜£)/è0?)/˘¢)/À0?)/9§)/Ü0?)/u§)/}0?)/•)/û0?)/…¢)/©0?)/C•)/‚0? …§áCONSOL≈Z)/O xµt)/ kµt)/À)/è0?)/Ê)/À0?)/˜)/Ü0?)/I)/}0?)/¨)/û0?)/
+)/©0?)/h)/‚0? §á(TITLE©%6≥¶•ÖTITL≈ZY¶{Q'π
+ Œ, ã•äCOMPRE”Zk°π
+ )/ P¢ Ì•àSQUASH≈Zk°π
+ OP¢ _¶áAMBIEN‘Zﬁ Ambient Designs     Proprietary )/ ;7ﬁ11-14-84 w¶ÖPAGE£%6- Q¶à.LINE1ØZ-,lM
+*7-,ò{4
+1π
+  ()/D úò{£{"	4
+}( , ˜¶à.LIST1ØZò{ç)/  ;7)/ M
+-,π
+ ò{£{"	)/@ ;7)/ M
+ç)/ O¸ç.ˇ¶pπ
+ µ.®%ˇç, 7ßà.LIST2’Z)/ O¸ò{£{"	1~?ßò{]òŒt1lÉ	’&π
+ µ.®%÷ˇ£{)/ Ω&()/ ÔòŒt ë¶áLIST2U–Zë•¶]Ò¶¡t”
+Z7ò¡t…ﬁPageÒ¶{)/ M
+)/ ;7e¶ç]Ò¶Œtõßò{”
+1’&π
+œˇ,ı• ©¶Ü2INDEÿZ1)/ M
+*7Z7ëu)/2 ◊Q'π
+  ()/F ú-,)/ M
+*7ëu)/2 ◊ç ìßÜPINDEÿZ¶…1Ô&1"	Z7¸..)/7 "	.1~π
+ ,OI®.ä.É	)/7 ¢0ã
+.ä.Ω&⁄0=(π
+ …ª1)/7 "	Ô&®%ºˇª1, B®Ö[MOD›%6BLÓ®Ö[REG›%6)B˙®Ö[R/M›%6 cÎ¶ÜOBJIDÿ%6  ©ÜOBJSE«%6 ©áINSTLEŒ%6e ÎßÜD-FLA«%6on©ÜW-FLA«%6 fG©ä#DISPBŸ%6S ,©Ü[DISP›%6la:©ÇHÆZ5{Z7‰-OO¿*5¡t T©É2HÆZ5{Z7‰--,)/ ~π
+ )/0 ß]}( lM
+5¡t á®É4HÆZO)/ ˝7é©é© º©ÑSHR£Ÿ©YX”ËP≠ãÿˇ'“©ÑBIT∞Z)/ =( b©ÜBIT0-±Z)/ =( ˆ©ÜBIT0-≤Z)/ =( Â©ÑBIT±Z)/ =()/ ◊© 	™ÜBIT1-≤Z)/ =()/ ◊© ™ÑBIT≤Z)/ =()/ ◊© L™ÑBIT≥Z)/ =()/ ◊© 3™ÜBIT3-¥Z)/ =()/ ◊© z™ÜBIT3-µZ)/8 =()/ ◊© c™ÑBIT¥Z)/ =()/ ◊© ¨™ÑBITµZ)/  =()/ ◊© √™ÑBIT∂Z)/@ =()/ ◊© ì™ÜBIT6-∑Z)/¿ =()/ ◊© ⁄™ÑBIT∑Z)/Ä =()/ ◊© Ò™ÖC@OB Z&©{©{˘1"	rS ä©Ñ@OB Z&©{©{˘1"	GS 
+´Ç$¨Z-,Ô&÷-Z75uª1+( !´áREGNAM≈%6ALCLDLBLAHCHDHBHAXCXDXBXSPBPSIDIo©Ñ.RE«ZN©{π
+
+ )/ }( OZ7Ò
+s´"	"	l◊ ;´àMNEMON…%6AAA   AAD   AAM   AAS   ADC   ADD   AND   CALL  CBW   CLC   CLD   CLI   CMC   CMP   CMPS  CWD   DAA   DAS   DEC   DIV   ESC   HLT   IDIV  IMUL  IN    INC   INT   INTO  IRET  JA    JAE   JB    JBE   JCXZ  JZ    JG    JGE   JL    JLE   JMP   JNZ   JNO   JNP   JNS   JO    JP    JS    LAHF  LDS   LEA   LES   LOCK  LODS  LOOP  LOOPZ LOOPNZMOV   MOVS  MUL   NEG   NOP   NOT   OR    OUT   POP   POPF  PUSH  RCL   RCR   REP   REPNE RET   ROL   ROR   SAHF  SAR   SBB   SCAS  SEG   SHL   SAL   SHR   STC   STD   STI   STOS  SUB   TEST  WAIT  XCHG  XLAT  XOR   ?     PUSHF ó´Ö.MNEÕZ)/ Ô ´"	)/ ◊ T´à.ALLMN≈Z)/^ O¸.≈	.Æ®%ˆˇ ¬´ÜOPLOOÀ%6
+
+B@>>>>>
+>
+B\ 
+
+B@LLLLL
+L
+B@
+
+N VVVVV
+V
+N [[[[[
+[
+N  
+
+N BBBBBBBB@@@@@@@@\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ,)"( .+-*%$&#ccccWWYY8888818@< YYYYYYY  X ] A J / 888899W
+W
+UU44MM8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	8	\ \ GG 2088\ \ GG    cccc\ Z 765!??'''??3 \ F E   cccc	 R  T 
+ S ccÆä80-83G“%6>LV[ÆäD0-D3G“%6HICDOQ\K_∞âF6F7GRœ%6W\=;:@ÆáFEGROU–%6\\\\\\á∞áFFGROU–%6''B\s∞ãSPEC-MŒ#r i∞Ä U∞Å U∞Ç U∞É U∞ˆ }∞˜ }∞˛ ë∞ˇ •∞Ø∞â.MNEMOŒZO'´Ò
+GÆ"	 (-,)/c Ω&π
+ ,O'´∑∞]'´ö™"	 (Æ õ∞á.OBJIDÿZ5{‰-&©{¿©ﬁ:©{¿©5¡t k´ä.OBJHEÿZ5{Z7‰-O¸.'´é©®%¯ˇ5¡t A±ã.DECOD≈Zç!±4©{-,*7I±)/ Z7Ò
+É	;7Á∞*7 i±Ç.¨Zﬁ, ï±ÜSEGRE«%6ESCSSSDS±á.SEGRE«ZÒ
+©±"	l◊ µ±ÉB>◊”±XòP≠ãÿˇ'ﬂ∞à.IP-IN√Z—±©{4©{"	"	r© ›±â.DATA8ØZN©{π
+ @´}( '´r© Õ±Ü.DATA∏Z'´r© ¢±ÜBIT0>◊ZO'´Í©N©¡t ,≤ÜBIT3>◊ZO'´h™N©¡t K∞Ö.ADD“Zﬁ[@´r©ﬁ] ≤á.IP-IN√Z©{4©{"	"	r© C≤Ü#[MOD›Z]'´¯™Ù®¡t é≤Ü#[REG›Z]'´ö™ ©¡t •≤Ü#[R/M›Z]'´™©¡t ˚±ã##DISP¬ZÙ®{-,)/ Ω&π
+ ⁄0}(. -,lΩ&π
+ }(  -,]Ω&π
+ }( ©{)/ Ω&π
+ \©¡t Z≤á#[DISP›Z\©{]Ω&π
+ l'´—±}( l@´i©¡t º≤ÜBIT1>ƒZO'´!™A©¡t ”≤õ[D][W]€ZZ≥3≤ï≤¨≤√≤€≤/≥ '≥Ö.DIS–Zi©{r© j≥à.R/MTEÿ%6BX+SIBX+DIBP+SIBP+DISI   DI   BP   BX   r≤Ü.R/M0∞Z©{-,)/ Ω&π
+" ,N©{π
+
+ ﬁw}( ﬁbﬁ[å≥}( ﬁ[)/ Ô†≥"	)/ õ	◊ﬁ] ò≥â.R/M01ØZﬁ[©{)/ Ô†≥"	)/ õ	◊ﬁ+å≥ﬁ] Ã≥Ü.R/M0≥Z©{ú´ #¥â.R/MCA”#r ^¥  ’≥ -¥ -¥Ü≥Ñ.R/ÕZÙ®{p¥ h¥á00CLAS”Z]4©¡tq± ï¥á01CLAS”Z]4©¡tq±3≤Oú´ò±lú´ ´¥á03CLAS”Z]4©¡tq±]N©¡tO'´™ú´ Õ¥á04CLAS”Z]4©¡tq±]N©¡tOú´ò±O'´™ú´ Ò¥á05CLAS”Z]4©¡tq±O'´Å™Ω± µá06CLAS”Zl4©¡tq±]"≤ 9µá07CLAS”Zl4©¡tq±3≤Oú´ò±]"≤ Sµá08CLAS”Zl4©¡tq±]'´Â± uµá09CLAS”ZJ≤N©{4©¡tq±O'´™ú´ò±]≤ S≥á10CLAS”Z3≤N©{π
+
+ )/ }( l4©¡tq±Oú´ò±]≤ ªµá11CLAS”Z)/ 4©¡tq±3≤Oú´ò±]`≤ Ìµá12CLAS”Z)/ 4©¡tq±3≤]`≤ò±Oú´ ∂á13CLAS”Z)/ 4©¡tq±]@´z≤ 5∂á14CLAS”Z)/ 4©¡tq±ﬁSP+]@´≈	 S∂á15CLAS”Z)/ 4©¡tq±ﬁSP+]@´≈	ﬁ
+(INTERSEG) w∂á16CLAS”Zr≥l\©{"	4©¡tq±A©{π
+  ©{ú´ò±â¥}( â¥ò± ©{ú´ ®∂á17CLAS”Zr≥]N©¡tl\©{"	4©¡tq±]'´Å™Ω±ò±â¥ Ê∂á18CLAS”Zr≥]N©¡tl\©{"	4©¡tq±â¥ò±]'´Å™Ω± ∑á19CLAS”Zr≥]N©¡tl\©{"	4©¡tq±â¥ F∑á20CLAS”Zr≥l\©{"	4©¡tq± ©{ú´ò±â¥ l∑á21CLAS”Zr≥]N©¡tl\©{"	4©¡tq± ©{ú´ò±â¥ î∑á22CLAS”Zr≥l\©{"	4©¡tq±â¥ ¬∑á23CLAS”Zr≥l\©{"	4©¡tq±â¥A©{π
+ ﬁ,CL ‚∑á24CLAS”ZN∑ ∏á25CLAS”ZN∑  ∏á26CLAS”Z)/ 4©¡tq±5{‰-)/ @´¿©ﬁ:]@´¿©5¡t 0∏á27CLAS”Zr≥)/ \©{"	N©{"	4©¡tq±â¥ò±l\©{"	≤ d∏á28CLAS”Zr≥)/ \©{"	O'´˝©]Ω&π
+ ”
+4©¡tq±â¥ò±l\©{"	A©{⁄0N©{=(π
+ @´}( '´A©{π
+ —±r© ò∏á29CLAS”Zl∏ Ñ¥á30CLAS”Zl4©¡tq± πá31CLAS”Z]4©¡tq±O'´Í©π
+ ﬁWORD}(	 ﬁBYTE πáCLASSE”#r T:  ü¥ µ¥ ◊¥ ˚¥ %µ Cµ ]µ µ	 õµ
+ ≈µ ˜µ ∂ ?∂ ]∂ Å∂ ≤∂ ∂  ∑ P∑ v∑ û∑ Ã∑ Ï∑ ∏ *∏ :∏ n∏ ¢∏ π π (πPπÜDECOD≈Z©¡tO'´Ò
+GÆ"	”
+ (-,)/c Ω&π
+ ,]'´ö™ã
+π
+
+ )/ }( )/ Xπ4©{©Œtpπ
+æˇ ëµÜ(DCMP©%6r U¥âCOLON-ƒ ;Z>∫Ö(PFA©%6  ‹πá+(DCMP©Zl8∫Œt ¯∏ä.NEXT-√Z`∫*78∫{{Ì7 l∫ã.NEXT-√Z`∫*78∫{-,{"	Ì7 Ü∫ã.2NEXT≠Z`∫*78∫{{Ì78∫{{Ì7`∫ §∫Ç.§Z*7`∫8∫{”
+-,‚
+ (◊)/" ß8∫{ (‚
+8∫Œt 1∫á(.WORD©#r
+ T;‡œ∫(ê∫jœ∫+/v∫]/Æ∫ª
+ê∫(ê∫™%ê∫Æê∫˛ê∫X∫Ö.WORƒZ8∫{-,O)/ ¿*)/ ;7{ƒ0Û /ªÜDECOM–Zç-,8∫¡t-,R∫¡t-,›({F∫Ω&π
+f ƒ0Û8∫{Ô&pπ
+ Ï8∫{{-,)/"Ω&1)/(Ω&0⁄0π
+ ç*75ªˇ∫`∫}(Ãˇç*75ª,ç8∫{ª1».É	≈	ﬁbytes}( „πç WªÑWIP≈Z”
+Z7¸.ëu)/ `(mu®%Úˇ ËªáCOMPAR≈ZO¸1."	ëu1."	ëu)/ O¸1."	 (1."	 (>+Ω&π
+ ,+}(3 çﬁOFFSET:ä.)/ ≠/.Or*∞**7ﬁA: Z7≈	ﬁ B: ≈	®%Øˇ,+®%ëˇ,+ 	ºÜLWSCAŒóºXYå¬ãﬂ_ÚØOO&;uWπ Qã˚é¬≠ãÿˇ'ZÓRh]{l]{x]{R Z]{l]{ÓRhx]{R L∫ÜOCCUR”ZÔ&Ô&>+..ïºπ
+ >+É	ª1"	Ô&-,Ì7Z7,}(ﬁˇª1ª1,+,+ éºÉGIŒ%6  !ΩÑNES‘Z]%ΩŒt +ΩÜUNNES‘Z)/ˇˇ%ΩŒt%Ω{ã
+π
+ x1  ∫É.I‘Z)/ "	-,-,‚
+ (-,ﬁ|˘1Z7)/ˇ =(◊ﬁ|"	lÉ	 <ΩÑ.LI‘Z-,{ﬁ=Ì7 ‰ºá.BRANC»Z-,{1"	ﬁto Ì7 ëΩÖ.COM–Z-,{ƒ0Û »ΩÜUCASE”#r	 T;+/òΩ(≤Ωª
+≤Ω™%≤ΩÆ≤Ω‡cΩjcΩ◊AcΩÀ)–Ω]ΩÖDELT¡Z-,{ÁΩ ®ΩÑ(UN©Z-,{)/ZΩ&π
+∞ -,{)/"Ω&1{)/(Ω&0⁄0π
+t ç-,Ì7%Ω{;7-,{ƒ0Û*7-,æZ7,%Ω{‚
+π
+ æ-,)/Q Ω&π
+ ,7x1}(, -,)/ Ω&π
+ ,-,{0Ω,æ}( )/P Ω&π
+ ,CΩ}(pˇ,ç%Ω{)/ "	;7ﬁ;S CΩ}( %Ω{‚
+ã
+π
+ ﬁ
+primitive ,CΩ æÉUN∫Zçﬁ!(sp=next, cr=nest, P=pop, Q=quit)]%Ω¡tÇ-,æ e.com  S RIVES SYSGEN E.COM' "                 9-13-85 ) ;u  ;128e.com                                                                                               j %6  %6 %6Œ%6ˇ %6¿ ; %6 %6 %62 %6˜%6 %6  %6 %6 %6- %6¨ˇ ±ˇ Æˇ ¨ˇ   (   8   3POL%6    %6ÔˇG ÷ˇG €ˇC  < ·ˇ'   G ^   ˇˇˇˇ%6     %6√Û– P– ‰ˇé˛£ë ¨˛	≈ŸÎ#scratch space):¡ %6»   é   ? j ·   ° G . ŒZ1"	Z7¸.TO¸.ä.VTNU®%ˆˇ®%Ïˇ %6ã¡√%6ã¬¡@( ORBIT-OV - @POLY                                     9-19-84)                                                                 HEAD: @POLY ( n --, get 4 x,y vertices & save in polygon clip                      workspace array as y,x)                      T: 4 0 DO I OVER GPOLY LC@                                         2 0 DO I 2* OVER XFORMVERT L@                                          J 4 * G1POLY + I 1- NEGATE 2* + !                            LOOP DROP                                                       LOOP DROP T;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ( ORBIT-OV - GVERTRANS                                 9-19-85)                                                                 HEAD: GVERTRANS ( -- \ transform all grid vertices)             T: 117 #IN !                                                      ' XFORMVERT 6 + @ 3DSEG ! 0 VOUT !                              ' G1VERT    6 + @ 3DSEG @ - 16* VIN' !                          ' GVERTEX   6 + @ 3DSEG @ - 16* VIN !                           60 YSCREEN !  36 XSCREEN !                                      VIEW>ORIGIN  ORTHAG.POINTS  PERSPEC.SCREEN T;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ( ORBIT-OV - ?#VIS                                     9-19-85)                                                                 HEAD: ?#VIS ( n -- # , # of vertices in front of the viewing)   T:          (          plane for polygon n )                      >R                                                              0                                                               4 0 DO I J GPOLY LC@                                                   4 SWAP XFORMVERT L@                                             SCALE - 0> IF 1+ THEN                                        LOOP                                                        R> DROP T;                                                                                                                                                                                                                                                                                                                                                                                    ( ORBIT-OV - G2ORTHAG                                  9-19-85)                                                                 HEAD: G2ORTHAG                                                  T: ( compute orthagonal coordinates for polygon in g2)            4 #IN ! G2POLY VIN !  G1POLY VIN' !  G3POLY VOUT !              @DS 3DSEG ! VIEW>ORIGIN  ORTHAG.POINTS T;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ( ORBIT-OV - ZCLIPSET ZXGET                            9-19-85)                                                                 HEAD: ZCLIPSET ( set clipping window for z,x & z,y clipping)    T:  16000 16000 SCALE -16000 SETCLIPWINDOW T;                                                                                   HEAD: ZXGET ( get z,x vertices for clipping)                    T:  4 0 DO I 6 * G3POLY + DUP @ SWAP 4 + @  ( X,Z --)                      I 2* 2* G1POLY + >R I ! R> 2+ !                              LOOP T;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ( ORBIT-OV - ZYGET XSAVE                               9-19-85)                                                                 HEAD: ZYGET ( get z,y vertices for clipping)                    T:  4 0 DO I 6 * G3POLY + DUP 2 + @ SWAP 4 + @  ( Y,Z --)                  I 2* 2* G1POLY + >R I ! R> 2+ !                              LOOP T;                                                                                                                 HEAD: XSAVE ( save x after z,x clipping)                        T: #IN @ 0 DO VIN @ I 2* 2* + 2 + @                                           G3POLY I 6 * + !                                             LOOP T;                                                                                                                                                                                                                                                                                                                                                                              ( ORBIT-OV - YSAVE ZSAVE XY>G1POLY                    11-30-84)                                                                 HEAD: YSAVE ( save y after z,y clipping)                        T: #IN @ 0                                                        DO VIN @ I 2* 2* + 2 + @ G3POLY I 6 * + 2+ ! LOOP T;                                                                          HEAD: ZSAVE ( save z after z,y clipping)                        T: #IN @ 0                                                        DO VIN @ I 2* 2* + @ G3POLY I 6 * + 4 + ! LOOP T;                                                                             HEAD: XY>G1POLY                                                 T: #IN @ 0                                                        DO I 6 * G3POLY + DUP @ SWAP 2+ @ ( X,Y--)                      I 2* 2* G1POLY + >R I ! R> 2+ ! LOOP T;                                                                                                                                                       ( ORBIT-OV - @CLIPOLY SETPOLYCOLOR                     9-18-85)                                                                 HEAD: @CLIPOLY ( n --, 3D clip polygon n)                       T:  @XYZ>G2POLY G2ORTHAG ZCLIPSET ZXGET 4 #IN !                   G1POLY VIN ! G2POLY VOUT ! GOC OIN ! GOC2 OOUT !                CLIPPER XSAVE ZYGET 4 #IN ! G1POLY VIN ! G2POLY VOUT !          CLIPPER YSAVE ZSAVE VCLIPSET G3POLY VOUT ! PERSPEC.SCREEN       XY>G1POLY T;                                                                                                                                                                                  HEAD: SETPOLYCOLOR ( n -- \ set color & dither for polygon n)   T: 0 SWAP GRIDCOLOR OVER OVER LC@ COLOR ! 1+ LC@ DCOLOR ! T;                                                                                                                                                                                                                                                                    
