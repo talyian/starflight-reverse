@@ -1,0 +1,258 @@
+==== Page 1 | 11-05-85 -- ENGINEERCMP -- Binary Systems | image ENGINEER_CMP_p01 ====
+---- Screen 0 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 2 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 3 ----
+( ------------overlay prefix for ENGINEER-------------------- )
+
+VOCABULARY ENGINEER-VOC IMMEDIATE
+98 OPEN-OVERLAY
+ENGINEER-VOC DEFINITIONS
+
+2000 TRANS-ALLOT NEWT-DP
+
+
+16 28  1 IFIELD: ^ENG    17 26 3 IFIELD: ENGINEER
+20 17  2 IFIELD: %ARMOR
+
+HEAD: .CTY/N T: ' ov.CTY/N MODULE T;
+
+
+
+---- Screen 4 ----
+( Crew fcns: Engineer                             AWK  7/02/85 )
+
+HEAD: .DAMAGE-GRAPHICS ( -- )
+T: DK-BLUE !COLOR
+ 154 180 113 OVER LLINE 154 130 113 OVER LLINE
+ 113 131 OVER 179 LLINE 154 131 OVER 179 LLINE T;
+
+HEAD: NXT-DMG ( -- )  T: -7 yBLT +! 85 xBLT ! T;
+
+HEAD: .DAMAGE-TEXT ( -- )
+T: >2FONT WHITE !COLOR 103 194 POS. ." DAMAGE"
+ >1FONT DK-BLUE !COLOR 85 178 POS. ." HULL"
+ NXT-DMG ." ENGINES" NXT-DMG ." SENSORS" NXT-DMG ." COMM."
+ NXT-DMG ." SHIELD"  NXT-DMG ." MISSILE" NXT-DMG ." LASER" T;
+
+
+---- Screen 5 ----
+( Crew fcns: Engineer                             AWK 10/02/85 )
+
+HEAD: .DAMAGE-BAR ( n -- )
+T: DUP 2* %ARMOR + >R I 1+ C@ I %ARMOR = OR
+ IF CURSORSPACE aBLT ! XORMODE OFF 5 lBLT ! I C@ 2* 5 / wBLT !
+   114 178 ROT 7 * - POS. DK-GREEN !COLOR wBLT @
+   IF BLT THEN
+   114 wBLT @ + xBLT ! 40 wBLT @ - wBLT ! RED !COLOR wBLT @
+ IF BLT THEN ELSE DROP THEN R> DROP T;
+
+: DBARS ( -- )
+ #SHIP >C+S 7 0 DO I .DAMAGE-BAR LOOP ICLOSE ;
+
+: (/DAMAGE) ( -- )
+ BLACK ERASE-AUXILLARY .DAMAGE-GRAPHICS
+ .DAMAGE-TEXT DBARS ;
+==== Page 2 | 11-05-85 -- ENGINEERCMP -- Binary Systems | image ENGINEER_CMP_p02 ====
+---- Screen 6 ----
+( Crew fcns: Engineer                             AWK 10/23/84 )
+
+HEAD: SCAN-DAMAGE-STATS ( n1 -- [n2] f )
+T: >R #SHIP >C+S 0
+ 7 0 DO %ARMOR I 2* + 1+ C@ J AND
+   IF 1+ I SWAP LEAVE THEN
+ LOOP R> DROP ICLOSE T;
+
+HEAD: .SHIP-VITALS ( n -- )
+T: >R I 0= IF ." DESTROYED" ELSE
+      I  1 20 WITHIN IF ." CRITICALLY" ELSE
+        I 20 40 WITHIN IF ." HEAVILY" ELSE
+          I 40 70 WITHIN IF ." MODERATELY" ELSE
+            I 70 90 WITHIN IF ." SLIGHTLY" ELSE
+              I 90 100 WITHIN IF ." MINIMALLY" ELSE ." NOT"
+ THEN THEN THEN THEN THEN ."  DAMAGED" THEN R> DROP T;
+---- Screen 7 ----
+( Crew fcns: Engineer                             AWK 10/23/84 )
+
+HEAD: .SI0 ( n -- )  T: ." HULL" T;
+HEAD: .SI1 ( n -- )  T: ." ENGINES" T;
+HEAD: .SI2 ( n -- )  T: ." SENSORS" T;
+HEAD: .SI3 ( n -- )  T: ." COMMUNICATIONS" T;
+HEAD: .SI4 ( n -- )  T: ." SHIELDS" T;
+HEAD: .SI5 ( n -- )  T: ." MISSILE LAUNCHER" T;
+HEAD: .SI6 ( n -- )  T: ." LASER CANNON" T;
+
+CASE .SHIP-ITEM
+ 0 IS .SI0  1 IS .SI1  2 IS .SI2
+ 3 IS .SI3  4 IS .SI4  5 IS .SI5  6 IS .SI6
+OTHERS NOP
+
+
+---- Screen 8 ----
+( Crew fcns: Engineer                             AWK 10/23/84 )
+
+HEAD: .DL1 ( n -- f )
+T: NULL CTPOS. DUP .SHIP-ITEM ." : "
+ 2* %ARMOR + >R I 1+ C@ I %ARMOR = OR
+ IF I C@ .SHIP-VITALS I C@ 0> ELSE ." NONE" 0 THEN R> DROP T;
+
+HEAD: .DL2 ( n -- )
+T: CTCR ." EFFICIENCY: " 2* %ARMOR + C@ 0 .R ." %" T;
+
+HEAD: .DL3 ( n -- )
+T: ?DUP IF CTCR ." CURRENT FUNCTIONALITY: " 2* %ARMOR + 1+ C@
+ 128 AND IF ." IN" THEN ." OPERATIVE" THEN T;
+
+
+
+---- Screen 9 ----
+( Crew fcns: Engineer                             AWK 10/23/84 )
+
+HEAD: GREG'S-FORMULA ( %eff -- n )
+T: #ASSIGN-CREW >C+S ENGINEER 1.5@ >C+S
+ 250 ^ENG C@ - 100 ROT - * 1+ 7195 21849 */ 5 + CDROP ICLOSE T;
+
+HEAD: .TIME-UNITS ( n -- )
+T: DUP 60 < IF 5 /MOD SWAP 2 > + DUP . ." MINUTE" ELSE
+   DUP 1440 < IF 60 /MOD SWAP 30 > +  DUP . ." HOUR" ELSE
+     1440 /MOD SWAP 720 > + DUP . ." DAY"
+ THEN THEN 1 > IF 83 EMIT THEN ." ." T;
+
+HEAD: .DL4 ( n -- )
+T: 2* %ARMOR + C@ DUP 100 <
+ IF CTCR ." ESTIMATED TIME FOR COMPLETE REPAIRS: "
+ CTCR GREG'S-FORMULA .TIME-UNITS ELSE DROP THEN T;
+---- Screen 10 ----
+( Crew fcns: Engineer                             AWK 10/23/84 )
+
+HEAD: .DL5 ( n -- )
+T: 2* %ARMOR + 1+ C@ 64 AND
+ IF CTCR ." CURRENTLY UNDER REPAIR." THEN T;
+
+HEAD: .DAMAGE ( n -- )
+T: #SHIP >C+S
+ >R CTINIT CTERASE I .DL1
+ IF I .DL2 I .DL3 I .DL4 I .DL5 THEN
+ R> DROP ICLOSE T;
+
+HEAD: .?DESTROYED ( n -- f )
+T: DUP 2* %ARMOR + C@ 0=
+ IF CTERASE .SHIP-ITEM ." : DAMAGED BEYOND REPAIR." 1
+ ELSE DROP 0 THEN T;
+---- Screen 11 ----
+( Crew fcns: Engineer                             AWK 10/14/85 )
+
+HEAD: .REPAIRING ( n -- )
+T: CTERASE .SHIP-ITEM ." :"
+ CTCR ." ALREADY UNDERGOING REPAIRS." T;
+
+HEAD: .?NEW-REPAIR ( n -- f )
+T: CTERASE ." CEASE REPAIRS ON " .SHIP-ITEM
+ CTCR ." AND BEGIN REPAIRS ON " OCRS @ .SHIP-ITEM ." ?"
+ CTCR .CTY/N Y/N FQUIT OFF CTERASE T;
+
+HEAD: .REPAIR> ( n -- )
+T: ." CEASING REPAIRS ON " .SHIP-ITEM ." ." T;
+
+HEAD: REPAIR> ( n -- )
+T: DUP .REPAIR> 2* %ARMOR + 1+ DUP C@ 191 AND SWAP C! T;
+==== Page 3 | 11-05-85 -- ENGINEERCMP -- Binary Systems | image ENGINEER_CMP_p03 ====
+---- Screen 12 ----
+( Crew fcns: Engineer                             AWK 10/23/84 )
+
+HEAD: .CONT-REPAIR ( n -- )
+T: ." CONTINUING REPAIRS ON " .SHIP-ITEM ." ." T;
+
+HEAD: .>REPAIR ( n -- )
+T: ." BEGINNING REPAIRS ON " .SHIP-ITEM ." ." ?REPAIR ON T;
+
+HEAD: >REPAIR ( n -- )
+T: DUP .>REPAIR #SHIP >C+S 2* %ARMOR + 1+ DUP
+ C@ 64 OR SWAP C! ICLOSE T;
+
+HEAD: .REPAIR-CRS ( n -- )
+T: >R @CRS I OCRS ! I 84 179 ROT 7 * - POS. CURSORSPACE aBLT !
+ 29 wBLT ! 7 lBLT ! LT-BLUE !COLOR XORMODE ON
+ BLT !CRS R> OCRS ! T;
+---- Screen 13 ----
+( Crew fcns: Engineer                             AWK 10/23/84 )
+: (/REPAIR) ( -- )
+ (/DAMAGE) 0 NCRS ! 0 .REPAIR-CRS 0 .DAMAGE CTINIT
+ FTRIG OFF FQUIT OFF #SHIP >C+S
+ BEGIN
+   XYSCAN DROP NCRS @ OVER - 7 MOD DUP 0< 7 * + NCRS !
+   IF OCRS @ .REPAIR-CRS NCRS @ DUP .REPAIR-CRS .DAMAGE THEN
+   ?TRIG OCRS @ 2* %ARMOR + >R I 1+ C@ 0> R> %ARMOR = OR AND
+   IF OCRS @ .?DESTROYED NOT
+     IF 64 SCAN-DAMAGE-STATS
+       IF >R I OCRS @ =
+         IF I .REPAIRING ELSE I .?NEW-REPAIR
+           IF I REPAIR> OCRS @ CTCR >REPAIR
+       ELSE I .CONT-REPAIR THEN THEN R> DROP
+   ELSE CTERASE OCRS @ >REPAIR THEN THEN THEN ?QUIT
+ UNTIL OCRS @ .REPAIR-CRS ICLOSE ;
+---- Screen 14 ----
+( ------------overlay suffix for ENGINEER-------------------- )
+DISPOSE
+CLOSE-OVERLAY
+98 OVERLAY ENGINEER-OV
+ENGINEER-OV
+FORTH DEFINITIONS
+
+: ov/DAMAGE ENGINEER-OV ENGINEER-VOC (/DAMAGE) ;
+: ov/REPAIR ENGINEER-OV ENGINEER-VOC (/REPAIR) ;
+: ovDBARS   ENGINEER-OV ENGINEER-VOC DBARS ;
+
+OV-CANCEL
+
+
+
+

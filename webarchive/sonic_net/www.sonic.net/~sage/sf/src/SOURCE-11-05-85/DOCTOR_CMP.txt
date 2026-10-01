@@ -1,0 +1,220 @@
+==== Page 1 | 11-05-85 -- DOCTOR CMP -- Binary Systems | image DOCTOR_CMP_p01 ====
+
+---- Screen 0 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 2 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 3 ----
+( ----------------overlay prefix for DOCTOR------------------ )
+
+VOCABULARY DOCTOR-VOC IMMEDIATE
+99 OPEN-OVERLAY
+DOCTOR-VOC DEFINITIONS
+2500 TRANS-ALLOT NEWT-DP
+
+16 19  1 AFIELD: ^DUR   16 11 15 IFIELD: ^NAME
+16 31  1 IFIELD: ^VIT   16 32  2 IFIELD: ^STA
+17 17  3 IFIELD: CAPTAIN
+
+HEAD: .CTY/N T: ' ov.CTY/N MODULE T;
+HEAD: CMESS T: ' ovCMESS MODULE T;
+
+
+
+
+---- Screen 4 ----
+( Crew fcns: Doctor                              AWK 10/22/84 )
+
+HEAD: SCAN-CREW-STATS ( n -- [iaddr] f )
+T: >R *ASSIGN-CREW >C+S
+ 0 6 0 DO CAPTAIN I 3 * + 1.5@ >C+S ^STA @ J AND
+   IF 1+ >R CI R> LEAVE THEN ICLOSE
+ LOOP ICLOSE R> DROP T;
+
+HEAD: .VITALS ( n -- )
+T: >R I 0= IF ." DEAD" ELSE
+      I  1 21 WITHIN IF ." CRITICALLY" ELSE
+        I 21 51 WITHIN IF ." HEAVILY" ELSE
+          I 51 81 WITHIN IF ." MODERATELY" ELSE
+            I 81 100 WITHIN IF ." SLIGHTLY" ELSE ." NOT"
+ THEN THEN THEN THEN ."  WOUNDED" THEN R> DROP T;
+
+
+---- Screen 5 ----
+( Crew fcns: Doctor  ?T/X  & text                AWK 10/22/84 )
+
+HEAD: .T/X ( f -- )  T: IF ." TREAT" ELSE ." EXAMINE" THEN T;
+
+HEAD: ?T/X ( f1 iaddr -- f2 )  ( ?treat patient )
+T: >C+S ." SHOULD I STOP TREATING " ^NAME $. ICLOSE
+ CTCR ." TO " .T/X ."  SOMEONE ELSE?" CTCR .CTY/N Y/N CTERASE T;
+
+HEAD: .NO-TREAT ( -- )
+T: ^NAME $. ."  DOESN'T NEED MEDICAL" CTCR ." TREATMENT." T;
+
+HEAD: .OTREAT ( -- )  T: ^NAME $. ."  IS BEYOND HELP." T;
+
+HEAD: .>TREAT ( -- )
+T: ." I AM STARTING TREATMENT ON" CTCR ^NAME $. ." ." T;
+
+
+==== Page 2 | 11-05-85 -- DOCTOR CMP -- Binary Systems | image DOCTOR_CMP_p02 ====
+
+---- Screen 6 ----
+( Crew fcns: Doctor  >TREAT TREAT> CONT-TREAT    AWK 10/22/84 )
+
+HEAD: >TREAT ( iaddr -- )
+T: >C+S ^VIT C@ 1 100 WITHIN
+ IF .>TREAT ^STA @ 4 OR ^STA ! ELSE ^VIT C@ 100 =
+ IF .NO-TREAT ELSE .OTREAT THEN THEN ICLOSE T;
+
+HEAD: .TREAT> ( -- )
+T: ." I AM CEASING TREATMENT ON" CTCR ^NAME $. ." ." T;
+HEAD: TREAT> ( iaddr -- )
+T: >C+S .TREAT> ^STA @ 65531 AND ^STA ! ICLOSE T;
+
+HEAD: .CONT-TREAT ( -- )
+T: ." I AM CONTINUING TREATMENT ON" CTCR ^NAME $. ." ." T;
+HEAD: CONT-TREAT ( iaddr -- )
+T: >C+S .CONT-TREAT ^STA @ 4 OR ^STA ! ICLOSE T;
+
+---- Screen 7 ----
+( Crew fcns: Doctor  GET-CREWMEMBER              AWK 10/11/85 )
+
+HEAD: GET-CREWMEMBER ( f -- iaddr )
+T: CTERASE ." WHO SHOULD I " .T/X ." ?"
+ *ASSIGN-CREW >C+S
+ 1 38 CMESS ." CHOOSE CREWMEMBER ^\ AND PRESS BUTTON" !CRS
+ CAPTAIN 1.5@ >C+S 11 2 CTPOS. ^NAME $. ICLOSE
+ 0 BEGIN XYSCAN DROP ?DUP
+   IF + 6 MOD DUP 0< 6 * + DUP 3 * CAPTAIN + 1.5@ >C+S
+   11 2 CTPOS. 15 BLACK POLY-ERASE-TEXT ^NAME $. ICLOSE THEN
+ ?TRIG UNTIL 3 * CAPTAIN + 1.5@ ICLOSE T;
+
+
+
+
+
+
+---- Screen 8 ----
+( Crew fcns: Doctor  .EXAMINE  EXAMINE           AWK 10/11/85 )
+
+HEAD: .EXAMINE ( iaddr -- )
+T: CTERASE >C+S ^NAME $. ."  IS " ^VIT C@ DUP .VITALS
+ IF ." ." CTCR ." AND HAS A VITALITY OF " ^VIT C@ 0 .R
+   ."  AND A" CTCR ." DURABILITY OF " ^DUR C@ 0 .R THEN ." ."
+ CTCR ^STA @ 4 AND
+ IF ^NAME $. ."  IS CURRENTLY BEING" CTCR ." TREATED." THEN
+ ICLOSE T;
+
+: (/EXAMINE) ( -- )
+ CTERASE >1FONT 0 GET-CREWMEMBER .EXAMINE ;
+
+
+
+
+
+---- Screen 9 ----
+( Crew fcns: Doctor  TREAT                       AWK 10/14/85 )
+
+: (/TREAT) ( -- )
+ CTERASE >1FONT 4 SCAN-CREW-STATS
+ IF 2DUP 1 ROT ROT ?T/X
+   IF TREAT> 2500 MS 1 GET-CREWMEMBER CTERASE >TREAT
+   ELSE CONT-TREAT THEN
+ ELSE 1 GET-CREWMEMBER CTERASE >TREAT THEN ;
+
+
+
+
+
+
+
+
+
+---- Screen 10 ----
+( ----------------overlay suffix for DOCTOR------------------ )
+DISPOSE
+CLOSE-OVERLAY
+99 OVERLAY DOCTOR-OV
+DOCTOR-OV
+FORTH DEFINITIONS
+
+: ov/EXAMINE DOCTOR-OV DOCTOR-VOC (/EXAMINE) ;
+: ov/TREAT DOCTOR-OV DOCTOR-VOC (/TREAT) ;
+
+OV-CANCEL
+
+
+
+
+
+
+---- Screen 11 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

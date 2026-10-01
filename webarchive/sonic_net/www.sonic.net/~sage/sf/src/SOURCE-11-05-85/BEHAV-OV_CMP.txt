@@ -1,0 +1,1276 @@
+==== Page (none) | (none) | image BEHAV-OV_CMP_p01 ====
+ 0 \ OVERLAY PREFIX: TV INTERFACE AND BEHAVIOR
+ 1 \ phrased getter/debugger
+ 2 \ start of phrase to iaddr retrieval
+ 3 \ localized search
+ 4 \ scanning word for finding a particular phrase
+ 5 \ actual s" word compiles double literal instance
+ 6 \ at sea test for wandering
+ 7 \ start of alien lifeform simulation: fields, prob
+ 8 \ conds: ?player-firing-laser to ?alien-hit-with-l
+ 9 \ conds: ?random-angry  to  ?stunned
+10 \ conds: niche testing
+11 \ conds: ?next-to-mate to ...
+12 \ conds: ?aggr-enough to ?mate-just-eaten
+13 \ conds: ?out-of-bounds  to  ?stuns>stun-points
+14 \ conds: ?moving  to  ?wants-to-float
+15 \ conds: ?wants-to-land  to  ?ok-to-land
+16 \ delta-xy  computes what to add to reduce/increas
+17 \ ?move-.icon if it is visible
+18 \ macros using delta-xy
+19 \ actions: reduce-aggr-level  to  attack-player
+20 \ actions: flee-player  to  flee-its-mate
+21 \ actions: attack-its-mate  to  become-unpaired
+22 \ actions: wander  to  reduce-hits-by-1-to-40
+23 \ actions: reduce-..by-  to  increment-stuns
+24 \ actions: fly  to land
+25 \ simulate does it for each creature
+26 exit \ search-list for a possible mate
+27 exit \ pairing
+28 \ quick: post players vitality
+29 \ attack player routine
+30  \ attack player routine
+31 \ window erase for the current window
+32 \ attack player routine
+33 \ combining attack routines
+34 \ expert: alien conditions --> actions
+35 \ expert: conditions --> actions ( towards player)
+36 \ rules: responses to other lifeforms c --> a
+37 \ rules: responses to other lifeforms c --> a
+38 \ rules: responses to other lifeforms c --> a
+39 \ rules: responses to other lifeforms c --> a
+40 \ rules: responses to other lifeforms c --> a
+41 \ rules: responses to other lifeforms c --> a
+42 \ rules: responses to other lifeforms c --> a
+43 \ rules: responses to other lifeforms c --> a
+44 \ rules: responses to other lifeforms c --> a
+45 \ rules: responses to other lifeforms c --> a
+46 \ rules: responses to other lifeforms c --> a
+47 \ rules: responses to other lifeforms c --> a
+48 \ rules: air - ground transitions
+49 \ rules: air - ground transitions
+50 \ simula wraps the experts up
+51 \ simulate does it for each creature
+52 \ .stardate
+53 \ storm stuff
+54 ( CASE STATEMENT BY CHARLES EAKER
+55 \ 'angle' to text phrase case statement
+
+55 \ 'angle' to text phrase case statement
+56 \ button to action case statement
+57 \ BLTs for 'function keys'
+58 \ case for do buttons
+59 \ tv-key
+60 \ .distance
+61 \ .cargo % full
+62 \ .energy (other stuff) for terrain vehicle
+63 \ absolute>degrees conversion for display
+64 \ ?forced+hr , module callers
+65 \ tv-tasks
+66 \ tv-untasks
+67 \ mainline routine
+68 \ OVERLAY SUFFIX: behave-ov
+69 \ continue overlay suffix: TV word
+
+==== Page 1 | 11-05-85 -- BEHAV-OVCMP -- Binary Systems | image BEHAV-OV_CMP_p02 ====
+---- Screen 0 ----
+\ OVERLAY PREFIX: TV INTERFACE AND BEHAVIOR       (rfg06sep85)
+
+ vocabulary behavior immediate
+ 115 open-overlay
+ behavior definitions
+
+2290 trans-allot
+newt-dp
+9 width !
+
+
+
+
+
+
+
+---- Screen 1 ----
+\ phrased getter/debugger
+
+head: ?2dup t: 2dup or if 2dup then t;
+head: difind t: 2dup ifind t;
+head: 1.5, t: here 3 allot 1.5! t;
+
+head: PRESENT t: BOX-IADDR 1.5@ >c+s IOPEN ifirst t;
+
+head: tvtwindow
+t:    64 3 7 38 window -1 wbottom +! t;
+
+head: coin t: 0 2 rrnd t;
+head: rand% t: 0 100 rrnd t;
+head: >flag t: 0= 0= t; \ ensures that result of AND op is a fl
+
+
+---- Screen 2 ----
+\ start of phrase to iaddr retrieval
+transient trace @ trace off
+2V= found
+
+: scan" \ parse to " --- addr,count
+  ascii " word count 2dup >uppercase ;
+
+: ?match
+0 dup found 1.5!
+dup phr-cnt c@ =
+  if CI found 1.5!  phrase phr-cnt c@  0 do
+     3 pick i + c@ over i + c@  -
+     if 0 DUP found 1.5! leave then loop drop
+  then ;
+
+
+---- Screen 3 ----
+\ localized search
+\ still uses ?first exit test, so doesn't wrap
+2v= (Starting)
+
+: defaultStart
+ file# @ record# @ >r >r
+ present ci (starting) 1.5! iclose iclose
+ r> r> record# ! file# ! ;
+defaultstart
+
+: startAt
+  box-iaddr 1.5@ >c (starting) 1.5@ >c+s ;
+
+
+
+
+---- Screen 4 ----
+\ scanning word for finding a particular phrase
+\ follow s" with the phrase object to be found
+: (s") 0 dup found 1.5!
+record# @ >r file# @ >r
+' nop 'map ! ' inext 'travers ! ' ?>first '?exit !
+startat  scan"
+begin ?match inext ?first found 1.5@ or or until
+found 1.5@ - 0=
+if ." Phrase " type ."  not found" abort then
+2drop iclose iclose found 1.5@
+r> file# ! r> record# ! ;
+
+\ leaves Instance address on top of stack; use >c+s!!
+
+
+
+---- Screen 5 ----
+\ actual s" word compiles double literal instance rfg20may85)
+
+: s" (s") [compile] 2literal ; immediate
+: start" [compile] s" (starting) 1.5! ;
+ resident  trace !
+
+head: tvxy
+t:  tvehicle 1.5@ >c+s
+    inst-x @ inst-y @ iclose t;
+( xabs @ yabs @ ? )
+head: its-xy t: inst-x @ inst-y @ t;
+
+
+
+
+
+==== Page 2 | 11-05-85 -- BEHAV-OVCMP -- Binary Systems | image BEHAV-OV_CMP_p03 ====
+---- Screen 6 ----
+\ at sea test for wandering                         rfg21jun85)
+\ should also be applied to approach, but too difficult
+( right now )
+
+head: ?in-ocean  \ --- tflag | if in ocean
+t:  inst-x @ xcon @ - inst-y @ ycon @ -
+  acelladdr a@ 32 < t;
+
+
+
+
+
+
+
+
+
+---- Screen 7 ----
+\ start of alien lifeform simulation: fields, prob(rfg06sep85)
+68 54 1 afield: i.level   68 55 1 afield: a.level
+68 48 1 afield: slowest   68 51 1 afield stun.effect
+68 12 1 afield: niche     68 41 3 afield: a.mobility
+68 17 1 ifield hits     68 18 1 ifield stuns
+68 52 1 afield hit.points
+68 24 3 ifield: goal-instance
+68 23 1 ifield: goal-direct
+68 21 1 ifield: move-mode 68 19 1 ifield: aggression
+68 27 1 ifield behave
+68 11 1 afield: size.index
+42 17 1 ifield tv-weapon
+11 17 2 ifield: content-vol
+32 17 1 afield atmo.activity
+
+
+---- Screen 8 ----
+\ conds: ?player-firing-laser to ?alien-hit-with-l(rfg07oct85)
+: ?player-firing-laser    weapon-fired @
+ tvehicle 1.5@ >c+s tv-weapon c@ 1 = iclose and ;
+: ?alien-close-enough
+   its-xy eyexy  @ - abs 6 < >r
+   eyexy 2+ @ - abs 6 < r> and ;
+
+: ?alien-smart-enough i.level c@ 69 > ;
+head: ?ultra-aggr t: aggression 79 > t;
+
+: ?random-scared  rand% 10 < ;
+
+: ?alien-hit-with-laser  its-xy eyexy d@  d=
+ tvehicle 1.5@ >c+s tv-weapon c@ 1 = iclose and
+     dup if 32 behave c@ or behave c! then ;
+
+---- Screen 9 ----
+\ conds: ?random-angry  to  ?stunned                (rfg07oct85)
+head: ?random-angry t: rand% 10 < t;
+
+: ?alien-hit-with-stunner  its-xy eyexy d@ d=
+ tvehicle 1.5@ >c+s tv-weapon c@ 0= iclose and ;
+
+head: ?mobile t: slowest c@ >flag t; \ or test for g.mobility<>s
+
+: ?notice-player  behave c@ 64 and 0=
+  if rand% 10 < if behave c@ 64 or behave c! 1 else 0 then
+  else 1 then ; \ make sure logic is right
+: ?next-to-player
+ tvxy its-xy rot - abs 2 < >r   - abs 2 < r> and ;
+
+head: ?alive t: hits c@ >flag t;
+head: ?stunned t: stuns c@ 0> not t;
+---- Screen 10 ----
+\ conds: niche testing                                 rfg29aug85)
+head: ?carnivore t: niche c@ 8 and >flag t;
+head: ?herbivore t: niche c@ 4 and >flag ?carnivore not and t;
+\ : ?omnivore ?carnivore niche c@ 4 and >flag and ;
+head: ?producer t: niche c@ 2 and >flag ?herbivore not and
+              ?carnivore not and t;
+head: get-mate
+t:   goal-instance  1.5@ >c+s t;
+
+\ : ?mate-carnivore get-mate ?carnivore iclose ;
+\ : ?mate-herbivore get-mate ?herbivore iclose ;
+\ : ?mate-omnivore get-mate ?omnivore iclose ;
+\ : ?mate-producer get-mate ?producer iclose ;
+
+
+
+---- Screen 11 ----
+\ conds: ?next-to-mate to ...
+\ : ?next-to-mate  its-xy get-mate its-xy iclose
+\  rot - abs 2 < >r - abs 2 < r> and ;
+\ : ?mate-on-ground get-mate move-mode c@ 0= iclose ;
+
+\ : ?has-mate goal-instance 1.5@ or >flag ;
+
+\ : ?mate-alive
+\   get-mate hits c@ >flag iclose ;
+head: ?big-enough t:  size.index c@ get-mate
+  size.index  iclose - 1 > t;
+\ : ?mate-approaching get-mate goal-direct c@ iclose ;
+\
+\ : ?mate-attacking get-mate behave c@ 1 and iclose ;
+
+
+==== Page 3 | 11-05-85 -- BEHAV-OVCMP -- Binary Systems | image BEHAV-OV_CMP_p04 ====
+---- Screen 12 ----
+\ conds: ?aggr-enough to ?mate-just-eaten
+
+head: ?aggr-enough t: aggression c@ 39 >  t;
+
+head: ?can-break-away t: rand% 10 < t;
+
+head: ?attacked t: behave c@ 128 and >flag t;
+
+head: ?attacking t: behave c@ 1 and t;
+
+: ?mate-out-of-bounds  0 ;
+
+: ?randomly-unpaired  coin ;
+
+\ : ?mate-just-eaten get-mate behave c@ 8 and >flag iclose ;
+
+---- Screen 13 ----
+\ conds: ?out-of-bounds  to  ?stuns>stun-points  rfg14aug85)
+
+head: ?out-of-bounds t: false t;
+
+head: ?been-eaten  t: behave c@ 8 and >flag t;
+
+head: ?hits>0 t: hits c@ 0> t;
+
+head: ?stuns>0 t: stuns c@ 0> t;
+
+head: ?stuns<0 t: stuns c@ 0< t;
+
+: ?stuns<stun-points  stuns c@ stun.effect c@ < ;
+
+head: ?HITS=0 t: HITS C@ 0= t;
+
+---- Screen 14 ----
+\ conds: ?moving  to  ?wants-to-float              rfg29aug85)
+
+head: ?moving t: behave c@ 16 and >flag t;
+
+head: ?on-ground t: move-mode c@ 0= t;
+
+head: ?can-fly  t: a.mobility 1.5@ s" flying" d= t;
+
+head: ?can-float t: a.mobility 1.5@ s" floating" d= t;
+
+: ?wants-to-fly  rand% 70 < ;
+
+: ?wants-to-float  ?wants-to-fly ;
+
+
+
+---- Screen 15 ----
+\ conds: ?wants-to-land  to  ?ok-to-land             rfg29aug85)
+
+head: ?wants-to-land t: rand% 30 < ?attacking or t;
+
+head: ?wandering t: behave c@ 2 and >flag t;
+
+head: ?ok-to-land t: its-xy xcon @ - swap ycon @ -
+      acelladdr a@ 16 > t;
+
+head: ?dumb-enough t: i.level c@ 35 < t;
+
+head: ?dangerous t: aggression c@ 65 > t;
+
+head: ?wimpy t: aggression c@ 50 ( 35) < t;
+
+
+---- Screen 16 ----
+\ delta-xy  computes what to add to reduce/increasrfg21jun85)
+\ x,y are the moving coordinates, x1,y1 are fixed
+head: delta-xy \ x,y x1,y1 --- x,y deltax,deltay
+t: 2over 2over d=
+  if 2drop -1 -1 \ force movement in case same points
+  else  2over  rot swap - dup
+       if dup abs / then >r
+        - dup
+       if dup abs / then r>
+  then t;
+
+head: move-yes t: behave c@ 16 or behave c! t;
+head: move-no t: behave c@ 16 negate or behave c! t;
+
+
+
+---- Screen 17 ----
+\ ?move-.icon if it is visible                              (rfg07oct85)
+
+head: ?move-.icon \ move only visible icons
+t:  xormode @ xormode off
+  ci ?icon=iaddr drop \ assume in list
+  point>icon
+  inst-x @ inst-y @ ( 2dup )
+  !iy !ix
+   >mainview  .background   \ plot only if visible
+  .local-icons v>display
+   >display xormode ! t;
+
+head: reorg \ force reorganization of iconlist
+t:  -5000 dup anchor 2! orglist t;
+
+
+==== Page 4 | 11-05-85 -- BEHAV-OVCMP -- Binary Systems | image BEHAV-OV_CMP_p05 ====
+---- Screen 18 ----
+\ macros using delta-xy                                rfg14aug85)
+
+head: mate-xy \ --- x,y of goal-instance ( GI<>0!!)
+t:   goal-instance 1.5@ >c+s
+  inst-x @ inst-y @ iclose t;
+
+head: approach  \ x,y x1,y1 --- | move xy towards x1y1
+t: delta-xy  rot + inst-y ! + inst-x !
+ ?move-.icon t;
+
+head: flee \ xy,x1y1 --- | what it sez...
+t: delta-xy negate rot + inst-y ! negate + inst-x !
+  ?move-.icon t;
+
+
+
+---- Screen 19 ----
+\ actions: reduce-aggr-level  to  attack-player  rfg29aug85)
+
+: reduce-aggr-level
+  a.level c@ 1 51 rrnd - 0 max a.level c! ;
+
+: increases-aggr-level
+  a.level c@ 1 21 rrnd + 100 min a.level c! ;
+
+head: approach-player
+t: behave c@ 1 or behave c!
+  its-xy tvxy   approach move-yes t;
+
+head: flee-player
+t:  its-xy tvxy flee move-yes t;
+
+
+---- Screen 20 ----
+\ actions: flee-player  to  flee-its-mate          rfg21jun85)
+
+head: approach-its-mate
+t:   its-xy mate-xy approach 1 goal-direct c! move-yes t;
+
+: flee-its-mate
+  its-xy mate-xy flee 0 goal-direct c! move-yes ;
+
+
+
+
+
+
+
+
+
+---- Screen 21 ----
+\ actions: attack-its-mate  to  become-unpaired   rfg29aug85)
+head: ?dead t: hits c@ 0= \ change blt if creature's dead
+  if ci ?icon=iaddr drop point>icon dead-ic !ic then t;
+
+\ head: attack-its-mate t: 16 negate behave c@ or
+\  1 or behave c! t;
+
+\ head: eat-its-mate t: rand% 10 <
+\   if get-mate 8 behave c@ or behave c! then iclose t;
+\ should also unlink mate from display??
+
+head: become-unpaired
+t:  goal-instance 1.5@ 0. goal-instance 1.5!
+  c> 2swap >c+s 0. goal-instance 1.5!
+  cdrop >c+s t;
+
+---- Screen 22 ----
+\ actions: wander  to  reduce-hits-by-1-to-40      rfg19aug85)
+
+head: wander t: \ stuns c@ stun.effect c@ < not
+( if)  behave c@ 2 or   254 and behave c! \ not attacking
+inst-x @ inst-y @  -1 2 rrnd inst-x +! -1 2 rrnd inst-y +!
+ ?in-ocean if inst-y ! inst-x ! else 2drop then
+ ?move-.icon move-yes ( then) t;
+
+: erase-lifeform-from-array
+ -icon  idelete reorg  ;
+
+: reduce-hits-by-10-to-50
+  hits c@ 10 51 rrnd - 0 max hits c!  ?dead ;
+
+: reduce-hits-by-1-to-40
+  hits c@ 1 41 rrnd - 0 max hits c! ?dead ;
+---- Screen 23 ----
+\ actions: reduce-..by- to  increment-stuns       rfg22may85)
+head: change-icon t: -icon ' icon-parm module +icon reorg t;
+
+: reduce-stuns-by-10-to-50
+   stuns c@ 10 51 rrnd - ( 0 max ) stuns c! ;
+
+: stun-effects-hits
+  hits c@ stuns c@ abs - 0 max hits c! 0 stuns c! ;
+
+head: die t: move-no 0 hits c! 0 move-mode c! t;
+head: stunned t: 0 stuns c! t;
+head: unstunned t: stun.effect c@ stuns c! t;
+
+: increment-stuns
+  1 stuns c@ + stun.effect c@  min stuns c! ;
+
+==== Page 5 | 11-05-85 -- BEHAV-OVCMP -- Binary Systems | image BEHAV-OV_CMP_p06 ====
+---- Screen 24 ----
+\ actions: fly  to land                              rfg21jun85)
+
+
+head: fly t: 1 move-mode c! change-icon ?move-.icon t;
+
+head: float t: 2 move-mode c! change-icon ?move-.icon t;
+
+head: land  t: 0 move-mode c! change-icon ?move-.icon t;
+
+
+
+
+
+
+
+
+---- Screen 25 ----
+\ simulate does it for each creature               rfg21jun85)
+
+head: this-creature \ ( --- current creature) for task
+  t: ^crit @ point>icon
+     @il @ih >c+s t;
+
+head: 1st-creature t: 0 ^crit ! t;
+
+
+
+
+
+
+
+
+
+---- Screen 26 ----
+exit \ search-list for a possible mate                  rfg21jun8
+
+head: search-list \ --- 0. or iaddr, mates for CI
+t: 0. ilocal @ iindex @ 1+ \ unsucessful flag on stack
+  do i point>icon \ examine each icon as a possible mate
+     @id 19 <
+     if @il @ih >c+s
+        goal-instance 1.5@ 2dup or
+        if 2swap leave then 2drop iclose \ lose 0.
+     then  loop t;
+
+head: (pair) \ mate2 --- | (mate1 --- mate2) | iaddr's
+  t:  2dup goal-instance 1.5! \ forms a pair
+      c> 2swap >c+s
+      goal-instance 1.5! t;
+
+---- Screen 27 ----
+exit \ pairing                                                 rfg21jun8
+head: form-pairs \ within ilocal display list
+t: iindex @ >r \ preserve before searching
+  ilocal @ 0 do i point>icon
+             @id 19 <                         \ living only
+             if @il @ih >c+s
+                goal-instance 1.5@ or 0=      \ not paired?
+                if search-list 2dup or 0= not \ find one
+                    if (pair)
+                    else 2drop leave          \ no more pairs
+                    then
+                then  iclose
+             then loop
+ r> point>icon t;
+
+
+---- Screen 28 ----
+\ quick: post players vitality                              rfg21jun85)
+17 ( assign-crew) 17 3 ifield: captain
+16  31 1 ifield: ^vit
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 29 ----
+\ attack player routine
+
+head: #attacks
+  t: rand% dup 71 <
+   if drop 1
+   else 95 <
+    if 2  else 3 then
+   then t;
+
+head: 1crew \ sets ci to a random crewmember
+t: *assign-crew >c+s captain
+ 0 6 rrnd  3 * + 1.5@ iclose t;
+
+
+
+
+==== Page 6 | 11-05-85 -- BEHAV-OVCMP -- Binary Systems | image BEHAV-OV_CMP_p07 ====
+---- Screen 30 ----
+ \ attack player routine                              rfg29may85)
+16  ( crewmember) 11 15 ifield: ^name
+16 19 1 afield: ^dur
+
+head: ?success \ --- true | if succesful, else false
+t:  rand%
+  ?flat @ if 10 * then
+ aggression c@ i.level c@ + 2/ < t;
+
+head: damage \ --- value| amount of damage to crewmember
+t: aggression c@ hit.points c@ 2* + 3 / t;
+
+
+
+
+
+---- Screen 31 ----
+\ window erase for the current window              (rfg11sep85)
+
+head: werase \ using current window
+t:  color @
+  wtop @  wleft @  wbottom @ 1- wright @ 1+
+  black poly-window-fill
+  !color t;
+
+head: ?injure \ --- flag | true if in bad storm and should injur
+  t: #storm @ 6 11 within
+       if 1 100 rrnd 30 <
+         if 'injure @ module then
+       then t;
+
+
+
+---- Screen 32 ----
+\ attack player routine
+
+head: .attack \ ( creature --- crewmember)
+t:  tvtwindow werase
+  wleft @ wtop @ 4 - pos. white !color
+    ." THE " resembles 1.5@ 2dup or 0=
+   if 2drop shape 1.5@ then >c+s
+  phrase phr-cnt c@ type  cdrop iclose
+  ."  LIFEFORM ATTACKS "
+  wleft @ wtop @ 10 - pos.    ( 6CR ?)
+>c+s  ^name $.  t;
+
+
+
+
+
+---- Screen 33 ----
+\ combining attack routines                              rfg03jul85)
+
+head: attack-player
+t:  behave c@ 1 or behave c! \ set attacking bit
+  #attacks 1               \ this number of attacks
+   do ci ?success damage
+      1crew .attack
+      swap if ^dur c@ / ^vit c@ swap -
+           0 max 100 min  ^vit c!
+           ?heal on
+           else  drop ." , BUT MISSES"
+           then ." ." iclose >c+s 500 ms \ read pause
+   loop move-no
+  'death @ execute
+  '.vital-signs @ execute t;
+
+---- Screen 34 ----
+\ expert: alien conditions --> actions
+9 3  expert Aggr-modifier
+
+rule: ?player-firing-laser true  ?alien-close-enough true
+      ?alien-smart-enough true  ?ultra-aggr false
+      ?random-scared true  --> reduce-aggr-level
+
+rule: ?alien-hit-with-laser true  ?ultra-aggr true
+      ?random-angry true  --> increases-aggr-level
+
+rule: ?alien-hit-with-stunner true  ?ultra-aggr true
+      ?random-angry true  --> increases-aggr-level
+
+
+
+
+---- Screen 35 ----
+\ expert: conditions --> actions ( towards player)rfg03may85 )
+7 3  expert vs.player
+
+rule: ?mobile true  ?alive true  ?stunned false
+      ?notice-player true  ?dangerous true
+      ?next-to-player false --> approach-player
+
+rule: ?alive true  ?stunned false  ?notice-player true
+      ?dangerous true  ?next-to-player true
+      --> attack-player
+
+rule:  ?mobile true  ?notice-player true  ?alive true
+       ?stunned false  ?wimpy true --> flee-player
+
+
+
+==== Page 7 | 11-05-85 -- BEHAV-OVCMP -- Binary Systems | image BEHAV-OV_CMP_p08 ====
+---- Screen 36 ----
+\ rules: responses to other lifeforms c --> a
+5 50 expert life-sim
+exit
+rule: ?mobile true  ?alive true  ?stunned false
+      ?herbivore true  ?mate-producer true
+      ?next-to-mate false  ?mate-on-ground true
+      ?has-mate true  --> approach-its-mate
+
+rule: ?mobile true  ?alive true  ?stunned false
+      ?carnivore true  ?mate-herbivore true
+      ?big-enough true  ?next-to-mate false
+      ?mate-on-ground true  ?has-mate true
+      --> approach-its-mate
+
+
+
+---- Screen 37 ----
+\ rules: responses to other lifeforms c --> a
+exit
+rule: ?mobile true  ?alive true  ?stunned true
+      ?omnivore true  ?mate-producer true
+      ?next-to-mate false  ?mate-on-ground true
+      ?has-mate true  --> approach-its-mate
+
+rule: ?mobile true  ?alive true  ?stunned false
+      ?omnivore true  ?mate-herbivore true
+      ?big-enough true  ?next-to-mate false
+      ?mate-on-ground true  ?has-mate true
+      --> approach-its-mate
+
+
+
+
+---- Screen 38 ----
+\ rules: responses to other lifeforms c --> a
+exit
+rule: ?mobile true ?alive true  ?stunned false
+      ?herbivore false  ?producer false
+      ?mate-herbivore false  ?mate-producer false
+      ?big-enough true  ?ultra-aggr true
+      ?next-to-mate false  ?mate-on-ground true
+      ?has-mate true --> approach-its-mate
+
+rule: ?mobile true  ?alive true  ?stunned false
+      ?mate-approaching true  ?has-mate true
+      --> flee-its-mate
+
+
+
+
+---- Screen 39 ----
+\ rules: responses to other lifeforms c --> a
+exit
+rule: ?mobile true  ?alive true  ?stunned false
+      ?mate-attacking true  ?aggr-enough false
+      ?can-break-away true  ?has-mate true
+      --> flee-its-mate
+
+rule: ?alive true  ?stunned false  ?herbivore true
+      ?mate-producer true  ?next-to-mate true
+      ?mate-alive true  ?has-mate true
+      --> attack-its-mate
+
+
+
+
+
+---- Screen 40 ----
+\ rules: responses to other lifeforms c --> a
+exit
+rule: ?alive true  ?stunned false  ?carnivore true
+      ?mate-herbivore true  ?big-enough true
+      ?next-to-mate true  ?mate-alive true
+      ?has-mate true  -->  attack-its-mate
+
+rule: ?alive true  ?stunned false  ?omnivore true
+      ?mate-producer true  ?next-to-mate true
+      ?mate-alive true  ?has-mate true
+      --> attack-its-mate
+
+
+
+
+
+---- Screen 41 ----
+\ rules: responses to other lifeforms c --> a
+exit
+rule: ?alive true  ?stunned false  ?omnivore true
+      ?mate-herbivore true  ?big-enough  true
+      ?next-to-mate true  ?mate-alive true
+      ?has-mate true  -->  attack-its-mate
+
+rule: ?alive true  ?stunned false  ?herbivore false
+      ?producer false  ?mate-herbivore false
+      ?mate-producer false  ?big-enough true
+      ?ultra-aggr true  ?next-to-mate true
+      ?mate-alive true  ?has-mate true
+      --> attack-its-mate
+
+
+
+==== Page 8 | 11-05-85 -- BEHAV-OVCMP -- Binary Systems | image BEHAV-OV_CMP_p09 ====
+---- Screen 42 ----
+\ rules: responses to other lifeforms c --> a
+exit
+rule: ?alive true  ?stunned false  ?mate-attacking true
+      ?aggr-enough true  ?has-mate true
+      --> attack-its-mate
+
+rule: ?alive true  ?stunned false  ?carnivore false
+      ?producer false  ?mate-producer true
+      ?attacked true  ?mate-attacking false
+      ?next-to-mate true  ?has-mate true
+      --> eat-its-mate
+
+
+
+
+
+---- Screen 43 ----
+\ rules: responses to other lifeforms c --> a     rfg03jul85)
+exit
+rule: ?alive true  ?stunned false  ?carnivore false
+      ?producer false  ?mate-producer true
+      ?mate-alive false  ?next-to-mate true
+      ?has-mate true  --> eat-its-mate
+
+rule: ?alive true  ?stunned false  ?producer false
+      ?herbivore false  ?mate-producer false
+      ?mate-alive false  ?next-to-mate true
+      ?has-mate true  --> eat-its-mate
+
+
+
+
+
+---- Screen 44 ----
+\ rules: responses to other lifeforms c --> a
+
+\ rule: ?has-mate true  ?mate-out-of-bounds true
+\       --> become-unpaired
+
+\ rule: ?has-mate true  ?randomly-unpaired true
+\       --> become-unpaired
+
+\ rule: ?has-mate true  ?mate-just-eaten true
+\       --> become-unpaired
+
+rule:  ?alive true  ?stunned false  ?mobile true
+        --> wander
+
+
+
+---- Screen 45 ----
+\ rules: responses to other lifeforms c --> a
+2 2 expert erase-life
+
+rule: ?out-of-bounds true
+      --> erase-lifeform-from-array
+
+rule: ?been-eaten true
+      --> erase-lifeform-from-array
+
+
+
+
+
+
+
+
+---- Screen 46 ----
+\ rules: responses to other lifeforms c --> a     rfg21aug85)
+5 3 expert ?reduce-points
+
+rule: ?alien-hit-with-laser true ?hits>0 true
+       --> reduce-hits-by-10-to-50
+
+\ rule: ?mate-attacking true  ?hits>0 true
+\       --> reduce-hits-by-1-to-40
+
+rule: ?alien-hit-with-stunner true ?stuns>0 true
+      --> reduce-stuns-by-10-to-50
+
+head: ?stuns>hits t:  ?stuns<0 if  stun-effects-hits then t;
+
+
+
+---- Screen 47 ----
+\ rules: responses to other lifeforms c --> a     rfg21jun85)
+54 3 expert effect-life
+
+rule: ?hits=0 TRUE  ?alive true --> die
+
+rule: ?stuns>0 false  ?stunned false  --> stunned
+
+rule: ?stuns>0 true  ?stunned true  -->  unstunned
+
+head: ?bump-stuns
+t:      ?alive ?stunned and
+        ?stuns<stun-points and
+        if increment-stuns then t;
+
+
+
+==== Page 9 | 11-05-85 -- BEHAV-OVCMP -- Binary Systems | image BEHAV-OV_CMP_p10 ====
+---- Screen 48 ----
+\ rules: air - ground transitions                     rfg29aug85)
+14 7 expert ground>air
+
+rule: ?moving true  ?on-ground true  ?can-fly true
+      ?alive true ?wants-to-fly true --> fly
+
+rule: ?moving true  ?on-ground true  ?can-float true
+      ?alive true ?producer true  --> float
+
+rule: ?moving true  ?on-ground true  ?can-float true
+      ?producer false  ?wants-to-float true
+      ?alive true --> float
+
+
+
+
+---- Screen 49 ----
+\ rules: air - ground transitions                     rfg10aug85)
+
+rule: ?alive false  ?on-ground false
+      ?ok-to-land true --> land
+
+rule: ?stunned true  ?on-ground false
+      ?ok-to-land true --> land
+
+rule: ?on-ground false ?wandering true ?wants-to-land true
+      ?ok-to-land true --> land
+
+rule: ?on-ground false  ?attacking true
+      ?ok-to-land true --> land
+
+
+
+---- Screen 50 ----
+\ simula wraps the experts up                        (rfg02sep85)
+
+head: (simulate)
+t: weapon-fired @
+ if ' ?reduce-points distract ?reduce-points drop then
+  hits c@
+ if ' aggr-modifier distract aggr-modifier drop then
+    ' vs.player distract vs.player 0=
+   if ' life-sim distract life-sim drop then
+\     ' erase-life distract erase-life drop
+   ?stuns>hits
+    ' effect-life distract effect-life drop
+   ?bump-stuns
+    ' ground>air distract ground>air drop t;
+
+
+---- Screen 51 ----
+\ simulate does it for each creature                     (rfg10sep85)
+: simulate
+?new @                        \ set by landing or TVMOVE
+if ( form-pairs ) 1st-creature ?new off ( maybe also +icon?? )
+then ilocal @ 2 > \ ?anybody to behave
+if this-creature @id 19 <
+   if (simulate)
+       weapon-fired dup @   \ set by firing
+      if -1 swap +! else drop then  \ each creature exam once
+   then iclose                \ the displayed object
+\  iindex @ 0= if form-pairs then
+ ^crit  @ 1+ ilocal @ 1- mod ^crit ! \ wrap to 0 if at end
+then ;
+
+
+
+---- Screen 52 ----
+\ .stardate                                                 (rfg12sep85)
+
+head: .stardate \ print current stardate
+t: xormode @ xormode off
+           116 178 pos. 10 black poly-erase-text
+ white !color stardate @
+ 300 /mod 4620 + swap 30 /mod 1+ swap 1+
+ dup 10 < if ." 0" then 0 .r ." -"
+ dup 10 < if ." 0" then 0 .r ." -" 0 .r  xormode ! t;
+
+
+
+
+
+
+
+---- Screen 53 ----
+\ storm stuff
+create %storm \ probability table, 0<=index<=4
+0 , 10 ( 3) , 20 ( 6)   , 40 ( 15)   , 60 ( 30) ,
+\ index is atmo.activity
+
+: ?fair storm @ 0= atmo @ 0= 0= and
+  if 1 4 rrnd #storm ! 100 %eff !
+  else atmo @ 0= if 0 #storm ! 100 %eff ! then then ;
+
+: ?storm storm @ 0= atmo @ 0= 0= and
+ if (planet) 1.5@ >c+s atmo.activity c@ iclose
+     dup + %storm + @ rand% >
+    if 'storm @ module then \ calls forward patch
+ else  storm @ 1- 0 max storm !
+ then ?fair ?injure ; \ fair weather phrase, maybe injure
+
+==== Page 10 | 11-05-85 -- BEHAV-OVCMP -- Binary Systems | image BEHAV-OV_CMP_p11 ====
+---- Screen 54 ----
+( CASE STATEMENT BY CHARLES EAKER                    rfg01jul85)
+DECIMAL transient  trace @ trace off
+: 2OF            4 ?PAIRS COMPILE 2OVER COMPILE d= COMPILE
+                0BRANCH HERE 0 , COMPILE 2DROP 5 ; IMMEDIATE
+: !CSP SP@ CSP ! ;
+: ECASE            ?COMP CSP @ !CSP 4 ; IMMEDIATE
+
+: ENDOF         5 ?PAIRS COMPILE BRANCH HERE 0 ,
+                SWAP 2 [COMPILE] THEN  4 ; IMMEDIATE
+
+: ENDCASE       4 ?PAIRS COMPILE DROP BEGIN SP@
+                CSP @ = 0= WHILE 2 [COMPILE]
+                THEN  REPEAT CSP ! ; IMMEDIATE
+ resident  trace !
+
+
+---- Screen 55 ----
+\ 'angle' to text phrase case statement               rfg12apr85
+head: angle>text \ deltax,deltay --- prints direction
+t: ecase
+  0 1 2of ." NORTH" endof
+  1 1 2of ." NORTHEAST" endof
+  1 0 2of ." EAST" endof
+  1 -1 2of ." SOUTHEAST" endof
+  0 -1 2of ." SOUTH" endof
+  -1 -1 2of ." SOUTHWEST" endof
+  -1 0 2of ." WEST" endof
+  -1 1 2of ." NORTHWEST" endof
+   drop ( extra parameter )  endcase t;
+
+
+
+
+---- Screen 56 ----
+\ button to action case statement                   (rfg12sep85)
+head: icons+map t: xormode off
+>mainview  .background .local-icons v>display >display t;
+
+head: ?embark \ --- true| if tv back on ship icon, after moved
+t:    (ship) 1.5@ >c+s  inst-x @ inst-y @ iclose
+     tvxy  d=  ( moved @ and ) t; \  on top of tv
+
+
+
+
+
+
+
+
+
+---- Screen 57 ----
+\ BLTs for 'function keys'                                 rfg08jul85)
+create functions
+6 c, 12 c, 2 c,  12 c, 20 c,  12 c, 22 c, 12 c, 20 c,
+     12 c, 42 c, 12 c, 20 c,  12 c, 62 c, 12 c, 20 c,
+     12 c, 82 c, 12 c, 28 c,  12 c, 110 c, 12 c, 24 c,
+     12 c, 134 c, 12 c, 23 c,
+
+head: set-cursor
+   t: tvtwindow functions set-crs drop t;
+
+head: get-distance \ --- tv distance from ship | ( --- ship )
+t:  (ship) 1.5@ >c+s
+ tvxy  inst-y @ - dup * 0
+   rot inst-x @ - dup * 0 d+ sqrt t;
+
+
+---- Screen 58 ----
+\ case for do buttons                                       (rfg11sep85)
+v: '.stats ( forward patch for icons )
+: maps ' maps module ;
+: walk&talk ' (talk) module ;
+: tvmove ' tvmove module time-passing on ;
+: do.weapons ' (weapons) module ;
+: /items ' /items module ;
+: icons ' icons module ' (tvset) module
+         .stardate '.stats @ execute
+        '.vital-signs @ module ; \ maybe lucky this works
+
+case >buttons
+0 is maps  1 is tvmove   2 is walk&talk  3 is walk&talk
+4 is do.weapons  5 is /items   6 is icons
+others nop
+
+---- Screen 59 ----
+\ tv-key                                                    (rfg10sep85)
+head: Movecrs t: ncrs +! set-cursor t;
+
+head: tv-key \ key --- |terrain vehicle console interaction
+t: (xyscan) ecase 0  1 2of  1 movecrs endof \ right
+                  0 -1 2of -1 movecrs endof \ left
+              drop  ( extra parameter )
+     ?trig if ncrs @  >buttons  \ execute this button
+              icons+map  \ refresh display
+           then endcase
+?embark if 0=    \ flip task active flag
+-1 dup yvis +! yabs +! time-passing off
+        then t;  \ fix ship position, prevent display
+
+
+
+==== Page 11 | 11-05-85 -- BEHAV-OVCMP -- Binary Systems | image BEHAV-OV_CMP_p12 ====
+---- Screen 60 ----
+\ .distance                                          (rfg06sep85)
+17 23 3 ifield navig 16 27 1 ifield ^nav
+: -storm storm @ 0= ;
+: ?nav \ --- flag| true if good navigator
+*assign-crew >c+s navig 1.5@ >c+s ^nav c@
+cdrop iclose 199 > ;
+
+: .distance \ prints KM. from ship  + direction
+ 116 150 pos. 4 black poly-erase-text white !color
+ -storm ?nav or
+    if  get-distance 4 .r ." KM." then   \ ( --- ship )
+  116 143 pos. 09 black poly-erase-text white !color
+-storm ?nav or
+    if tvxy inst-x @ inst-y @ iclose \ ( ship --- )
+  delta-xy 2swap 2drop angle>text then ; \ prints direction
+
+---- Screen 61 ----
+\ .cargo % full                                      (rfg06sep85)
+
+head: .cargo
+t: 116 157 pos. 3 black poly-erase-text
+ tv-hold 1.5@ >c+s
+ content-vol @  dup
+  if 5 max 5 / then \ inst-qty =500 for tv-hold
+ white !color 3 .r ." % FULL"
+ iclose t;
+
+
+
+
+
+
+
+---- Screen 62 ----
+\ .energy (other stuff) for terrain vehicle       (rfg12sep85)
+
+head: .energy \ print % of full tank
+t: 116 171 pos. 7  black poly-erase-text
+ tvehicle 1.5@ >c set-current
+ inst-qty @ iclose dup 0> not   \ get amt in tank (full=32767)
+  if  drop 'ending @ execute       \ head back to starport
+  else ( 116 171 pos. ) white !color
+       2000 - 100 30767 */ dup 0> not  \ is it zero percent
+       if drop color @ pink !color ." RESERVE" !color
+       else 3 .r ." %"
+       then 116 164 pos. 3 black poly-erase-text
+       %eff @ ( 48 ) 100 e/m @ negate */
+        99 min 3 .r ." %"
+  then t;
+
+---- Screen 63 ----
+\ absolute>degrees conversion for display
+
+head: abs>deg \ x,y --- xdegree,ydegree
+t:  480 - 10 53 */ swap
+  1152 - 10 64 */ swap t;
+
+head: ?east \ xdegree --- print E if negative, else W
+t:  ?dup if  0< if ." E" else ." W" then
+       else      ."  "
+       then t;
+head: ?south \ ydegree --- print S if negative, else N
+t: ?dup if   0< if ." S" else ." N" then
+     else       ."  "
+     then t;
+
+
+---- Screen 64 ----
+\ ?forced+hr , module callers                               (rfg11sep85)
+head: .where
+t: -storm ?nav or
+     if white !color  tvxy abs>deg   16 197 pos.
+dup dup 0< if negate then 4 .r ?south ."  * "
+dup dup 0< if negate then 0 .r ?east then t;
+
+head: .stats
+ t: xormode @ >r  xormode off .where
+    .energy .cargo .distance r> xormode ! t;
+' .stats '.stats !
+head: ?forced+hr \ --- flag| true if force display of stats
+t: ?new-hour forced @ or forced off t;
+
+\ head: .vits t: ' (.vits) module t;
+
+---- Screen 65 ----
+\ tv-tasks                                                  (rfg11sep85)
+: tv-tasks \ install vectors for tasker
+' ?forced+hr  'vehicle-cycle !  ' ?storm 'repair !
+' .stats  '.vehicle-status !  \ vehicle update, every hour
+' obits   'death ! \ executes when there is a death
+' simulate 'external-events ! \ lifeform simulation goes here
+' beep 'ending ! \ KLUDGE for testing endgame=no fuel
+'  ?appoint 'crew-cycle  ! 0. lastappoint 2!
+' .vits '.vital-signs !  ' heal 'treatment ! ?heal on
+
+' .stardate '.date !           \ date in auxwindow
+ time-passing on               \ activate these routines
+ forced on      ;               \ print vehicle stats
+
+
+
+==== Page 12 | 11-05-85 -- BEHAV-OVCMP -- Binary Systems | image BEHAV-OV_CMP_p13 ====
+---- Screen 66 ----
+\ tv-untasks                                         (rfg10sep85)
+
+head: tv-untasks \ remove vectors for tasker
+t: ' ?ship-repair  'vehicle-cycle !  ' #repair 'repair !
+  ' nop  '.vehicle-status !  \ vehicle update, every hour
+  ' obits  'death !
+  ' nop 'external-events ! \ lifeform simulation went here
+  ' ?appoint 'crew-cycle  !
+  ' nop  '.vital-signs !  ' heal 'treatment !
+  ' nop '.date !   t;       \ date in auxwindow
+
+head: tv-cleanup t: ' (clean) module tv-untasks t;
+
+
+
+
+---- Screen 67 ----
+\ mainline routine                                   (rfg11sep85)
+
+head: role-call t: ' (role) module t;
+
+head: tv-init
+      t: ' tv-disp module .stardate role-call
+         tv-tasks black !color ! t;
+
+: tv   ' tv-cleanup ' tv-key  ' tv-init dotasks
+      time-passing on ;
+
+
+
+
+
+
+---- Screen 68 ----
+\ OVERLAY SUFFIX: behave-ov                          (rfg08sep85)
+
+trace @ trace off dispose trace !
+
+close-overlay  115 overlay behave-ov  behave-ov
+
+forth definitions \ available to module callers
+
+: heaveho ' (heave) module ;
+
+: tvtasks behave-ov behavior tv-tasks ;
+' tvtasks 'tvt !  \ for move-ov
+
+
+
+
+---- Screen 69 ----
+\ continue overlay suffix: TV word                         (rfg08sep85)
+
+: tv  \ call terrain vehicle interaction
+    ' heaveho  'throw-away !
+    behave-ov behavior tv ;
+
+: (simula)  behave-ov behavior simulate ;
+: simulate ' (simula) module ;
+ ' simulate  'simulate ! \ so can be called from MOVE tasker
+ ov-cancel
+
+
+
+
+
+

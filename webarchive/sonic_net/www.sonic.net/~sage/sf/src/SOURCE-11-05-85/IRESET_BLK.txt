@@ -1,0 +1,189 @@
+==== Page 1 | 11-05-85 -- IRESET BLK -- Binary Systems | image IRESET_BLK_p01 ====
+---- Screen 0 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 2 ----
+( INSTALL - LFCLAIM AINSTALL BINSTALL                   2-4-85)
+EXIT
+: LFCLAIM
+  ( #segs -- seg \ claim space at end of avail mem)
+  NEGATE LFSEG @ + DUP LFSEG ! ;
+
+: AINSTALL
+  ( array-pfa -- install indexed array in memory)
+  DUP 'ARRAY ! #BYTES #ROWZ 2* + 16/ 1+ LFCLAIM OVER 6 + !
+  !OFFSETS ;
+
+: BINSTALL
+  ( base-ptr-pfa #segs -- \ install un-indexed array)
+  LFCLAIM SWAP ! ;
+
+
+---- Screen 3 ----
+( INSTALL - AINSTALLS                                   2-4-85)
+EXIT
+: AINSTALLS
+  ( -- \ install indexed arrays)
+ ' VERTEX    AINSTALL   ' MERCATOR  AINSTALL
+ ' FACET     AINSTALL   ' CONANCHOR AINSTALL
+ ' FACE      AINSTALL   ' CONTOUR   AINSTALL
+ ' PPOLY     AINSTALL  ARRAYSEG ' POLYSEG !
+ ' ICONIMAGE AINSTALL
+ ' GVERTEX   AINSTALL
+ ' GPOLY     AINSTALL
+ ' GRIDCOLOR AINSTALL
+ ' G1VERT    AINSTALL
+ ' 9X9COARSE AINSTALL
+ ' 9X9FINE   AINSTALL
+ ' XFORMVERT AINSTALL ;
+---- Screen 4 ----
+( INSTALL - BINSTALLS                                  2-18-85)
+EXIT : BINSTALLS
+  ( -- \ install un-indexed arrays)
+  HBUF-SEG 270 BINSTALL ( mainview screen buffer)
+  $SEG     310 BINSTALL ( instance cache: string space)
+  $LOCSEG   62 BINSTALL ( instance cache: string pointers)
+  LOISEG    62 BINSTALL ( instance cache: lo-word iadr)
+  HIISEG    31 BINSTALL ( instance cache: hi-byte iadr)
+  IXSEG     90 BINSTALL ( display sys: x world coordinate)
+  IYSEG     90 BINSTALL ( display sys: y world coordinate)
+  IDSEG     45 BINSTALL ( display sys: icon id#)
+  ICSEG     45 BINSTALL ( display sys: color codes)
+  ILSEG     90 BINSTALL ( display sys: lo-word iadr)
+  IHSEG     45 BINSTALL ( display sys: hi-byte iadr)
+  LSYSEG    47 BINSTALL   MSYSEG 28 BINSTALL
+  SSYSEG    11 BINSTALL   CURSEG 13 BINSTALL ;
+---- Screen 5 ----
+( INSTALL - CONFIGURE-SYSTEM                            2-5-85)
+EXIT HEX
+: CONFIGURE-SYSTEM ( customize to environment)
+  12 0 SYSCALL          ( -- #K in system)
+  40 *                  ( -- #seg in system)
+  1- LFSEG !            ( -- \ mark last free seg)
+  AINSTALLS             ( -- \ install indexed arrays)
+  BINSTALLS             ( -- \ install un-indexed arrays)
+  LFSEG @ @DS 1000 + -  ( -- #cache-segs)
+  41 /                  ( -- #cache-blks)
+  #CACHE !  AUTO-CACHE  ( -- \ set up auto cache)
+  B800 DBUF-SEG !       ( -- \ screen display buffer)
+  BUFFER-HEAD @ SEG>ADDR DUP 1BUFADR ! ( disk buffers)
+  @ SEG>ADDR 2BUFADR ! ICINIT ( INSTALLXKEY) ;
+DECIMAL
+
+==== Page 2 | 11-05-85 -- IRESET BLK -- Binary Systems | image IRESET_BLK_p02 ====
+---- Screen 6 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 7 ----
+( MEMORY - INSTANCE OP: IRESET support               1-15-85)
+
+: MAXSPACE 3. VA>BUF ;
+
+: INIT-SPACE ( -- ) IROOT !NEWSPACE
+  150000. MAXSPACE 1.5! ;
+: NEXT-NEW ( class -- d  \ allocate new space and ignore)
+  ( fragments and block boundaries - for ireset)
+  >R I FILE-SLEN C@ >R   ( -- slen class )
+  @NEWSPACE 2DUP I IHEADLEN + M+ !NEWSPACE ( d -- slen class)
+  >C CI VA>BUF          ( adr -- slen class)
+  9 + I' SWAP C!        ( -- slen class \ store class)
+  R> R> 2DROP
+  SET-CURRENT NULLPOINTERS CI ICLOSE ;
+
+
+---- Screen 8 ----
+( MEMORY - INSTANCE OP: IRESET                       1-30-85)
+
+: IRESET ( -- \ initialize object handling system)
+  ICINIT CCLR VCLR
+  ( MOUNT-B ) INIT-SPACE          ( initialize newspace)
+  2 NEXT-NEW >C SET-CURRENT CI INST-SIB 1.5! CI INST-PREV 1.5!
+  7 NEXT-NEW CI IINSERT   ( IAPPLICATION)
+  3 NEXT-NEW CI IINSERT IOPEN ( ISYSTEM)
+  5 NEXT-NEW 2DUP ' FRAGMENT 2! CI IINSERT ( FRAGMENT)
+  4 NEXT-NEW 2DUP ' INACTIVE 2! CI IINSERT ( INACTIVE)
+  SAVE-BUFFERS CCLR VCLR ;
+
+
+
+
+
+---- Screen 9 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 10 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

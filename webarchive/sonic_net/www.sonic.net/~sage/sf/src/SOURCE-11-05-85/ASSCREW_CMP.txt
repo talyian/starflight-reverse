@@ -1,0 +1,491 @@
+==== Page - | [no header printed; screen index listing] | image ASSCREW_CMP_p01 ====
+ 0
+ 1
+ 2
+ 3 ( ---------------overlay prefix for---------------
+ 4 ( MISCELLANEOUS Module Callers
+ 5 ( Miscellaneous Utilities  BKSPACE KEY-PAUSE FLASH
+ 6 ( Miscellaneous Utilities  #IN$
+ 7 ( Miscellaneous Utilities
+ 8 ( Text Output
+ 9 ( Miscellaneous Messages   .#  CRWAIT
+10 ( Miscellaneous Messages
+11   ( contd.  CREWMEMBER                         A
+12   ( contd.  ASSIGN-CREW                        A
+13 ( Personnel File -- Main Page Frame            A
+14 ( Personnel File -- Crew Assignment            A
+15 ( Personnel File -- Main Page Option Box       A
+16 ( Crew Record                                  A
+17 ( Crew Stats DEAD                        RM    A
+18 (  Crew Assignment                             A
+19 ( Crew Stats [.STATS]                          A
+20 ( Crew Stats .STATS                            A
+21 ( Crew Assignment  .1CREW .CREW                A
+22 ( Crew Assignment  LOG-CREW NEXTBLT            A
+23 ( Crew Assignment                              A
+24 ( Crew Assignment  .NOCREW  SEARCH-FOR-CREW    A
+25 ( Crew Assignment  U-ASSCREW                   A
+==== Page 1 | 11-05-85 -- ASSCREW CMP -- Binary Systems | image ASSCREW_CMP_p02 ====
+---- Screen 0 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 2 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 3 ----
+( ---------------overlay prefix for--------------------------  )
+
+
+
+VOCABULARY ASSIGN-CREW-VOC IMMEDIATE
+81 OPEN-OVERLAY
+ASSIGN-CREW-VOC DEFINITIONS
+
+2200 TRANS-ALLOT
+
+NEWT-DP
+
+
+
+
+
+---- Screen 4 ----
+( MISCELLANEOUS Module Callers                                 )
+
+HEAD: TRIM T: ' ovTRIM MODULE T:
+
+( 0 C= 3RIGHT  1 C= 3LEFT  2 C= 3PLUS ) 3 C: 2RIGHT  4 C: 2LEFT
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 5 ----
+( Miscellaneous Utilities  BKSPACE KEY-PAUSE FLASH-CURSOR      )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==== Page 2 | 11-05-85 -- ASSCREW CMP -- Binary Systems | image ASSCREW_CMP_p03 ====
+---- Screen 6 ----
+( Miscellaneous Utilities  #IN$                                )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 7 ----
+( Miscellaneous Utilities                                      )
+
+HEAD: 2/3SPACE T: 4 xBLT +! T;
+
+HEAD: THERE T: PAD 128 + T;
+
+HEAD: $-TB ( $1 -- $2 )
+T: PAD $! 1 PAD C@ 0 PAD C! DO PAD I + C@ 32 = NOT
+ IF I PAD C! LEAVE THEN -1 +LOOP PAD T;
+
+
+
+
+
+
+
+---- Screen 8 ----
+( Text Output                                     AWK 10/01/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 9 ----
+( Miscellaneous Messages   .#  CRWAIT             AWK 03/14/84 )
+
+V: #BLT -2 DP +! HEX 57D5 , F500 , DECIMAL
+HEAD: .# ( -- )
+T: @CRS 5 wBLT ! #BLT aBLT ! BLT 6 xBLT +! !CRS T;
+
+HEAD: CRWAIT ( -- )   T: BEGIN KEY 13 = UNTIL T;
+
+
+
+
+
+
+
+
+
+---- Screen 10 ----
+( Miscellaneous Messages                          AWK 10/02/85 )
+
+HEAD: .PAGE ( -- )
+T: ." PAGE THROUGH FILES: ^\" T;
+
+HEAD: .DEAD-CHAR ( -- )
+T: ." A DEAD CREWMEMBER" !CRS T;
+
+
+
+
+
+
+
+
+
+---- Screen 11 ----
+( contd.  CREWMEMBER                              AWK 09/10/84 )
+
+16 FILE# !
+16  0 8 AFIELD: ^RACE
+16  8 1 AFIELD: ^SCI-B   16 13 1 AFIELD: ^SCI-M
+16 18 1 AFIELD: ^LRN     16 19 1 AFIELD: ^DUR
+
+16 11 15 IFIELD: ^NAME  16  26 1 IFIELD: ^SCI
+16 27  1 IFIELD: ^NAV   16  28 1 IFIELD: ^ENG
+16 29  1 IFIELD: ^CMC   16  30 1 IFIELD: ^MED
+16 31  1 IFIELD: ^VIT   16  32 2 IFIELD: ^STA
+16 34  1 IFIELD: CREWFILE#
+
+17 17 18 IFIELD: CAPTAIN
+
+
+==== Page 3 | 11-05-85 -- ASSCREW CMP -- Binary Systems | image ASSCREW_CMP_p04 ====
+---- Screen 12 ----
+  ( contd.  ASSIGN-CREW                           AWK 09/12/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 13 ----
+( Personnel File -- Main Page Frame               AWK 06/23/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 14 ----
+( Personnel File -- Crew Assignment               AWK 03/18/84 )
+
+HEAD: SPFRAME ( -- )
+T: 73  1 8  67 GREY2 POLY-WINDOW-FILL
+ 60 68 8 157 GREY2 POLY-WINDOW-FILL
+ DK-BLUE !COLOR XORMODE OFF
+ 2 0 DO
+   I 1+ 8 OVER 73 LLINE 157 I + 8 OVER 60 LLINE
+   2 6 I + 156 OVER LLINE 68 61 I + 156 OVER LLINE
+   2 74 I + 65 OVER LLINE 66 I + 63 OVER 73 LLINE
+ LOOP
+ >1FONT 10 71 POS. ." FILE" 2 xBLT +! .# >0FONT
+ 1 8 2RIGHT TRIM 1 74 2LEFT TRIM 65 74 2RIGHT TRIM
+ 156 8 2LEFT TRIM 156 61 2RIGHT TRIM 67 63 2RIGHT TRIM T;
+
+
+---- Screen 15 ----
+( Personnel File -- Main Page Option Box          AWK 03/19/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 16 ----
+( Crew Record                                     AWK 06/22/84 )
+V: POFF ( p-record raster offset )
+
+HEAD: P-RECORD ( y-offset -- )
+T: >R I POFF ! >1FONT XORMODE OFF
+ 10 41 I + POS. ." SKILLS:"
+ 15 34 I + POS. ." SCIENCE       :"
+       97 xBLT ! ." RACE:"
+ 15 27 I + POS. ." NAVIGATION    :"
+ 15 20 I + POS. ." ENGINEERING   :"
+       97 xBLT ! ." DURABILITY:"
+ 15 13 I + POS. ." COMMUNICATIONS:"
+ 15  6 I + POS. ." MEDICINE      :"
+       97 xBLT ! ." LRN RATE  :"
+ 87 48 R> + POS. ." VITALITY:   %" >0FONT T;
+
+---- Screen 17 ----
+( Crew Stats DEAD                             RM  AWK 03/26/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==== Page 4 | 11-05-85 -- ASSCREW CMP -- Binary Systems | image ASSCREW_CMP_p05 ====
+---- Screen 18 ----
+(  Crew Assignment                                AWK 04/16/85 )
+
+HEAD: ASSCREW ( -- )
+T: >HIDDEN DARK 28 195 BLUE .1LOGO >1FONT WHITE !COLOR
+ 10 167 POS. ." CAPTAIN"         10 147 POS. ." NAVIGATOR"
+ 10 157 POS. ." SCIENCE OFFICER" 10 137 POS. ." ENGINEER"
+ 10 127 POS. ." COMMUNICATIONS" 10 117 POS. ." DOCTOR"
+ ( 10 97 POS. ." EXIT" ) BLUE !COLOR
+ >3FONT 48 194 POS. ." CREW" 10 xBLT +! ." ASSIGNMENT"
+ 2 0 DO
+   156 198 I + 3 OVER LLINE I 1+ 184 OVER 197 LLINE
+   157 I + 184 OVER 197 LLINE 156 182 I + 3 OVER LLINE
+ LOOP
+ 2 198 2LEFT TRIM 156 198 2RIGHT TRIM
+ 2 184 2RIGHT TRIM 156 184 2LEFT TRIM SPFRAME 9 P-RECORD
+ >DISPLAY SCR-RESTORE T;
+---- Screen 19 ----
+( Crew Stats [.STATS]                             AWK 10/22/85 )
+
+HEAD: (.STATS) ( -- )
+T: POFF @ >R 10 48 I + POS. WHITE !COLOR ^NAME DUP C@
+ IF $. ELSE DROP THEN        122 xBLT ! ^VIT C@ 3 .R
+ 74 34 I + POS. ^SCI C@ 3 .R 119 xBLT ! ^RACE $.
+ 74 27 I + POS. ^NAV C@ 3 .R
+ 74 20 I + POS. ^ENG C@ 3 .R 141 xBLT ! ^DUR C@ 2 .R
+ 74 13 I + POS. ^CMC C@ 3 .R
+ 74 6 R> + POS. ^MED C@ 3 .R 141 xBLT ! ^LRN C@ 2 .R T;
+
+
+
+
+
+
+---- Screen 20 ----
+( Crew Stats .STATS                               AWK 10/04/85 )
+
+HEAD: .STATS ( -- )
+T: SAVE-SCR >HIDDEN
+ @CRS >1FONT POFF @ >R 14 GREY2 48 I + 10 POS.PXT
+ 3 GREY2 48 I + 122 POS.PXT WHITE !COLOR XORMODE OFF
+ 5 0 DO 3 GREY2 I 7 * 6 + J + 74 POS.PXT
+    2 I 4 = 5 * + GREY2 I 7 * 6 + J + 141 I 4 = -22 * + POS.PXT
+ LOOP 2 GREY2 61 I + 40  POS.PXT
+ 40 61 R> + POS. CREWFILE# C@ 1+ 2 .R
+ ^STA @
+ IF (.STATS) THEN !CRS >DISPLAY SCR-RESTORE T;
+
+
+
+
+---- Screen 21 ----
+( Crew Assignment  .1CREW .CREW                   AWK 10/04/85 )
+
+HEAD: .1CREW ( line# -- )
+T: >R @CRS R> 167 SWAP 10 * - 95 2DUP
+ 14 0 2SWAP POS.PXT WHITE !COLOR SWAP POS. ^NAME $. !CRS T;
+
+HEAD: .CREW ( -- )
+T: >1FONT WHITE !COLOR *ASSIGN-CREW >C+S
+ 6 0 DO
+   CAPTAIN I 3 * + 1.5@
+   >C+S CI OR
+   IF ^STA @ 8 AND
+      IF I .1CREW THEN
+   THEN ICLOSE
+ LOOP ICLOSE T;
+
+---- Screen 22 ----
+( Crew Assignment  LOG-CREW NEXTBLT               AWK 10/02/85 )
+
+HEAD: LOG-CREW ( crew# -- )
+T: >R CI *ASSIGN-CREW >C+S
+ CAPTAIN I 3 * + 1.5! ICLOSE ^STA @ 8 OR ^STA ! R> .1CREW T;
+
+HEAD: .ASS-CREW ( color -- )
+T: >R @CRS >1FONT R> !COLOR XORMODE OFF 34 91 POS. .PAGE
+ 14 85 POS. ." PRESS BUTTON TO ASSIGN CREWMEMBER" !CRS T;
+
+HEAD: NEXTBLT ( line# -- )
+T: CURSORSPACE aBLT ! XORMODE ON BLT DUP 5 =
+ IF 1+ 18 wBLT ! BLACK .ASS-CREW
+ @CRS 39 85 POS. >1FONT
+ WHITE !COLOR ." PRESS BUTTON TO EXIT." !CRS BLACK !COLOR
+ THEN 1+ 10 * 169 SWAP - yBLT ! BLT T;
+---- Screen 23 ----
+( Crew Assignment                                 AWK 10/04/84 )
+
+HEAD: .NEWSTATS ( n -- )
+T: ?DUP IF 0< IF IPREV ELSE INEXT THEN .STATS THEN T;
+
+HEAD: ?ASSIGN ( -- f )
+T: 0 .ASS-CREW @CRS >1FONT WHITE !COLOR XORMODE OFF ^STA @ 2 AND
+ IF 35 91 10 2DUP SWAP POS.
+  ." YOU CAN'T ASSIGN " @CRS .DEAD-CHAR
+  ELSE 91 42  2DUP SWAP POS.
+  ." THIS FILE IS EMPTY." THEN
+ 2500 MS 19 0 2SWAP POS.PXT !CRS WHITE .ASS-CREW 0 T;
+
+
+
+
+==== Page 5 | 11-05-85 -- ASSCREW CMP -- Binary Systems | image ASSCREW_CMP_p06 ====
+---- Screen 24 ----
+( Crew Assignment  .NOCREW  SEARCH-FOR-CREW       AWK 09/10/84 )
+
+HEAD: ((U-ASSCREW)) ( crew# -- )
+T: >R BEGIN XYSCAN DROP .NEWSTATS ?TRIG
+  IF ^STA C@ 3 AND 1 XOR 0=
+  IF I NEXTBLT I LOG-CREW 1 ELSE ?ASSIGN THEN
+ ELSE 0 THEN UNTIL R> DROP T;
+
+HEAD: .NOCREW ( -- )
+T: >1FONT WHITE !COLOR 42 110 POS. ." THERE ARE NO LIVING"
+ 40 100 POS. ." CREWMEMBERS ON FILE." T;
+
+HEAD: SEARCH-FOR-CREW ( -- f )
+T: IFIRST 0 25 0 DO ^STA C@ 3 AND 3 XOR 2 =
+ IF 1+ LEAVE ELSE INEXT THEN LOOP T;
+
+---- Screen 25 ----
+( Crew Assignment  U-ASSCREW                      AWK 10/23/85 )
+
+: (U-ASSCREW) ( -- )
+ ASSCREW
+ *PERSONNEL >C+S IOPEN SEARCH-FOR-CREW
+ IF .CREW NCRS OFF OCRS OFF
+   CURSORSPACE aBLT ! 9 lBLT ! 144 wBLT ! 8 169 POS.
+   DK-GREEN !COLOR XORMODE ON BLT WHITE .ASS-CREW
+   *ASSIGN-CREW >C+S
+   6 0 DO CAPTAIN I 3 * + 1.5@ >C+S .STATS
+     I ((U-ASSCREW)) ICLOSE
+   LOOP ICLOSE KEY DROP
+ ELSE .NOCREW TIME D@ 4500. +
+   BEGIN TIME D@ 2OVER D> 'KEY OR UNTIL 2DROP THEN
+ ICLOSE ICLOSE ;
+
+---- Screen 26 ----
+( ---------------overlay Suffix for ASSIGN-CREW--------------  )
+DISPOSE
+CLOSE-OVERLAY
+81 OVERLAY ASSCREW-OV
+ASSCREW-OV
+FORTH DEFINITIONS
+
+: U-ASSCREW  ASSCREW-OV ASSIGN-CREW-VOC (U-ASSCREW) ;
+
+
+OV-CANCEL
+
+
+
+
+

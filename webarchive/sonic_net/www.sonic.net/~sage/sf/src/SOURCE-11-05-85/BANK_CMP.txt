@@ -1,0 +1,329 @@
+==== Page - | [no header printed; screen index listing] | image BANK_CMP_p01 ====
+ 0
+ 1
+ 2
+ 3 ( ---------------overlay prefix for BANK----------
+ 4 ( MISCELLANEOUS Module Callers
+ 5
+ 6 ( Miscellaneous Messages   .#  CRWAIT
+ 7 ( Miscellaneous Messages
+ 8   ( contd.  BANK BANK-TRANS                    A
+ 9 ( Bank  TRANSACT                               A
+10 ( Bank   INT%                                 AW
+11 ( Bank -- DOTS .DOTS .BDATE                    A
+12 ( Bank -- .$AMT ?.MESS                         A
+13 ( Bank -- Main Page Frame                      A
+14 ( Bank -- Main Page Info                       A
+15 ( Bank -- BMESS                                A
+16 ( ---------------overlay suffix for BANK----------
+17
+[handwritten: see ~ for transactions. (below listing)]
+==== Page 1 | 11-05-85 -- BANK CMP -- Binary Systems | image BANK_CMP_p02 ====
+---- Screen 0 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 2 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 3 ----
+( ---------------overlay prefix for BANK---------------------- )
+
+
+
+
+VOCABULARY BANK-VOC IMMEDIATE
+80 OPEN-OVERLAY
+BANK-VOC DEFINITIONS
+
+1000 TRANS-ALLOT
+NEWT-DP
+
+
+
+
+
+---- Screen 4 ----
+( MISCELLANEOUS Module Callers                                 )
+
+HEAD: TRIM T: ' ovTRIM MODULE T;
+
+0 C: 3RIGHT  1 C: 3LEFT  2 C: 3PLUS  3 C: 2RIGHT  4 C: 2LEFT
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 5 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==== Page 2 | 11-05-85 -- BANK CMP -- Binary Systems | image BANK_CMP_p03 ====
+---- Screen 6 ----
+( Miscellaneous Messages   .#  CRWAIT             AWK 03/14/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 7 ----
+( Miscellaneous Messages                          AWK 03/24/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 8 ----
+  ( contd.  BANK BANK-TRANS                       AWK 09/12/84 )
+
+13 11 4 IFIELD: MASTERBALANCE  13 15 4 IFIELD: BALANCE
+13 19 1 IFIELD: TFLAG
+
+14 0 19 AFIELD: TRANSTEXT
+14 11 4 IFIELD: T-AMT 14 15 2 IFIELD: T-DATE
+
+HEAD: SET-BANK ( --  ( -- n ) )   T: *BANK >C+S T;
+: !TFLAG ( -- )   SET-BANK 1 TFLAG C! ICLOSE ;
+: D@BALANCE ( -- d )   SET-BANK BALANCE D@ ICLOSE ;
+: D!BALANCE ( d -- )   SET-BANK BALANCE D! ICLOSE ;
+: ?BALANCE ( d -- f )   D@BALANCE D> 0= ;
+
+: INIT-BALANCE ( -- )
+ SET-BANK MASTERBALANCE D@ BALANCE D! ICLOSE ;
+---- Screen 9 ----
+( Bank  TRANSACT                                  AWK 10/23/85 )
+
+: TRANSACT ( n -- )
+ SET-BANK TFLAG C@
+ IF IOPEN 14 SWAP 1 *CREATE IFIRST
+   0 9 0 DO INEXT ?FIRST
+     IF 1+ LEAVE THEN
+   LOOP 0=
+   IF IFIRST IDELETE THEN ILAST COVER SET-CURRENT
+     STARDATE @ MASTERBALANCE D@ BALANCE D@ D-
+   ICLOSE T-AMT D! T-DATE ! ICLOSE
+   BALANCE D@ MASTERBALANCE D! 0 TFLAG C!
+ ELSE DROP THEN ICLOSE ;
+STARDATE OFF
+SET-BANK 100080. MASTERBALANCE D! 100000. BALANCE D! 1 TFLAG C!
+ICLOSE 6 TRANSACT
+---- Screen 10 ----
+( Bank   INT%                                     AWK 11/04/85 )
+
+: INT% ( -- )
+ INIT-BALANCE
+ D@BALANCE 12 100 M*/             \ interest/annum
+ STARDATE @ PORTDATE @ - 300 M*/  \ adjusted for time
+ 2DUP D0=
+ IF 2DROP
+ ELSE D@BALANCE D+ D!BALANCE      \ modify balance
+   !TFLAG 5 TRANSACT              \ note transaction
+   STARDATE @ PORTDATE !          \ set latest interest date
+ THEN ;
+
+
+
+
+---- Screen 11 ----
+( Bank -- DOTS .DOTS .BDATE                       AWK 09/05/84 )
+
+V: DOTS -2 DP +! HEX
+ 4444 , 4444 , 4444 , 4444 , 4444 ,
+ 4444 , 4444 , 4444 , 4444 , 4444 , DECIMAL
+
+HEAD: .DOTS ( xlim -- )
+T: -4 yBLT +! xBLT @ - wBLT !
+ 1 lBLT ! DOTS aBLT ! BLT 4 yBLT +! T;
+
+HEAD: .BDATE ( -- )  ( 01-01-4620 )
+T: T-DATE @ 300 /MOD 4620 + SWAP 30 /MOD 1+ SWAP 1+
+ DUP 10 < IF ." 0" THEN 0 .R ." -"
+ DUP 10 < IF ." 0" THEN 0 .R ." -" 0 .R T;
+
+
+==== Page 3 | 11-05-85 -- BANK CMP -- Binary Systems | image BANK_CMP_p04 ====
+---- Screen 12 ----
+( Bank -- .$AMT ?.MESS                            AWK 09/11/84 )
+HEAD: .$AMT ( -- )
+T: T-AMT D@ 2DUP 2DUP DABS 999999. DMIN 6 D.R 0 0 D<
+ IF 11 ELSE 13 THEN >R OR NOT NOT R> * 32 + EMIT T;
+
+HEAD: ?.MESS ( -- )   T: TRANSTEXT $. T;
+
+HEAD: BTITLE ( -- )
+T: 50 190 50 178 LLINE 111 190 111 178 LLINE
+ 52 192 109 192 LLINE 52 176 109 176 LLINE
+ 50 192 3PLUS TRIM 50 178 3PLUS TRIM
+ 109 192 3PLUS TRIM 109 178 3PLUS TRIM
+ WHITE !COLOR 70 188 POS. >3FONT ." BANK" T;
+
+
+
+---- Screen 13 ----
+( Bank -- Main Page Frame                         AWK 04/23/85 )
+
+HEAD: BOFRAME ( c -- )
+T: !COLOR XORMODE ON
+ 3 0 DO 1 I + 196 1 I + 3 LLINE 156 I + 196 156 I + 3 LLINE
+ 156 1 I + 3 1 I + LLINE 156 196 I + 3 196 I + LLINE LOOP
+ 5 194 5 18 LLINE 18 18 6 18 LLINE 18 17 18 5 LLINE
+ 153 5 19 5 LLINE 154 5 154 194 LLINE 153 194 6 194 LLINE
+ 2 197 3LEFT TRIM 155 197 3RIGHT TRIM 2 4 3RIGHT TRIM
+ 155 4 3LEFT TRIM 18 6 2RIGHT TRIM 5 19 2RIGHT TRIM
+ 17 18 2RIGHT TRIM 18 6 2RIGHT TRIM 153 6 2LEFT TRIM
+ 18 6 2RIGHT TRIM 153 194 2RIGHT TRIM 5 194 2LEFT TRIM
+ 6 15 DK-BLUE .1LOGO T;
+
+
+
+---- Screen 14 ----
+( Bank -- Main Page Info                          AWK 04/23/85 )
+HEAD: BINFO ( -- )
+T: WHITE !COLOR >1FONT 19 167 POS.
+ ." DATE" 62 xBLT ! ." TRANSACTIONS"
+ 133 xBLT ! ." AMT"
+ 19 161 33 161 LLINE 62 161 108 161 LLINE
+ 133 161 144 161 LLINE 144 163 LPLOT
+ 38 45 POS. ." ( INTEREST RATE: 12% )"
+ 15 29 POS. ." BALANCE" 119 .DOTS T;
+
+HEAD: BSCREEN ( -- )
+T: >LORES DARK DK-BLUE BOFRAME BTITLE BINFO T;
+
+HEAD: BMESS ( line# -- )
+T: XORMODE OFF 10 * 149 SWAP - 7 SWAP POS. >1FONT
+ .BDATE 50 xBLT ! ?.MESS 124 .DOTS 125 xBLT ! .$AMT T;
+---- Screen 15 ----
+( Bank -- BMESS                                   AWK 04/23/85 )
+
+HEAD: .BALANCE ( ( n -- n ) )
+T: 121 29 POS. >1FONT MASTERBALANCE D@ 7 D.R T;
+
+HEAD: .BANK ( -- )
+T: SET-BANK IOPEN
+ 0 BEGIN DUP BMESS 1+ INEXT ?FIRST UNTIL DROP ICLOSE .BALANCE
+ ICLOSE T;
+
+: (U-BANK)
+ >HIDDEN BSCREEN .BANK >1FONT WHITE !COLOR
+ 42 14 POS. ." PRESS BUTTON TO EXIT."
+ >DISPLAY SCR-RESTORE BEGIN XYSCAN 2DROP ?TRIG UNTIL ;
+
+
+---- Screen 16 ----
+( ---------------overlay suffix for BANK---------------------- )
+DISPOSE
+CLOSE-OVERLAY SAVE-BUFFERS
+80 OVERLAY BANK-OV
+BANK-OV
+FORTH DEFINITIONS
+: ovINIT-BALANCE ( -- )
+ BANK-OV BANK-VOC INIT-BALANCE ;
+: ovTRANSACT  ( n -- )   BANK-OV BANK-VOC TRANSACT ;
+: ovD@BALANCE ( -- d )   BANK-OV BANK-VOC D@BALANCE ;
+: ovD!BALANCE ( d -- )   BANK-OV BANK-VOC D!BALANCE ;
+: ov?BALANCE  ( d -- f ) BANK-OV BANK-VOC ?BALANCE ;
+: ov!TFLAG    ( -- )     BANK-OV BANK-VOC !TFLAG ;
+: I-TRANS     ( -- )     BANK-OV BANK-VOC INT% ;
+: U-BANK      ( -- )     BANK-OV BANK-VOC (U-BANK) ;
+OV-CANCEL
+---- Screen 17 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

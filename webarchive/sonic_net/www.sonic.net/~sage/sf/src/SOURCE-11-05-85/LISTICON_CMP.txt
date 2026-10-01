@@ -1,0 +1,70 @@
+==== Page 1 | 11-05-85 -- LISTICONCMP -- Binary Systems | image LISTICON_CMP_p01 ====
+---- Screen 0 ----
+\ OVERLAY PREFIX: ICON-VOC                       rfg19aug85)
+ vocabulary icon-voc immediate
+ 96 open-overlay
+ icon-voc definitions
+210 trans-allot newt-dp
+
+head: altitude
+t: black !color
+  31 46 128 46 lline   128 46 128 29 lline
+  128 29 31 29 lline    31 29 31 46 lline
+   8 0 do cmap i 8 * + tile-ptr !
+          33 i 12 * + 45 16 12 tilefill
+  loop
+  35 25 pos. ." LO.....ELEVATION.....HI " t;
+
+
+---- Screen 1 ----
+( DISPLAY ICONS WITH LEGEND                      rfg16aug85)
+
+head: "ICON-KEY" ( -- \ display centered title for icon key)
+t:  190 YBLT !  55 XBLT ! BLACK !COLOR
+  >3FONT ." ICON" 10 XBLT +! ." KEY"
+  10  15  150 15   LLINE
+  10  178 150 178  LLINE
+  10  15  10  178  LLINE
+  150 15  150 178  LLINE t;
+
+head: .BLT ( addr -- \ given blt record address)
+t:  2 0 DO DUP I 9 * + DUP C@ COLOR !
+  1+ ABLT ! BLT LOOP DROP  t;
+head: PAUSE-PAGE
+t:  10 YBLT ! 27 XBLT ! WHITE !COLOR
+   ." (PRESS ANY KEY TO CONTINUE)" KEY DROP t;
+---- Screen 2 ----
+( DISPLAY ICONS WITH LEGEND                      rfg16aug85)
+head: SEE-BLTS t: >1FONT ( YBASE end start -- )
+       DO 10 - DUP YBLT !
+          20  XBLT !
+          8 LBLT ! 8 WBLT !
+          62 I @RECORD .BLT 12 XBLT +! BLACK !COLOR
+          -2 YBLT +! 65 I @RECORD 27 TYPE 2 YBLT +!
+       LOOP DROP t;
+
+head: title t: GREY1 COLOR ! BFILL "ICON-KEY" t;
+
+: ICONS  xormode off
+ title 180 15 0 SEE-BLTS PAUSE-PAGE
+ title 180 27 15 SEE-BLTS altitude PAUSE-PAGE  ;
+
+
+---- Screen 3 ----
+( OVERLAY SUFFIX: LISTICONS-OV OVERLAY -----------(rfg11sep85)
+dispose
+ close-overlay
+96  overlay listicons-ov
+listicons-ov
+forth definitions
+
+: icons listicons-ov icon-voc  icons ;
+
+ov-cancel
+
+
+
+
+
+
+

@@ -1,0 +1,103 @@
+==== Page 1 | 7-15-85  FILE: CMAP.CMP  --  BINARY SYSTEMS | image CMAP_CMP_p01 ====
+---- Screen 9 ----
+( CMAP - Contour map color table compiler source         3-6-85)
+V= BASE-RECORD
+
+: RGB ( -- \ set base record pointer to rgb area)
+  BASE-RECORD OFF ;
+: COMPOSITE ( -- \ set base record pointer to composite area)
+  5 BASE-RECORD ! ;
+
+: ADDTILE ( c c n -- \ add contour tile to cmap buffer)
+  8 * CMAP + TILE-PTR !
+  2 0 DO I 4 * TILE-PTR @ + >R
+         >R >R
+         I J C! I J 1+ C!  I' J 2+ C!  I' J 3 + C!
+         R> R> R> DROP LOOP 2DROP ;
+
+
+---- Screen 10 ----
+( CMAP - Contour map color table compiler source         3-6-85)
+
+: ADDRECORD ( n -- \ copy cmap to record n of cmap file)
+  FILE: CMAP LITERAL SWAP @RECORD CMAP SWAP 64 CMOVE ;
+
+: !COLORMAP ( c c c c c -- \ save color constants in cmap file)
+  0 4 DO  ( for each planet type)
+  0 7 DO  ( for each contour)
+      I ADDTILE
+      -1 +LOOP
+      I BASE-RECORD @ + ADDRECORD
+      -1 +LOOP ;
+
+
+
+
+---- Screen 11 ----
+( CMAP - RGB contour map color table                     3-6-85)
+RGB
+(   LIFE)   GREEN VIOLET   DK-GREEN BLACK    RED DK-GREEN
+            RED GREY2      GREY2 GREY2       BLUE GREY2
+            YELLOW BLUE    WHITE WHITE
+( NOLIFE)   GREEN VIOLET   BLACK ORANGE      ORANGE ORANGE
+            ORANGE LT-BLUE ORANGE LT-BLUE    LT-BLUE WHITE
+            LT-BLUE WHITE  WHITE WHITE
+(    ICE)   GREEN VIOLET   BLACK ORANGE      ORANGE ORANGE
+            ORANGE LT-BLUE LT-BLUE WHITE     LT-BLUE WHITE
+            WHITE WHITE    WHITE WHITE
+( MOLTON)   GREY1 GREY1    BLACK DK-BLUE     DK-BLUE BROWN
+            GREY1 BROWN    LT-GREEN GREY1    LT-GREEN PINK
+            WHITE PINK     WHITE WHITE
+
+
+---- Screen 12 ----
+( CMAP - RGB contour map color table                     3-6-85)
+(    GAS)   BROWN BROWN    LT-BLUE LT-BLUE   DK-GREEN DK-GREEN
+            GREEN GREEN    GREEN GREEN     LT-GREEN LT-GREEN
+            LT-GREEN LT-GREEN   BLUE BLUE
+!COLORMAP
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 13 ----
+( CMAP - COMPOSITE contour map color table               3-6-85)
+COMPOSITE
+(   LIFE)   DK-BLUE DK-BLUE DK-GREEN DK-GREEN GREEN GREEN
+            YELLOW YELLOW  ORANGE ORANGE     BROWN BROWN
+            GREY2 GREY2    WHITE WHITE
+( NOLIFE)   DK-BLUE DK-BLUE YELLOW YELLOW    ORANGE ORANGE
+            BROWN BROWN    BROWN BROWN       GREY2 GREY2
+            GREY2 GREY2    WHITE WHITE
+(    ICE)   DK-BLUE DK-BLUE GREY1 GREY1     LT-BLUE LT-BLUE
+            VIOLET VIOLET  BLUE BLUE        BLUE BLUE
+            WHITE WHITE    WHITE WHITE
+( MOLTON)   RED RED        YELLOW YELLOW     YELLOW YELLOW
+            ORANGE ORANGE  ORANGE ORANGE     BROWN  BROWN
+            BROWN BROWN    GREY1 GREY1
+
+
+---- Screen 14 ----
+( CMAP - COMPOSITE contour map color table               3-6-85)
+(    GAS)   PINK  PINK     VIOLET VIOLET     YELLOW YELLOW
+            ORANGE ORANGE  ORANGE ORANGE     BROWN BROWN
+            BROWN BROWN    GREY1 GREY1
+!COLORMAP
+
+
+
+
+
+
+
+
+
+
+

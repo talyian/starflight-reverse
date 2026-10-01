@@ -1,0 +1,1072 @@
+==== Page  |  | image GAME-OV_CMP_p01 ====
+ 0 ( GAME-OV ------- OVERLAY PREFIX -----------------
+ 1 ( GAME OPTIONS - CONSTANTS
+ 2 ( GAME OPTIONS - VARIABLES
+ 3 ( GAME OPTIONS - VARIABLES
+ 4 ( GAME OPTIONS - !$ #CPL #LPS
+ 5 ( GAME OPTIONS - ?BL<-
+ 6 ( GAME OPTIONS - ##LINES
+ 7 ( GAME OPTIONS - #YBLT #XBLT .SUB$
+ 8 ( GAME OPTIONS - .#LINES
+ 9 ( GAME OPTIONS - .FORMAT BORDERMARGINS
+10
+11
+12 ( GAME OPTIONS - ERASEWIND ERASELINE .PAGE
+13 ( GAME OPTIONS - BORDER
+14 ( GAME OPTIONS - PRESSANY .GAMEOPS
+15 ( GAME OPTIONS - .LOADGAME .SAVEGAME
+16
+17 ( GAME OPTIONS - .ERROR1 BLINK
+18 ( GAME OPTIONS - ?GAMEDSK !TIMESTAMP TME>DISK
+19 ( GAME OPTIONS - .INSERTSAVE  REMOVEGAME
+20 ( GAME OPTIONS - .ERROR2  LOADSAVE
+21 ( GAME OPTIONS - .INSERTLOAD
+22 ( GAME OPTIONS - .CKSUMERROR  SAVECHK
+23 ( GAME OPTIONS - LOADGAME
+24 ( GAME OPTIONS - .INSERTGAME
+25 ( GAME OPTIONS - .KEYTORESUME
+26 ( GAME OPTIONS - PRESERVEDISPLAY RESTOREDISPLAY
+27 ( GAME OPTIONS - ESCDISABLE ESCENABLE OFFCACHE ONC
+28 ( GAME OPTIONS - CHECKSUM
+29
+30 ( GAME OPTIONS - .LOADING .LOADED
+31 ( GAME OPTIONS - .SAVING  DONE
+32 ( GAME OPTIONS - PRMSAV PRMLOD
+33 ( GAME OPTIONS - RETSAV RETSAV
+34 ( GAME OPTIONS - .RS testing words
+35 ( GAME OPTIONS - !DISK
+36 ( GAME OPTIONS - <DISK >DISK
+37 ( GAME OPTIONS - ARR>DISK  DISK>ARR
+38 ( GAME OPTIONS - DSP>DISK  DISK>DSP
+39 ( GAME OPTIONS - DISK>KRN KRN>DISK
+40 ( GAME OPTIONS - RTN>DISK  DISK>RTN  PRM>DISK
+41 ( GAME OPTIONS - DATASAVE
+42 ( GAME OPTIONS - SETSAVE CLRSAVE
+43 ( GAME OPTIONS - DATALOAD
+44 ( GAME OPTIONS - LOADGAME
+45 ( GAME OPTIONS - SAVEGAME
+46 ( GAME OPTIONS - .CONFIGHEAD   MONITORTYPE
+47 ( GAME OPTIONS - MEMORYSIZE
+48 ( GAME OPTIONS - CONFIGAME
+49
+50 ( SAVEGAME - GET-OPTION#
+51 ( SAVEGAME - GAMEOPCASES RESUMEGAME
+52 ( GAME OPTIONS - >GAMEOPTIONS
+53 ( GAME OPTIONS - GAMEOPTIONS
+54 ( GAME OPTIONS - <GAMEOPTIONS
+55 ( GAME OPTIONS - GAMEOPS
+55 ( GAME OPTIONS - GAMEOPS
+56
+57 ( GAME-OV ------ OVERLAY SUFFIX ------------------
+
+==== Page 1 | 9-26-85  FILE: GAME-OV.CMP  --  BINARY SYSTEMS | image GAME-OV_CMP_p02 ====
+---- Screen 0 ----
+( GAME-OV ------- OVERLAY PREFIX ------------------- 7-11-85)
+
+VOCABULARY GAME IMMEDIATE
+120 OPEN-OVERLAY
+GAME DEFINITIONS
+
+2500 TRANS-ALLOT ( allot space for heads)
+
+NEWT-DP
+
+
+
+
+
+
+
+---- Screen 1 ----
+( GAME OPTIONS - CONSTANTS                          9-26-85)
+ 0 C: KRNBLK        ( base block for kernal image)
+64 C: DSPBLK        ( base block for display image)
+80 C: RTNBLK        ( base block for return stack image)
+81 C: PRMBLK        ( base block for parameter stack)
+82 C: ARRBLK        ( base block for array data)
+ 4 C: RDROP         ( # bytes to drop from the return stack)
+ 0 C: SDROP         ( # bytes to drop from the parm stack)
+
+
+
+
+
+
+
+
+[handwritten: BACKUP'S: (near line 8)]
+[handwritten: YBLT, XBLT, XORMODE, LBLT, WBLT, ABLT, BLTSEG (near line 9)]
+[handwritten: COLOR -> COLOR (near line 10)]
+---- Screen 2 ----
+( GAME OPTIONS - VARIABLES                          9-26-85)
+\ V= ESC-EN         ( ESC key enable flag)
+\ V= ESC-PFA         ( pfa of current escape invoked routine)
+\ V= [#CACHE]        ( # of cache buffers possible)
+V: [BCACHE]        ( start of cache space address)
+V: RESUME          ( resume play flag)
+V: TIMESTAMP       ( save version identifier)
+V: RTNTEMP 80 ALLOT ( temp return stack space)
+V: NSYSK           ( new memory size in k bytes)
+V: CKSUM           ( check sum accumulator)
+
+
+
+
+
+
+[handwritten: V: 'TYPE-BAK ( TYPE VECTOR BACKUP) (near line 10)]
+[handwritten: V: 'EMIT-BAK ( EMIT VECTOR BACKUP) (near line 11)]
+[handwritten: V: BUFSEG-BAK ( DISPLAY BUFFER SEG BACKUP) (near line 12)]
+[handwritten: V: BUFCNT-BAK ( " " COUNT " ) (near line 13)]
+[handwritten: V: YTAB-BAK ( " " YTABL " ) (near line 14)]
+---- Screen 3 ----
+( GAME OPTIONS - VARIABLES                          9-26-85)
+V: LMARG       ( left margin)
+V: RMARG       ( right margin)
+V: TMARG       ( top margin)
+V: BMARG       ( bottom margin)
+V: CHARHEIGHT  ( height of character)
+V: CHARWIDTH   ( width  of character)
+V: LINESPACING ( pixels between lines)
+V: CPL         ( characters/line)
+V: LPS         ( lines/screen)
+V: $ADDR       ( string address)
+V: $LEN        ( length of string)
+V: #LINES      ( number of lines string occupies)
+V: SUB$ADDR    ( substring address)
+V: SUB$LEN     ( substring length)
+
+---- Screen 4 ----
+( GAME OPTIONS - !$ #CPL #LPS                       9-26-85)
+
+HEAD: !$ ( addr cnt -- \ set current string)
+T: $LEN ! $ADDR ! T;
+
+HEAD: #CPL ( -- \ compute characters/line)
+T: RMARG @ LMARG @ - CHARWIDTH @ / CPL ! T;
+
+HEAD: #LPS ( -- \ compute lines/screen)
+T: TMARG @ BMARG @ - CHARHEIGHT @ LINESPACING @ + / LPS ! T;
+
+
+
+
+
+
+---- Screen 5 ----
+( GAME OPTIONS - ?BL<-                              9-26-85)
+
+HEAD: ?BL<- ( addr -- addr' \ given address, end if space else)
+T: ( decrement until a blank space is encountered)
+  BEGIN
+    DUP C@ BL = NOT
+  WHILE
+    1-
+  REPEAT T;
+
+
+
+
+
+
+
+==== Page 2 | 9-26-85  FILE: GAME-OV.CMP  --  BINARY SYSTEMS | image GAME-OV_CMP_p03 ====
+---- Screen 6 ----
+( GAME OPTIONS - ##LINES                            9-26-85)
+
+HEAD: ##LINES ( -- \ compute number of lines will be occupied)
+T: ( by the current string)
+  $ADDR @ SUB$ADDR !
+  1 #LINES !                    ( count initialized)
+  BEGIN
+    SUB$ADDR @ CPL @ + DUP
+    $ADDR @ $LEN @ + U<
+  WHILE
+    ?BL<-                      ( address.of.linebreak.blank --)
+    1+ SUB$ADDR !
+    1 #LINES +!
+  REPEAT DROP T;
+
+
+---- Screen 7 ----
+( GAME OPTIONS - #YBLT #XBLT .SUB$                  9-26-85)
+
+HEAD: #YBLT ( -- \ compute initial line location for current )
+T: ( text message so that the message is centered)
+  ##LINES
+  LPS @ #LINES @ - 2/ CHARHEIGHT @ LINESPACING @ + * NEGATE
+  TMARG @ + YBLT ! T;
+
+HEAD: #XBLT ( -- \ compute x location for current substring)
+T: ( such that the current substring is centered)
+  YBLT @ 900 YBLT ! 0 XBLT ! SUB$ADDR @ SUB$LEN @ TYPE
+  YBLT ! RMARG @ LMARG @ + 2/
+  XBLT @ 2/ NEGATE + XBLT ! T;
+
+HEAD: .SUB$ ( -- \ plot centered substring)
+T: #XBLT SUB$ADDR @ SUB$LEN @ TYPE T;
+---- Screen 8 ----
+( GAME OPTIONS - .#LINES                            9-26-85)
+HEAD: .#LINES ( -- \ plot current string as center formated)
+T: #YBLT
+  $ADDR @ SUB$ADDR !
+  BEGIN
+    SUB$ADDR @ CPL @ + DUP
+    $ADDR @ $LEN @ + U<
+  WHILE
+    ?BL<-                      ( address.of.linebreak.blank --)
+    SUB$ADDR @ -
+    SUB$LEN ! .SUB$
+    CHARHEIGHT @ LINESPACING @ + NEGATE YBLT +!
+    SUB$LEN @ 1+ SUB$ADDR +!
+  REPEAT DROP
+  $ADDR @ $LEN @ + SUB$ADDR @ - SUB$LEN ! .SUB$ T;
+
+---- Screen 9 ----
+( GAME OPTIONS - .FORMAT BORDERMARGINS              9-26-85)
+
+HEAD: .FORMAT ( addr count -- \ plot center formated string)
+T: !$ #CPL #LPS
+  .#LINES T;
+
+HEAD: BORDERMARGINS
+T: 20 LMARG ! 140 RMARG !
+  40 BMARG ! 150 TMARG !
+  3 LINESPACING !
+  9 CHARHEIGHT !  6 CHARWIDTH ! T;
+
+
+
+
+
+---- Screen 10 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 11 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==== Page 3 | 9-26-85  FILE: GAME-OV.CMP  --  BINARY SYSTEMS | image GAME-OV_CMP_p04 ====
+---- Screen 12 ----
+( GAME OPTIONS - ERASEWIND ERASELINE .PAGE          9-26-85)
+
+HEAD: ERASEWIND ( -- \ erase text in display window)
+T: COLOR @ 150 20 40 140 BLACK POLY-WINDOW-FILL !COLOR T;
+
+HEAD: ERASELINE ( -- \ erase text below display window)
+T: COLOR @ 17 20 5 159 BLACK POLY-WINDOW-FILL !COLOR T;
+
+HEAD: .PAGE
+T: BORDERMARGINS ERASEWIND >2FONT .FORMAT T;
+
+
+
+
+
+
+---- Screen 13 ----
+( GAME OPTIONS - BORDER                             9-26-85)
+
+HEAD: BORDER ( -- \ display standard interface border with )
+T:  ( Interstel logo)
+  WHITE !COLOR
+     5 155  10 160 LLINE  10 160 150 160 LLINE
+   150 160 155 155 LLINE 155 155 155  25 LLINE
+   155  25 150  20 LLINE 150  20  20  20 LLINE
+    20  20  17  23 LLINE  17  23  17  30 LLINE
+    17  30  14  33 LLINE  14  33   8  33 LLINE
+     8  33   5  36 LLINE   5  36   5 155 LLINE
+     5  29 COLOR @ .1LOGO T;
+
+
+
+
+---- Screen 14 ----
+( GAME OPTIONS - PRESSANY .GAMEOPS                  9-26-85)
+
+HEAD: PRESSANY ( -- \ display message below border)
+T: >2FONT 20 17 POS. ERASELINE
+   ." PRESS ANY KEY TO CONTINUE" >0FONT KEY DROP T;
+
+HEAD: .GAMEOPS  ( -- \ display message below border)
+T: >DISPLAY DARK BORDER
+   >3FONT 46 171 POS. ." GAME" 10 XBLT +! ." OPTIONS"
+   >2FONT 39  17 POS. ." SELECT AN OPTION"
+         34 120 POS. ." 1. SAVE GAME"
+         34 100 POS. ." 2. RESUME GAME"
+         34  80 POS. ." 3. CONFIGURE SYSTEM" >0FONT T;
+
+
+
+---- Screen 15 ----
+( GAME OPTIONS - .LOADGAME .SAVEGAME                9-26-85)
+
+HEAD: .LOADGAME ( -- \ display load game disk message)
+T: >3FONT 53 171 POS. ." STARFLIGHT"
+   " PLEASE INSERT A COPY OF THE GAME DISK INTO DRIVE A."
+   .PAGE  PRESSANY T;
+
+HEAD: .SAVEHEAD ( -- \ display save game header message)
+T: >3FONT 53 171 POS. ." SAVE" 10 XBLT +! ." GAME" >0FONT T;
+
+HEAD: .LOADHEAD ( -- \ display load game header message)
+T: >3FONT 53 171 POS. ." LOAD" 10 XBLT +! ." GAME" >0FONT T;
+
+
+
+
+---- Screen 16 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 17 ----
+( GAME OPTIONS - .ERROR1 BLINK                      9-26-85)
+
+HEAD: .ERROR1 ( -- \ display load game disk message)
+T: " PLEASE REMOVE THE GAME DISK." .PAGE T;
+
+HEAD: BLINK ( pfa n -- \ blink blue to white n times)
+T: 0 DO BLUE  !COLOR DUP EXECUTE
+        WHITE !COLOR DUP EXECUTE LOOP DROP T;
+
+
+
+
+
+
+
+
+==== Page 4 | 9-26-85  FILE: GAME-OV.CMP  --  BINARY SYSTEMS | image GAME-OV_CMP_p05 ====
+---- Screen 18 ----
+( GAME OPTIONS - ?GAMEDSK !TIMESTAMP TME>DISK       9-26-85)
+
+HEAD: ?TIMEDISK ( -- t \ does loaded disk match timestamp?)
+T: EMPTY-BUFFERS 359 BLOCK 1012 + @ TIMESTAMP @ = T;
+
+HEAD: ?GAMEDSK ( -- t \ is the current game disk loaded?)
+T: ?TIMEDISK
+  359 BLOCK 1008 + @ 23040 = AND T;
+HEAD: !TIMESTAMP
+T: ( -- \ take the lo word of the real time clock)
+  ( and store it into the variable TIMESTAMP; 0 not allowed)
+  TIME 2+ @ ?DUP 0= IF 2 THEN TIMESTAMP ! T;
+
+HEAD: TME>DISK ( -- \ write the timestamp to the disk)
+T: ( NOTE: virgin play disk has 0 in timestamp field)
+  TIMESTAMP @ 359 BLOCK 1012 + ! SAVE-BUFFERS T;
+---- Screen 19 ----
+( GAME OPTIONS - .INSERTSAVE  REMOVEGAME            9-26-85)
+
+HEAD: .INSERTBLANK ( -- \ display remove game disk message) T:
+  " PLEASE REMOVE THE GAME DISK AND INSERT A BLANK FORMATTED DIS
+K FOR DATA STORAGE INTO DRIVE A." .PAGE T;
+
+HEAD: REMOVEGAME ( -- \ make sure game disk is removed)
+T: BEGIN
+    ?GAMEDSK               ( check for removal of game disk)
+   WHILE
+    BEEP ' .INSERTBLANK 1 BLINK  ( if game disk still in, beep)
+    PRESSANY
+   REPEAT T;
+
+HEAD: INSERTBLANK ( -- \ insert a blank disk for game storage)
+T: .INSERTBLANK PRESSANY REMOVEGAME T;
+---- Screen 20 ----
+( GAME OPTIONS - .ERROR2  LOADSAVE                  9-26-85)
+
+HEAD: .ERROR2 ( -- \ feedback if correct save disk not loaded)
+T: " INSERT THE CORRECT SAVE DISK INTO DRIVE A." .PAGE T;
+
+HEAD: LOADSAVE ( -- \ make sure right save disk is loaded)
+T: BEGIN
+    ?TIMEDISK NOT           ( check for matching save disk)
+   WHILE
+    BEEP ' .ERROR2 1 BLINK  ( if save disk not in, beep)
+    PRESSANY
+   REPEAT T;
+
+
+
+
+---- Screen 21 ----
+( GAME OPTIONS - .INSERTLOAD                        9-26-85)
+HEAD: .INSERTLOAD ( -- \ display load save disk message) T:
+  " PLEASE REMOVE THE GAME DISK AND INSERT THE SAVE DISK INTO DR
+IVE A." .PAGE T;
+HEAD: REMOVEGAME2 ( -- \ make sure game disk is removed)
+T: BEGIN
+    ?GAMEDSK                     ( check for removal of game disk)
+   WHILE
+    BEEP ' .INSERTLOAD 1 BLINK  ( if game disk still in, beep)
+    PRESSANY
+   REPEAT T;
+
+HEAD: INSERTLOAD ( -- \ insert the save disk for loading)
+T: .INSERTLOAD PRESSANY
+   REMOVEGAME2              ( check for removal of game disk)
+   LOADSAVE T;              ( check for matching save disk)
+---- Screen 22 ----
+( GAME OPTIONS - .CKSUMERROR  SAVECHK               9-26-85)
+
+HEAD: .CKSUMERROR ( -- \ warn user of checksum error)
+T: ERASELINE BEEP
+     " SAVE DISK CONTAINS BAD DATA. PREPARE TO EXIT." .PAGE
+     PRESSANY PAGE BYE T;
+
+HEAD: SAVECHK ( -- \ warn user game not saved)
+T: 359 BLOCK 1016 + @ NOT
+   IF ERASELINE BEEP
+      " GAME IN PROGRESS NOT SAVED. PREPARE TO EXIT" .PAGE
+      PRESSANY PAGE BYE
+   THEN T;
+
+
+
+---- Screen 23 ----
+( GAME OPTIONS - LOADGAME                           9-26-85)
+
+HEAD: .ERROR3 ( -- \ display re-load game disk message)
+T: " RE-INSERT THE GAME DISK INTO DRIVE A." .PAGE T;
+
+HEAD: LOADGAMEDSK ( -- \ make sure game disk is loaded)
+T: BEGIN
+    ?GAMEDSK NOT           ( check for removal of game disk)
+   WHILE
+    BEEP ' .ERROR3 1 BLINK  ( if game disk not in, beep)
+    KEY DROP
+   REPEAT T;
+
+
+
+
+==== Page 5 | 9-26-85  FILE: GAME-OV.CMP  --  BINARY SYSTEMS | image GAME-OV_CMP_p06 ====
+---- Screen 24 ----
+( GAME OPTIONS - .INSERTGAME                        9-26-85)
+
+HEAD: .INSERTGAME ( -- \ display load game disk message) T:
+  " PLEASE REMOVE THE SAVE DISK AND RE-INSERT THE GAME DISK INTO
+DRIVE A." .PAGE
+  PRESSANY
+  LOADGAMEDSK T;    ( check for game disk reload)
+
+
+
+
+
+
+
+
+
+---- Screen 25 ----
+( GAME OPTIONS - .KEYTORESUME                       9-26-85)
+
+HEAD: .KEYTORESUME ( -- \ display press key to resume message)
+T: " PLEASE PRESS ANY KEY TO RESUME THE GAME IN PROGRESS."
+  .PAGE PRESSANY T;
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 26 ----
+( GAME OPTIONS - PRESERVEDISPLAY RESTOREDISPLAY     9-26-85)
+
+HEAD: PRESERVEDISPLAY  ( preserve current display)
+T: DBUF-SEG @ 0 [BCACHE] @ 0 16384 LCMOVE T;
+
+HEAD: RESTOREDISPLAY   ( move picture from cache to display)
+T: [BCACHE] @ 0 DBUF-SEG @ 0 16384 LCMOVE T;
+
+
+
+
+
+
+
+
+
+---- Screen 27 ----
+( GAME OPTIONS - ESCDISABLE ESCENABLE OFFCACHE ONCACHE 9-26-85)
+
+HEAD: ESCDISABLE
+T: ( -- \ turn off escape key path to game options)
+  ESC-EN OFF T;
+HEAD: ESCENABLE
+T: ( -- \ turn on  escape key path to game options)
+  ESC-EN ON T;
+
+( install number of cache blocks in variable [#cache] during)
+( configure-system)
+HEAD: OFFCACHE ( -- \ turn cache memory off)
+T: #CACHE OFF CACHE-BEGIN DUP @ [BCACHE] ! OFF CACHE-HEAD OFF T;
+
+HEAD: ONCACHE ( -- \ turn cache memory back on)
+T: [#CACHE] @ #CACHE ! AUTO-CACHE EMPTY-CACHE T;
+---- Screen 28 ----
+( GAME OPTIONS - CHECKSUM                           9-26-85)
+
+HEAD: CHECKSUM ( addr count -- \ accum a check sum given)
+T: ( memory start and byte count)
+  0 DO DUP I + C@ CKSUM +! 1 /LOOP DROP T;
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 29 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[handwritten: \ EMIT @ 'MC +(~) (diagonal, near lines 1-5)]
+==== Page 6 | 9-26-85  FILE: GAME-OV.CMP  --  BINARY SYSTEMS | image GAME-OV_CMP_p07 ====
+---- Screen 30 ----
+( GAME OPTIONS - .LOADING .LOADED                   9-26-85)
+
+HEAD: .LOADING ( -- \ display message to user)
+T: ERASELINE
+   " LOADING GAME..." .PAGE
+   55  17 POS. ." PLEASE WAIT" >0FONT T;
+
+HEAD: .LOADED
+T: ( -- \ game save complete, wait for key then exit)
+   ERASELINE
+   " ...GAME LOAD COMPLETE." .PAGE
+   PRESSANY T;
+
+
+
+
+---- Screen 31 ----
+( GAME OPTIONS - .SAVING  DONE                      9-26-85)
+
+HEAD: .SAVING ( -- \ display message to user)
+T: ERASELINE
+   " SAVING GAME..." .PAGE
+   55  17 POS. ." PLEASE WAIT" >0FONT T;
+
+HEAD: DONE ( -- \ game save complete, wait for key then exit)
+T: ERASELINE
+  " GAME SAVE COMPLETE. REMOVE THE SAVE DISK AND PREPARE TO EXIT
+." .PAGE
+  PRESSANY DARK BYE T;  ( exit to system)
+
+
+
+
+---- Screen 32 ----
+( GAME OPTIONS - PRMSAV PRMLOD                      8-28-85)
+CREATE PRMSAV ( addr -- \ save parm stack image at addr)
+  ( with the parameter stack pointer in the format:)
+  ( [sp][---------1000 bytes--------]<-sp0)
+  HERE DUP 2- !  HEX 5B C, 89 C, 27 C, 43 C, 43 C, 56 C, 57 C,
+  8B C, FB C, 8B C, 36 C, SP0 , 81 C, EE C, E8 C, 03 C, B9 C,
+  E8 C, 03 C, F3 C, A4 C, 5F C, 5E C, AD C, 8B C, D8 C, FF C,
+  27 C,
+CREATE PRMLOD ( addr -- \ given addr of parm stack image)
+  ( move it to the stack area and load the parm stack pointer)
+  HERE DUP 2- ! 5B C, 8B C, 27 C, 43 C, 43 C, 89 C, 76 C, FE C,
+  89 C, 7E C, FC C, 8B C, F3 C, FA C, 1E C, 07 C,
+                               8B C, 3E C, SP0 , 81 C, EF C,
+  E8 C, 03 C, B9 C, E8 C, 03 C, F3 C, A4 C, 03 C, 26 C, ' SDROP ,
+  8B C, 76 C, FE C, 8B C, 7E C, FC C, FB C, AD C, 8B C, D8 C,
+  FF C, 27 C, DECIMAL
+---- Screen 33 ----
+( GAME OPTIONS - RETSAV RETSAV                      8-28-85)
+HEX
+CREATE RETSAV ( addr -- \ save return stack image at addr)
+ ( with the current return stack pointer in the format:)
+ ( [rp][---------80 bytes--------]<-r0) HERE DUP 2- !
+ 5B C, 89 C, 2F C, 43 C, 43 C, 56 C, 57 C, 8B C, FB C, 8B C,
+ 36 C, R0 , 83 C, EE C, 50 C, B9 C, 50 C, 00 C, F3 C, A4 C,
+ 5F C, 5E C, AD C, 8B C, D8 C, FF C, 27 C,
+CREATE RETJMP ( addr -- \ given addr of return stack image)
+  ( move it to the return stack and jump to next word)
+  HERE DUP 2- ! FA C, 1E C, 07 C,
+  5B C, 8B C, 2F C, 43 C, 43 C, 8B C, F3 C, 57 C, 8B C, 3E C,
+  R0 , 83 C, EF C, 50 C, B9 C, 50 C, 00 C, F3 C, A4 C, 5F C,
+  03 C, 2E C, ' RDROP , 8B C, 76 C, 00 C, 45 C, 45 C, FB C,
+  AD C, 8B C, D8 C, FF C, 27 C,
+DECIMAL
+---- Screen 34 ----
+( GAME OPTIONS - .RS testing words                     7-1-85)
+exit
+V= RBASE
+V= R0'
+V= RP'
+: .RS ( addr -- \ dump return stack image names at addr)
+  DUP RBASE !
+  DUP 82 + R0' !
+  R0 @ SWAP @ - R0' @ SWAP - RP' !
+  BEGIN
+    RP' @ R0' @ = NOT
+  WHILE
+    RP' @ @  2 RP' +!
+    2- @ 2+ NFA CR ID.
+  REPEAT ;
+
+---- Screen 35 ----
+( GAME OPTIONS - !DISK                              9-26-85)
+HEAD: !DISK ( mem-seg mem-offset base-blk #bytes tf -- \)
+T: ( move data to/from memory to disk, tf=1-->disk )
+  >R DUP 0 1024 U/MOD ( mseg moff bblk #b rem blks -- tf)
+  SWAP IF 1+ THEN     ( mseg moff bblk #b blks' -- tf)
+  ?DUP IF 0 DO
+          4 PICK I 64 * +  4 PICK
+          @DS 5 PICK I + BLOCK 2OVER 2OVER
+          J NOT IF 2SWAP THEN
+          9 PICK 1024 UMIN LCMOVE
+          J IF UPDATE THEN
+          5 PICK 1024 UMIN CHECKSUM
+          DROP 2DROP 1024 -
+          LOOP
+        I IF SAVE-BUFFERS THEN
+     THEN R> DROP 2DROP 2DROP T;
+==== Page 7 | 9-26-85  FILE: GAME-OV.CMP  --  BINARY SYSTEMS | image GAME-OV_CMP_p08 ====
+---- Screen 36 ----
+( GAME OPTIONS - <DISK >DISK                        9-26-85)
+
+HEAD: <DISK
+T: ( mem-seg mem-offset base-blk #bytes -- \ move data)
+    ( from disk to memory)
+    0 !DISK T;
+
+HEAD: >DISK
+T: ( mem-seg mem-offset base-blk #bytes -- \ move data)
+    ( from memory to disk)
+    1 !DISK T;
+
+
+
+
+
+---- Screen 37 ----
+( GAME OPTIONS - ARR>DISK  DISK>ARR                 9-26-85)
+
+HEAD: ARR>DISK ( -- \ move array image to save disk)
+T: LFSEG @ 0 ARRBLK
+    SYSK @ 64 * 1- LFSEG @ - 16*    ( seg off blk #bytes --)
+    >DISK T;
+
+HEAD: DISK>ARR ( -- \ load array image from save disk)
+T: LFSEG @ 0 ARRBLK
+    SYSK @ 64 * 1- LFSEG @ - 16*    ( seg off blk #bytes --)
+    <DISK T;
+
+
+
+
+
+---- Screen 38 ----
+( GAME OPTIONS - DSP>DISK  DISK>DSP                 9-26-85)
+
+HEAD: DSP>DISK ( -- \ move display image from temporary )
+T: ( location in cache to save disk)
+   [BCACHE] @ 0 DSPBLK  16 1024 * >DISK T;
+
+
+HEAD: DISK>DSP ( -- \ move display image from save disk to )
+T: ( temporary location in cache)
+   [BCACHE] @ 0 DSPBLK  16 1024 * <DISK T;
+
+
+
+
+
+
+---- Screen 39 ----
+( GAME OPTIONS - DISK>KRN KRN>DISK                  9-26-85)
+
+HEAD: DISK>KRN ( -- \ move kernal thru OVA from save disk)
+T: @DS 1800 KRNBLK  OVA @ 1800 - <DISK T;
+
+HEAD: KRN>DISK ( -- \ move kernal thru OVA to save disk)
+T: @DS 1800 KRNBLK  OVA @ 1800 - >DISK T;
+
+
+
+
+
+
+
+
+
+---- Screen 40 ----
+( GAME OPTIONS - RTN>DISK  DISK>RTN  PRM>DISK       9-26-85)
+
+HEAD: RTN>DISK ( -- \ save return stack to disk)
+T: RTNBLK BLOCK RETSAV UPDATE SAVE-BUFFERS T;
+
+HEAD: DISK>RTN
+T: ( -- \ get return stack from disk and move it to)
+   ( return stack temp array)
+   RTNBLK BLOCK RTNTEMP 82 CMOVE T;
+
+HEAD: PRM>DISK ( -- \ save parm stack to disk)
+T: PRMBLK BLOCK PRMSAV UPDATE SAVE-BUFFERS T;
+
+HEAD: DISK>PRM ( -- \ get parm stack from disk)
+T: PRMBLK BLOCK PRMLOD T;
+
+---- Screen 41 ----
+( GAME OPTIONS - DATASAVE                           9-26-85)
+
+HEAD: DATASAVE ( -- \ save game image data to disk)
+T: .SAVING              ( give user message)
+   CKSUM OFF            ( initialize checksum)
+   TME>DISK             ( timestamp to disk)
+   KRN>DISK             ( save kernal thru ova)
+   DSP>DISK             ( save display image)
+   ARR>DISK             ( save data arrays to disk)
+   PRM>DISK             ( save parameter stack to disk)
+   RTN>DISK             ( save return stack to disk)
+   CKSUM @ 359 BLOCK 1014 + ! ( save checksum)
+   0 359 BLOCK 1008 + !       ( clear signature)
+   UPDATE SAVE-BUFFERS T;
+
+
+==== Page 8 | 9-26-85  FILE: GAME-OV.CMP  --  BINARY SYSTEMS | image GAME-OV_CMP_p09 ====
+---- Screen 42 ----
+( GAME OPTIONS - SETSAVE CLRSAVE                    9-26-85)
+
+HEAD: SETSAVE ( -- \ set game-saved flag)
+T: 3~9 BLOCK 1016 + ON FLUSH T;
+
+HEAD: CLRSAVE ( -- \ clear game-saved flag)
+T: 31~ BLOCK 1016 + OFF T;
+
+
+
+
+
+
+
+
+
+[handwritten: 359 (near page header, with a line drawn down through lines 0-7; block numbers on lines 3 and 6 are overwritten by pen)]
+---- Screen 43 ----
+( GAME OPTIONS - DATALOAD                           9-26-85)
+
+HEAD: DATALOAD ( -- \ load game image data to memory)
+T: .LOADING            ( give user message)
+   CKSUM OFF           ( initialize checksum)
+   EMPTY-BUFFERS
+   DISK>KRN            ( load kernal thru ova)
+   DISK>DSP            ( load display image)
+   DISK>ARR            ( load data arrays)
+   DISK>PRM            ( load parameter stack)
+   DISK>RTN            ( load return stack to RTNTEMP)
+   CKSUM @ 359 BLOCK 1014 + @ = ( cmp check sum)
+   IF .LOADED
+   ELSE .CKSUMERROR
+   THEN T;
+
+---- Screen 44 ----
+( GAME OPTIONS - LOADGAME                           9-26-85)
+
+: LOADGAME ( -- \ load game state from save disk assumes game)
+   ( disk is loaded)
+   >DISPLAY DARK BORDER           ( draw border & logo)
+   .LOADHEAD                      ( draw heading)
+   EMPTY-BUFFERS OFFCACHE
+   359 BLOCK 1012 + @ TIMESTAMP ! ( restore time id#)
+   SAVECHK                        ( check if saved)
+   INSERTLOAD                     ( load save disk)
+   DATALOAD                       ( load data from disk)
+   .INSERTGAME  CLRSAVE           ( insert the game disk)
+   TIMESTAMP ON  TME>DISK         ( mark disk in play)
+   .KEYTORESUME SET-CURRENT       ( "press key to resume")
+   RESUME ON
+   RTNTEMP RETJMP ;               ( continue where saved)
+[handwritten: SET-CURRENT struck through with pen, small box symbol after it (near line 13)]
+---- Screen 45 ----
+( GAME OPTIONS - SAVEGAME                           9-26-85)
+
+HEAD: SAVEGAME ( -- \ save current game state)
+T: >DISPLAY DARK
+  BORDER                   ( draw border & logo)
+  .SAVEHEAD                ( draw heading)
+  SETSAVE                  ( set game saved flag)
+  INSERTBLANK              ( load blank disk for storage)
+  DATASAVE                 ( save data to disk)
+  DONE  T;                 ( exit to system)
+
+
+
+
+
+
+---- Screen 46 ----
+( GAME OPTIONS - .CONFIGHEAD   MONITORTYPE          9-26-85)
+
+HEAD: .CONFIGHEAD ( -- \ display configure game header message)
+T: >3FONT 34 171 POS.
+  ." CONFIGURE" 10 XBLT +! ." SYSTEM" >0FONT T;
+
+HEAD: MONITORTYPE ( -- \ display monitor type message and get)
+T:  ( user choice)
+  >2FONT ERASEWIND ERASELINE
+  37 17 POS. ." SELECT MONITOR TYPE"
+  40 120 POS. ." 1. BLACK,WHITE"
+  40 100 POS. ." 2. RGB"
+  40 80  POS. ." 3. COLOR TV OR"
+  38 70  POS. ."    COMPOSITE"
+  BEGIN 'KEY ASCII 1 ASCII 4 WITHIN UNTIL
+  LKEY @ ASCII 0 -  MONITOR ! >LORES T;
+---- Screen 47 ----
+( GAME OPTIONS - MEMORYSIZE                         9-26-85)
+HEAD: MEMORYSIZE
+T: ( -- \ display memory size options, get user )
+   ( choice and set memory up)
+  >2FONT ERASEWIND ERASELINE
+  39 17 POS. ." SELECT MEMORY SIZE"
+  27 120 POS. ." 1. 128 K      6. 448 K"
+  27 108 POS. ." 2. 192 K      7. 512 K"
+  27  96 POS. ." 3. 256 K      8. 576 K"
+  27  84 POS. ." 4. 320 K      9. 640 K"
+  27  72 POS. ." 5. 384 K "
+  BEGIN 'KEY ASCII 1 ASCII = WITHIN UNTIL
+  LKEY @ ASCII 1 - 64 * 127 + NSYSK ! T;
+
+
+
+==== Page 9 | 9-26-85  FILE: GAME-OV.CMP  --  BINARY SYSTEMS | image GAME-OV_CMP_p10 ====
+---- Screen 48 ----
+( GAME OPTIONS - CONFIGAME                          7-26-85)
+
+: CONFIGAME ( -- \ configure game system parms)
+  >DISPLAY DARK BORDER           ( draw border & logo)
+  .CONFIGHEAD                    ( draw heading)
+  MONITORTYPE                    ( select monitor type)
+  MEMORYSIZE                     ( select memory size)
+  NSYSK @ SYSK @ = NOT TIMESTAMP @ NOT OR
+  ( configure if 1st time or mem size change)
+  IF TIMESTAMP @ IF INSERTBLANK ARR>DISK THEN
+     NSYSK @ SYSK ! CONFIGURE-SYSTEM
+     TIMESTAMP @ IF DISK>ARR .INSERTGAME THEN
+  THEN
+  TIMESTAMP @ NOT IF TIMESTAMP ON TME>DISK THEN ;
+
+
+---- Screen 49 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[handwritten: : PUSHVECT ( -- \ PUSH CURRENT VECTORS) -- "XCHGVECT" crossed out and replaced by "PUSH"; "EXCHANGE VECTORS WITH" crossed out and replaced by "PUSH CURRENT VECTORS" (near line 0)]
+[handwritten: (BACKUPS) crossed out (near line 1)]
+---- Screen 50 ----
+( SAVEGAME - GET-OPTION#                            9-26-85)
+
+HEAD: GET-OPTION# ( -- c \ get user menu choice ascii 1-3)
+T: BEGIN
+    'KEY
+    ASCII 1 ASCII 4 WITHIN
+   UNTIL  LKEY @ T;
+
+
+
+
+
+
+
+
+
+---- Screen 51 ----
+( SAVEGAME - GAMEOPCASES RESUMEGAME                 9-26-85)
+
+HEAD: RESUMEGAME ( -- \ resume game in progress)
+T: RESUME ON T;
+
+CASE GAMEOPCASES ( n -- \ execute game option chosen)
+  ASCII 1 IS SAVEGAME
+  ASCII 2 IS RESUMEGAME
+  ASCII 3 IS CONFIGAME
+OTHERS UNRAVEL
+
+
+
+
+
+
+---- Screen 52 ----
+( GAME OPTIONS - >GAMEOPTIONS                       9-26-85)
+
+HEAD: >GAMEOPTIONS
+T: ( -- \ do set up for game options procedure)
+  ESCDISABLE                        ( turn off esc key path)
+  !TIMESTAMP                        ( mark time)
+  TME>DISK                          ( mark play disk)
+  FLUSH                             ( save virtual data)
+  OFFCACHE                          ( turn cache memory off)
+  SAVE-OVERLAY
+  PRESERVEDISPLAY                   ( preserve current display)
+                                    (  in cache mem area) T;
+
+
+
+
+[handwritten: PUSHVECT > (with checkmark, inserted before SAVE-OVERLAY, near lines 8-9)]
+---- Screen 53 ----
+( GAME OPTIONS - GAMEOPTIONS                        9-26-85)
+
+HEAD: GAMEOPTIONS ( -- \ do game options procedure)
+T: RESUME OFF                    ( clear resume flag)
+   BEGIN
+    .GAMEOPS                     ( display game option menu)
+    GET-OPTION#                  ( get user choice)
+    GAMEOPCASES                  ( execute choice)
+    RESUME @                     ( check for resume)
+   UNTIL T;
+
+
+
+
+
+
+==== Page 10 | 9-26-85  FILE: GAME-OV.CMP  --  BINARY SYSTEMS | image GAME-OV_CMP_p11 ====
+---- Screen 54 ----
+( GAME OPTIONS - <GAMEOPTIONS                       9-26-85)
+
+HEAD: <GAMEOPTIONS
+T:  ( -- \ do clean up for game options procedure)
+  RESTOREDISPLAY       ( move picture from cache to display)
+  ONCACHE              ( turn cache memory on)
+  SET-CURRENT          ( make current instance memory resident)
+  ESCENABLE T;         ( turn on escape path)
+
+
+
+
+
+
+
+
+[handwritten: POPVECT (with checkmark, arrow inserting it before ESCENABLE, near lines 7-9)]
+---- Screen 55 ----
+( GAME OPTIONS - GAMEOPS                            7-5-85)
+
+: GAMEOPS ( -- \ top level game option word)
+  >GAMEOPTIONS
+  GAMEOPTIONS
+  <GAMEOPTIONS ;
+
+
+
+
+
+
+
+
+
+
+---- Screen 56 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 57 ----
+( GAME-OV ------ OVERLAY SUFFIX -------------------- 9-26-85)
+TIMESTAMP OFF        ( initialize game Play flag)
+DISPOSE
+CLOSE-OVERLAY
+120 OVERLAY GAME-OV
+GAME-OV
+FORTH DEFINITIONS
+: LOADGAME ( -- )          GAME-OV GAME LOADGAME ;
+: CONFIGAME  ( -- )        GAME-OV GAME CONFIGAME ;
+: GAMEOPS    ( -- )        GAME-OV GAME GAMEOPS ;
+
+: GAMEOPM ' GAMEOPS MODULE ;
+OV-CANCEL
+' GAMEOPM ESC-PFA ! ( patch esc key link)
+ESC-EN ON           ( turn on path to game save)
+359 BLOCK 1012 + OFF ( initialize game play flag)

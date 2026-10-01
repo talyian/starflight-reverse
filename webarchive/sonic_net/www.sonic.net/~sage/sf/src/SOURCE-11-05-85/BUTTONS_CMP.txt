@@ -1,0 +1,422 @@
+==== Page - | [no printed header] | image BUTTONS_CMP_p01 ====
+ 0 ( ----------------Overlay prefix for BUTTONS------
+ 1 ( 'Flight Button tasking
+ 2 ( 'Flight Button tasking
+ 3 ( 'Flight Button tasking                         A
+ 4 ( 'Flight Button tasking                         A
+ 5 ( 'Flight Button tasking                         A
+ 6 ( 'Flight Button tasking                         A
+ 7 ( 'Flight Button Key Cases  SCIENCE OFFICER      A
+ 8 ( 'Flight Button Key Cases  CAPTAIN              A
+ 9 ( 'Flight Button Key Cases  CAPTAIN              A
+10 ( 'Flight Button Key Cases  CAPTAIN              A
+11 ( 'Flight Button Key Cases  CAPTAIN              A
+12 ( 'Flight Button Key Cases  SCIENCE OFFICER      A
+13 ( 'Flight Button Key Cases  SCIENCE OFFICER      A
+14 ( 'Flight Button Key Cases  NAVIGATOR
+15 ( 'Flight Button Key Cases  ENGINEER             A
+16 ( 'Flight Button Key Cases  COMM OFFICER         A
+17 ( 'Flight Button Key Cases  DOCTOR               A
+18 ( 'Flight Button Key Cases                       A
+19 ( 'Flight Button Key Cases                       A
+20 ( 'Flight Button Key Cases                       A
+21 ( 'Flight Button Key Cases                       A
+22 ( ----------------Overlay Suffix for BUTTONS------
+==== Page 1 | 7-15-85 FILE: BUTTONS.CMP -- BINARY SYSTEMS | image BUTTONS_CMP_p02 ====
+---- Screen 0 ----
+( ----------------Overlay prefix for BUTTONS-------------------)
+
+VOCABULARY BTN-VOC IMMEDIATE
+104 OPEN-OVERLAY
+BTN-VOC DEFINITIONS
+
+V= DISEMBARK
+V= 'AUX     \ 0 = NOP  1 = STATUS  2 = SENSORS  3 = DAMAGE
+            \ 4 = MERCATOR
+
+
+
+
+
+
+
+---- Screen 1 ----
+( 'Flight Button tasking                          AWK 1/05/85 )
+: /ITEMS  ' ov/ITEMS MODULE ;
+: /CAPT-LOG  ' ov/CAPT-LOG MODULE ;
+: /LAUNCH/LAND  ' ov/LAUNCH/LAND MODULE ;
+: /(DIS)ARM   ' ov/(DIS)ARM MODULE ;
+: /(UD)SHIELD  ' ov/(UD)SHIELD MODULE ;
+: /FTL/SUB  ' ov/FTL/SUB MODULE ;
+: /STARMAP  ' ov/STARMAP MODULE ;
+: /STATUS  1 'AUX ! ' ov/STATUS MODULE ;
+: /SENSORS  2 'AUX ! ' ov/SENSORS MODULE ;
+: GET-SENSORS  ' ovGET-SENSORS MODULE ;
+: /DAMAGE  3 'AUX ! ' ov/DAMAGE MODULE ;
+: /REPAIR  ' ov/REPAIR MODULE ;
+: /EXAMINE  ' ov/EXAMINE MODULE ;
+: /TREAT  ' ov/TREAT MODULE ;
+: .MERC  4 'AUX ! ' (.MERC) MODULE ' .REGION+ MODULE ;
+[handwritten: checkbox "INCLUDE REGION" and an illegible scribble (near line 15, below screen)]
+---- Screen 2 ----
+( 'Flight Button tasking                          AWK 1/12/85 )
+
+: /LOG-PLAN  ' ov/LOG-PLAN MODULE ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 3 ----
+( 'Flight Button tasking                         AWK 12/21/84 )
+EXIT
+: XEQ-BUTTON ( n -- )    'BUTTON @ EXECUTE ;
+
+V= BTN-REC#
+
+: .ABTN ( menu# btn# -- )
+ >R 58 FILE# ! RECORD# ! 93 119 I 11 * - POS. >2FONT
+ vBLT @ 93 OVER 7 - 156 BLACK POLY-WINDOW-FILL
+ WHITE !COLOR 1BTN R> 12 * + 12 TYPE SET-CURRENT ;
+
+: .BTN-TEXT ( menu# -- )
+ 58 FILE# ! DUP RECORD# ! BTN-REC# !
+ BLACK ERASE-BUTTONS 93 119 POS. >2FONT WHITE !COLOR
+ #BTN C@ 12 * 0 DO 1BTN I + 12 TYPE NEXT-BUTTON 12 +LOOP
+ SET-CURRENT ;
+---- Screen 4 ----
+( 'Flight Button tasking                         AWK 12/21/84 )
+EXIT
+: NEW-BUTTON ( n -- )
+ 58 FILE# ! BTN-REC# @ RECORD# !
+ THIS-BUTTON @ SWAP - DUP 0 #BTN C@ WITHIN
+ IF BLUE OVER BLACK THIS-BUTTON @ .HIGHLIGHT .HIGHLIGHT
+ THIS-BUTTON ! ELSE DROP THEN SET-CURRENT ;
+
+
+
+
+
+
+
+
+
+---- Screen 5 ----
+( 'Flight Button tasking                         AWK 12/21/84 )
+: BTN-CLEANER ( -- )
+ V> 'BUTTON !          \ restore button function table addr
+ V> DUP THIS-BUTTON !  \ restore button that called this task
+ V> DUP BTN-REC# !     \ restore button menu species
+ CLR-BUTTONS           \ clear old button highlights
+ CTERASE DISEMBARK @ 0=
+ IF .BTN-TEXT BLUE SWAP .HIGHLIGHT   \ restore button graphics
+ ELSE 2DROP THEN ;     \ or not
+
+: BTN-INITER ( addr n -- )
+ BTN-REC# @ >V         \ push button menu species
+ THIS-BUTTON @ >V      \ push calling button
+ 'BUTTON @ >V          \ push button function table
+ .BTN-TEXT INIT-BUTTON ~~~~execute new button graphics
+ 'BUTTON ! ;               store button function table addr
+==== Page 2 | 7-15-85 FILE: BUTTONS.CMP -- BINARY SYSTEMS | image BUTTONS_CMP_p03 ====
+---- Screen 6 ----
+( 'Flight Button tasking                         AWK 12/21/84 )
+
+: (BTN) ( -- ) THIS-BUTTON @ .ON ;
+: >BTN BLUE  (BTN) ;
+: BTN> BLACK (BTN) ;
+
+: BTN-KEY-CASE ( -- )
+ (XYSCAN) DROP ?DUP
+ IF NEW-BUTTON THEN ?TRIG
+ IF >BTN THIS-BUTTON @ XEQ-BUTTON THEN ;
+
+\ scans keypad for a dY and moves button-highlight accordingly
+\ if trigger has been pressed, the current button is executed
+\ if DISEMBARK has been set, exit the starship
+
+
+---- Screen 7 ----
+( 'Flight Button Key Cases  SCIENCE OFFICER      AWK 12/21/84 )
+
+CASE (GET-AUX)
+  1 IS /STATUS  2 IS GET-SENSORS  3 IS  /DAMAGE    \ 4 IS .MERC
+OTHERS NOP
+
+: GET-CONSOLE ( -- )
+ SHIP-CONSOLE BLACK ERASE-VS 'AUX @ (GET-AUX)
+ BTN-REC# @ .BTN-TEXT BLUE THIS-BUTTON @ .HIGHLIGHT ;
+
+
+
+
+
+
+
+---- Screen 8 ----
+( 'Flight Button Key Cases  CAPTAIN              AWK 12/21/84 )
+
+: 1.10BTN ( -- )
+ 'AUX @ 4 = 0= IF .MERC THEN ' (GETSITE) MODULE BTN> ;
+: 1.11BTN ( -- )
+ 1 'AUX !
+ ' ov>DESCEND MODULE ' DESCEND MODULE BTN> NOT ;
+
+CASE 1.1BTN.XEQ
+  0 IS  1.10BTN   1 IS 1.11BTN   2 IS NOT
+OTHERS BTN>
+
+: SP-RESTORE ( n -- )
+ DEPTH SWAP - 1- ?DUP IF 0 DO DROP LOOP THEN ;
+
+
+[handwritten: lines 12-13 struck through by hand, with a checked box in the left margin (near line 12)]
+---- Screen 9 ----
+( 'Flight Button Key Cases  CAPTAIN              AWK 12/21/84 )
+
+: >PORT ( -- ) NOT >R NOT R> ;
+: >PLANET ( -- )
+ PAD 300 + SCAN !
+ CTINIT CTERASE ." WAIT...SCANNING PLANET." PLHI @ 0=
+ IF ' BIO MODULE THEN DEPTH >R ' TV MODULE R> SP-RESTORE
+ DISEMBARK OFF GET-CONSOLE ;
+
+: >SPACE ( -- )
+ CTINIT CTERASE ." CAPTAIN, WE CAN'T DISEMBARK IN SPACE!"
+ 2500 MS CTERASE DISEMBARK OFF ;
+
+CASE >DISEMBARK
+  5 IS >PORT  0 IS >PLANET
+OTHERS >SPACE
+[handwritten: "( -- )" on line 2 struck through; "DEPTH >R" and "R> SP-RESTORE" on line 6 struck through; pen lines/arrows around lines 2-7; checked box in right margin (near line 6)]
+---- Screen 10 ----
+( 'Flight Button Key Cases  CAPTAIN              AWK 12/21/84 )
+
+: 10BTN ( -- )
+ /LAUNCH/LAND
+ IF ' BTN-CLEANER ' BTN-KEY-CASE
+ ' 1.1BTN.XEQ 7 ' BTN-INITER DOTASKS THEN BTN> 1 0 .ABTN ;
+
+: 11BTN ( -- )
+ DISEMBARK ON BTN> CONTEXT-ID# @ >DISEMBARK ;
+
+: 12BTN ( -- ) /ITEMS BTN> ;
+: 13BTN ( -- ) /LOG-PLAN BTN> ;
+: 14BTN ( -- ) /CAPT-LOG BTN> ;
+
+
+
+---- Screen 11 ----
+( 'Flight Button Key Cases  CAPTAIN              AWK 12/21/84 )
+
+CASE 1BTN.XEQ
+  0 IS  10BTN   1 IS 11BTN   2 IS 12BTN
+  3 IS  13BTN   4 IS 14BTN   5 IS NOT
+OTHERS BTN>
+
+
+
+
+
+
+
+
+
+
+==== Page 3 | 7-15-85 FILE: BUTTONS.CMP -- BINARY SYSTEMS | image BUTTONS_CMP_p04 ====
+---- Screen 12 ----
+( 'Flight Button Key Cases  SCIENCE OFFICER      AWK 12/21/84 )
+
+: 20BTN ( -- ) /STATUS BTN> ;
+: 21BTN ( -- ) /SENSORS BTN> ;
+: 22BTN ( -- ) BEEP BTN> ;
+
+CASE 2BTN.XEQ
+  0 IS  20BTN   1 IS 21BTN   2 IS 22BTN   3 IS NOT
+OTHERS NOP
+
+
+
+
+
+
+
+---- Screen 13 ----
+( 'Flight Button Key Cases  SCIENCE OFFICER      AWK 12/21/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 14 ----
+( 'Flight Button Key Cases  NAVIGATOR             AWK 1/05/84 )
+
+: 30BTN ( -- ) /(UD)SHIELD 3 0 .ABTN BTN> ;
+: 31BTN ( -- ) /(DIS)ARM 3 1 .ABTN BTN> ;
+: 32BTN ( -- ) ' MANEUVER MODULE BTN> ;
+: 33BTN ( -- )
+ /FTL/SUB BTN>
+ IF ' JUMP>FTL MODULE THEN ;
+: 34BTN ( -- ) /STARMAP GET-CONSOLE ;
+
+CASE 3BTN.XEQ
+  0 IS  30BTN   1 IS 31BTN   2 IS 32BTN
+  3 IS  33BTN   4 IS 34BTN   5 IS NOT
+OTHERS BTN>
+
+
+---- Screen 15 ----
+( 'Flight Button Key Cases  ENGINEER             AWK 12/21/84 )
+
+: 40BTN ( -- )  /DAMAGE BTN> ;
+: 41BTN ( -- )  /REPAIR BTN> ;
+
+CASE 4BTN.XEQ
+  0 IS  40BTN   1 IS 41BTN   2 IS NOT
+OTHERS BTN>
+
+
+
+
+
+
+
+
+---- Screen 16 ----
+( 'Flight Button Key Cases  COMM OFFICER         AWK 12/21/84 )
+EXIT
+: 50BTN ( -- ) BTN> ;
+: 51BTN ( -- ) BEEP BTN> ;
+: 52BTN ( -- ) BEEP BTN> ;
+
+CASE 5BTN.XEQ
+  0 IS  50BTN   1 IS 51BTN   2 IS 52BTN   3 IS NOT
+OTHERS BTN>
+
+
+
+
+
+
+
+---- Screen 17 ----
+( 'Flight Button Key Cases  DOCTOR               AWK 12/21/84 )
+
+: 60BTN ( -- ) /EXAMINE BTN> ;
+: 61BTN ( -- ) /TREAT BTN> ;
+
+CASE 6BTN.XEQ
+  0 IS  60BTN   1 IS 61BTN   2 IS NOT
+OTHERS BTN>
+
+
+
+
+
+
+
+
+==== Page 4 | 7-15-85 FILE: BUTTONS.CMP -- BINARY SYSTEMS | image BUTTONS_CMP_p05 ====
+---- Screen 18 ----
+( 'Flight Button Key Cases                       AWK 12/21/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 19 ----
+( 'Flight Button Key Cases                       AWK 12/21/84 )
+
+: 00BTN ( -- )  ' BTN-CLEANER  ' BTN-KEY-CASE
+ ' 1BTN.XEQ  1 ' BTN-INITER DOTASKS DISEMBARK OFF ;
+: 01BTN ( -- )  ' BTN-CLEANER  ' BTN-KEY-CASE
+                    ' 2BTN.XEQ  2 ' BTN-INITER DOTASKS ;
+: 02BTN ( -- )  ' BTN-CLEANER  ' BTN-KEY-CASE
+                    ' 3BTN.XEQ  3 ' BTN-INITER DOTASKS ;
+: 03BTN ( -- )  ' BTN-CLEANER  ' BTN-KEY-CASE
+                    ' 4BTN.XEQ  4 ' BTN-INITER DOTASKS ;
+: 04BTN ( -- )  ' COMM MODULE ;
+      \         ' BTN-CLEANER  ' BTN-KEY-CASE
+      \         ' 5BTN.XEQ  5 ' BTN-INITER DOTASKS ;
+: 05BTN ( -- )  ' BTN-CLEANER  ' BTN-KEY-CASE
+                    ' 6BTN.XEQ  6 ' BTN-INITER DOTASKS ;
+
+---- Screen 20 ----
+( 'Flight Button Key Cases                       AWK 12/21/84 )
+
+CASE 0BTN.XEQ
+  0 IS  00BTN   1 IS 01BTN   2 IS 02BTN
+  3 IS  03BTN   4 IS 04BTN   5 IS 05BTN
+OTHERS BTN>
+
+
+
+
+
+
+
+
+
+
+---- Screen 21 ----
+( 'Flight Button Key Cases                       AWK 12/21/84 )
+
+: SHIP-BTNS
+ ' BTN-CLEANER  ' BTN-KEY-CASE  ' 0BTN.XEQ 0 ' BTN-INITER
+ DOTASKS DISEMBARK OFF ;
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 22 ----
+( ----------------Overlay Suffix for BUTTONS-------------------)
+
+CLOSE-OVERLAY
+104 OVERLAY BTN-OV
+
+: ovFLIGHT
+ PLHI OFF SHIP-CONSOLE
+ BTN-OV BTN-VOC DISEMBARK OFF /STATUS SHIP-BTNS ;
+
+OV-CANCEL
+
+
+
+
+
+

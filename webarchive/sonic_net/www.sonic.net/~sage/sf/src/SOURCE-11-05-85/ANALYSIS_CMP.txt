@@ -1,0 +1,329 @@
+==== Page (none) | (none) | image ANALYSIS_CMP_p01 ====
+ 0 ( ------------------Analysis Overlay Prefix-------
+ 1 ( Science Officer's Analysis                      A
+ 2 ( Science Officer's Analysis  fields
+ 3 ( Science Officer's Analysis  .OBJECT             A
+ 4 ( Science Officer's Analysis  .OBJECT             A
+ 5 ( Science Officer's Analysis  .SIZE ?.CERTAIN     A
+ 6 ( Science Officer's Analysis  .TYPE               A
+ 7 ( Science Officer's Analysis .SHIELDS .ACCEL      A
+ 8 ( Science Officer's Analysis  .WEAP .objects      A
+ 9 ( Science Officer's Analysis  .ORBIT              A
+10 ( Science Officer's Analysis .SURF                A
+11 ( Science Officer's Analysis .GRAV   .ATMO        A
+12 ( Science Officer's Analysis .WEATH               A
+13 ( Science Officer's Analysis  .SPEC  .ECOS        A
+14 ( Science Officer's Analysis  .STABLE             A
+15 ( Science Officer's Analysis                      A
+16 ( Science Officer's Analysis                      A
+17 ( ------------------Analysis Overlay Suffix-------
+
+==== Page 1 | 11-05-85 -- ANALYSISCMP -- Binary Systems | image ANALYSIS_CMP_p02 ====
+---- Screen 0 ----
+( --------------------Analysis Overlay Prefix------------9/6/85)
+
+VOCABULARY ANALYZE-VOC IMMEDIATE
+107 OPEN-OVERLAY
+ANALYZE-VOC DEFINITIONS
+1500 TRANS-ALLOT NEWT-DP
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+( Science Officer's Analysis                      AWK 10/21/85 )
+
+ASCII . C: XTRAIL
+
+HEAD: -XTRAILING ( addr cnt b -- addr' cnt' )
+T: ' XTRAIL ! ' XTRAIL CFA ' -TRAILING 14 + !
+ -TRAILING
+ ' BL CFA ' -TRAILING 14 + ! T;
+
+
+
+
+
+
+
+
+---- Screen 2 ----
+( Science Officer's Analysis  fields              AWK 10/23/85 )
+
+20 39  2 IFIELD: %MASS          17 20 3 IFIELD: SCI-OFF
+16 26  2 IFIELD: ^SCI
+
+25  0  1 AFIELD: VES-PERSONALITY  25 24 1 AFIELD: VES-DEBRISE
+25  4  1 AFIELD: VES-CLASS        25  6 1 AFIELD: VES-ACCEL
+25  7  2 AFIELD: VES-MASS
+25 14  2 AFIELD: VES-SHIELDPTS     25 18 1 AFIELD: VES-LASER
+
+23 17  1 IFIELD: ORBIT-MASK
+32  1  1 AFIELD: PLAN-SURFTYPE  32 16 1 AFIELD: GRAVITY
+32 21  2 AFIELD: ATMO.ACTIVITY  32 23 1 AFIELD: ATMO.DENSITY
+23 11  2 IFIELD: FLARE-DATE
+
+26 0  16 AFIELD: ELEM-NAME
+---- Screen 3 ----
+( Science Officer's Analysis  .OBJECT             AWK  9/06/85 )
+
+HEAD: .UKN ( -- ) T: ." UKNOWN" T;
+HEAD: OB1.1 ( -- ) T: ." VESSEL" T;
+HEAD: OB1.3 ( -- ) T: ." LIFEFORM" T;
+
+CASE (.VESSEL)
+  22 IS OB1.3       \ Minstrel
+  20 IS .UKN        \ Mysterion
+OTHERS OB1.1        \ Vessels, Probes
+
+HEAD: .VESSELS ( ( object -- object ) )
+T: @INST-SPECIES (.VESSEL) T;
+
+
+
+---- Screen 4 ----
+( Science Officer's Analysis  .OBJECT             AWK 10/22/85 )
+HEAD: OB1.5 ( -- ) T: ." DEBRIS" T;
+HEAD: OB1.6 ( -- ) T: ." PLANET" T;
+HEAD: OB1.7 ( -- )
+T: BLUE !COLOR ." STELLAR PARAMETERS" WHITE !COLOR T;
+
+CASE (.OBJECT) ( inst-class -- ) \ output Analysis Line 1
+ 25 IS .VESSELS      \ vessels, probes, lifeforms
+ 24 IS OB1.5         \ debris
+ 32 IS OB1.6         \ planets
+ 23 IS OB1.7         \ star
+OTHERS .UKN          \ uknown
+
+HEAD: .OBJECT ( f ( object -- object ) )
+T: BLUE !COLOR IF ." ANALYSIS OF LAST SENSOR READING:"
+ CTCR ." OBJECT:" THEN WHITE !COLOR @INST-CLASS (.OBJECT) T;
+---- Screen 5 ----
+( Science Officer's Analysis  .SIZE ?.CERTAIN     AWK 10/17/85 )
+
+HEAD: .SIZE ( ( object -- object ) )
+T: CTCR
+ VES-MASS @ *SHIP >C+S %MASS @ ICLOSE
+ SWAP 0 3 PICK U/MOD 0 .R ." ."
+ 10 * OVER /MOD 0 .R 10 * OVER /MOD 0 .R 10 * SWAP / .
+ ." TIMES THE SIZE OF OUR SHIP." T;
+
+HEAD: ?.CERTAIN ( -- f )
+T: WHITE !COLOR *ASSIGN-CREW >C+S SCI-OFF 1.5@ >C+S
+ 200 ^SCI C@ - 0 MAX 0 200 RRND > CDROP ICLOSE DUP 0=
+ IF ." NOT CERTAIN" THEN T;
+
+HEAD: HEADER T: CTCR BLUE !COLOR T;
+
+==== Page 2 | 11-05-85 -- ANALYSISCMP -- Binary Systems | image ANALYSIS_CMP_p03 ====
+---- Screen 6 ----
+( Science Officer's Analysis  .TYPE               AWK 10/17/85 )
+
+HEAD: TY1 ( -- ) T: ." TRANSPORT" T;
+HEAD: TY2 ( -- ) T: ." SCOUT" T;
+HEAD: TY3 ( -- ) T: ." WARSHIP" T;
+
+CASE (.TYPE)
+ 1 IS TY1  2 IS TY2  3 IS TY3
+OTHERS .UKN
+
+HEAD: .TYPE ( ( object -- object ) )
+T: HEADER ." TYPE: " ?.CERTAIN
+ IF VES-CLASS C@ (.TYPE) THEN T;
+
+
+
+---- Screen 7 ----
+( Science Officer's Analysis .SHIELDS .ACCEL      AWK 10/17/85 )
+
+HEAD: .NONE T: ." NONE" T;
+
+HEAD: .SHIELDS  ( ( object -- object ) )
+T: HEADER ." SHIELDS: " ?.CERTAIN
+ IF VES-SHIELDPTS @ ?DUP               \ have shield points?
+   IF VES-PERSONALITY C@ 2 = NOT       \ not Gazurtoid?
+     IF ." CLASS " 200 / . ." EQUIVALENT" ELSE DROP .UKN THEN
+   ELSE .NONE ." APPARENT" THEN
+ THEN T;
+
+HEAD: .ACCEL  ( ( object -- object ) )
+T: HEADER ." ACCELERATION: " ?.CERTAIN
+ IF VES-ACCEL C@ . ." G" THEN T;
+
+---- Screen 8 ----
+( Science Officer's Analysis  .WEAP .objects      AWK 10/21/85 )
+HEAD: .WEAP  ( ( object -- object ) )
+T: HEADER ." WEAPON STATUS: " ?.CERTAIN
+ IF VES-LASER @ 0=
+   IF ." NOT" THEN ." ARMED"
+ THEN T;
+
+HEAD: .DELEM ( n -- )
+T: DUP VES-DEBRISE + C@
+ IF ?DUP IF VES-LASER + 2+ C@ ELSE 21 THEN RECORD# ! 26 FILE# !
+ ELEM-NAME 16 ASCII . -XTRAILING TYPE SET-CURRENT
+ CTCR 13 SPACES THEN T;
+
+HEAD: .CONSTIT ( ( object -- object ) )
+T: HEADER ." CONSTITUENTS:" ?.CERTAIN
+   IF 0 .DELEM 1 .DELEM 2 .DELEM 3 .DELEM THEN T;
+---- Screen 9 ----
+( Science Officer's Analysis  .ORBIT              AWK 10/22/85 )
+
+HEAD: O# ( -- n )
+T: (ORBIT) 1.5@ >C+S INST-QTY @ ICLOSE T;
+
+HEAD: .ORBIT ( ( object -- object ) )
+T: HEADER ." ORBIT NUMBER: " WHITE !COLOR O# . T;
+
+
+
+
+
+
+
+
+
+---- Screen 10 ----
+( Science Officer's Analysis .SURF                AWK 10/17/85 )
+
+HEAD: SR1 ( -- )  T: ." GAS" T;
+HEAD: SR2 ( -- )  T: ." LIQUID" T;
+HEAD: SR3 ( -- )  T: ." FROZEN" T;
+HEAD: SR4 ( -- )  T: ." ROCK" T;
+HEAD: SR5 ( -- )  T: ." MOLTEN" T;
+
+CASE (.SURF)
+  1 IS SR1  2 IS SR2  3 IS SR3  5 IS SR4  4 IS SR5
+OTHERS .UKN
+
+HEAD: .SURF ( ( object -- object ) )
+T: HEADER ." PREDOMINANT SURFACE: " ?.CERTAIN
+ IF PLAN-SURFTYPE C@ (.SURF) THEN T;
+
+---- Screen 11 ----
+( Science Officer's Analysis .GRAV  .ATMO         AWK 10/17/85 )
+HEAD: .GRAV ( ( object -- object ) )
+T: HEADER ." GRAVITY: " ?.CERTAIN
+ IF GRAVITY C@ 10 /MOD 0 .R ." ." . ." G" THEN T;
+
+HEAD: ATM2 T: ." THIN" T;   HEAD: ATM1 T: ." VERY " ATM2 T;
+HEAD: ATM3 T: ." MODERATE" T;   HEAD: ATM4 T: ." THICK" T;
+HEAD: ATM5 T: ." VERY " ATM4 T;
+
+CASE (.ATMO)
+  1 IS ATM1   2 IS ATM2   3 IS ATM3   4 IS ATM4   5 IS ATM5
+OTHERS .NONE
+
+HEAD: .ATMO ( ( object -- object ) )
+T: HEADER ." ATMOSPHERIC DENSITY: " ?.CERTAIN
+ IF ATMO.DENSITY C@ (.ATMO) THEN T;
+==== Page 3 | 11-05-85 -- ANALYSISCMP -- Binary Systems | image ANALYSIS_CMP_p04 ====
+---- Screen 12 ----
+( Science Officer's Analysis .WEATH               AWK 10/17/85 )
+
+HEAD: WTH1 ( -- ) T: ." CALM" T;
+HEAD: WTH2 ( -- ) T: ." MODERATE" T;
+HEAD: WTH3 ( -- ) T: ." VIOLENT" T;
+HEAD: WTH4 ( -- ) T: ." VERY " WTH4 T;
+
+CASE (.WEATH)
+  1 IS WTH1   2 IS WTH2   3 IS WTH3   4 IS WTH4
+OTHERS .NONE
+
+HEAD: .WEATH ( ( object -- object ) )
+T: HEADER ." GLOBAL WEATHER: " ?.CERTAIN
+ IF ATMO.ACTIVITY C@ (.WEATH) THEN T;
+
+
+---- Screen 13 ----
+( Science Officer's Analysis  .SPEC  .ECOS        AWK 10/30/85 )
+HEAD: .SPECTRAL ( ( object -- object ) )
+T: HEADER ."  SPECTRAL CLASS: "
+   WHITE !COLOR @INST-SPECIES EMIT T;
+
+V: SPEC-TABLE -2 DP +!
+ ASCII M C, ASCII K C, ASCII G C, ASCII F C,
+ ASCII A C, ASCII B C, ASCII O C,
+
+HEAD: SPEC>ECOS ( n -- n' )
+T: >R 2 7 0 DO 1+ SPEC-TABLE I + C@ J =
+ IF LEAVE THEN LOOP R> DROP T;
+
+HEAD: .ECOS ( ( object -- object ) )
+T: HEADER ."  ECOSPHERE: " @INST-SPECIES SPEC>ECOS DUP
+ WHITE !COLOR 2- . ." - " 8 MIN . T;
+---- Screen 14 ----
+( Science Officer's Analysis  .STABLE             AWK 10/17/85 )
+
+HEAD: .STABLE ( -- )
+T: HEADER ."  CONDITION: " ?.CERTAIN
+ IF FLARE-DATE @ STARDATE @ - >R I 0 2001 WITHIN NOT
+   IF ." STABLE " I 0<
+     IF ." (POST-FLARE)" THEN
+   ELSE I 1000 >
+     IF ." SLIGHTLY UNSTABLE"
+       ELSE ." UNSTABLE - ESTIMATED TIME TO FLARE:"
+     CTCR I . " ARTH DAYS." THEN
+   THEN R> DROP
+ THEN T;
+
+
+
+---- Screen 15 ----
+( Science Officer's Analysis                      AWK 10/17/85 )
+
+HEAD: .MINSTREL ( -- )  T: .SIZE .ACCEL T;
+HEAD: .DEBRIS ( -- )  T: .CONSTIT T;
+HEAD: .V/P ( -- )  T: .TYPE .SIZE .SHIELDS .ACCEL .WEAP T;
+
+CASE (.V/P-OBJ)
+  22 IS .MINSTREL  24 IS .DEBRIS
+OTHERS .V/P
+
+HEAD: .V/P-OBJ ( -- ) T: @INST-SPECIES (.V/P-OBJ) T;
+HEAD: .P-OBJ ( -- ) T: .ORBIT .SURF .ATMO .WEATH T;
+HEAD: .S-OBJ ( -- ) T: .SPECTRAL .ECOS .STABLE T;
+
+
+
+---- Screen 16 ----
+( Science Officer's Analysis                      AWK 10/17/85 )
+
+CASE (.ANALYSIS)
+  32 IS .P-OBJ   23 IS .S-OBJ   25 IS .V/P-OBJ
+OTHERS UNRAVEL
+
+: (/ANALYSIS) ( f -- )
+ CTINIT CTERASE SENSE-ADDR 1.5@ 2DUP OR
+ IF >C+S .OBJECT @INST-CLASS (.ANALYSIS) ICLOSE
+   TIME D@ 4000. D+
+   BEGIN TIME D@ 2OVER D> 'KEY OR UNTIL 2DROP
+   ELSE 2DROP DROP ." I NEED A CURRENT SENSOR READING."
+ THEN 0. SENSE-ADDR 1.5! ;
+
+
+
+---- Screen 17 ----
+( ------------------Analysis Overlay Suffix-------------9/10/85)
+DISPOSE
+CLOSE-OVERLAY
+107 OVERLAY ANALYZE-OV
+ANALYZE-OV
+FORTH DEFINITIONS
+
+: ov/ANALYSIS ( f -- ) ANALYZE-OV ANALYZE-VOC (/ANALYSIS) ;
+' ov/ANALYSIS ' 'ANSYS !  \ set forward ref in hyper-ov for
+                          \ system entry
+OV-CANCEL
+
+
+
+
+

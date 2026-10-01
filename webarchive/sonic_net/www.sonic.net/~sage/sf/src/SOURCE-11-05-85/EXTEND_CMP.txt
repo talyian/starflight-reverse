@@ -1,0 +1,52 @@
+==== Page 1 | 7-15-85 FILE: EXTEND.CMP -- BINARY SYSTEMS | image EXTEND_CMP_p01 ====
+---- Screen 0 ----
+\ interrupting data access for examining          rfg08may85)
+exit
+create ?esc hex here here 2- !
+ b2 c, ff c, b4 c, 06 c, cd c, 21 c, 3c c, 1b c,
+ 75 c, 05 c, b8 c, 01 c, 00 c,
+ eb c, 03 c, b8 c, 00 c, 00 c, 50 c, ad c, 8b c, d8 c,
+ ff c, 27 c,
+ decimal
+
+: check >0font begin cr ." debug> " query interpret
+       >in @ 0= until >1font ;
+
+: ?int ?esc if  check  then ;
+\ install ?INT somewhere in your code, enter another interpreter
+\ escape back to interrupted routine,
+\ by hitting CarriageReturn (0 characters input)
+---- Screen 1 ----
+\ additions to kernal                             rfg12may85)
+
+: keywait
+ begin 'simulate @ execute 'key ?dup until ;
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 2 ----
+\ hexcode for 3+                                  rfg27may85)
+hex
+\ create 3+
+\ 58 c, 05 c, 03 c, 00 c, 50 c, ad c,
+\ 8b c, d8 c, ff c, 27 c,
+\ ' 3+ dup cfa !  \ make code word
+\  code 3*
+\ 0 pop 0 1 mov 1 shl 1 0 add 0 push next
+create 3*
+58 c, 8b c, c8 c, d1 c, e1 c, 03 c,
+c1 c, 50 c, ad c, 8b c, d8 c, ff c, 27 c,
+' 3* dup cfa !
+decimal
+
+
+

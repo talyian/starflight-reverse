@@ -1,0 +1,698 @@
+==== Page (none) | (no header) | image CONFIG_CMP_p01 ====
+ 0
+ 1 ( ---------------overlay prefix for SHIP-CONFIGURA
+ 2 ( BANK Module Callers
+ 3 ( MISCELLANEOUS Module Callers
+ 4 ( SHIPGRPH Module Callers
+ 5   ( contd.  SHIP                                  A
+ 6 ( Miscellaneous Utilities  BKSPACE KEY-PAUSE FLASH
+ 7 ( Miscellaneous Utilities  #IN$
+ 8 ( Text Output
+ 9 ( Miscellaneous Messages
+10 ( Ship Configuration Cursors                      A
+11 ( Ship Configuration  Ship BLT data               A
+12 ( Ship Configuration  Ship BLT data & Cursor      A
+13 ( Ship Configuration  .MASS .ACC                  A
+14 ( Ship Configuration  .END .HULL                  A
+15 ( Ship Configuration Shield                       A
+16 ( Ship Configuration  Missiles, Lasers            A
+17 ( Ship Configuration ?CLASS ?PODS .CLASS          A
+18 ( Ship Configuration BALANCEMESS   Frame          A
+19 ( Ship Configuration Info                         A
+20 ( Ship Configuration  BSFRAME    KEY'TIL          A
+21 ( Ship Configuration  PRICETABLE                  A
+22 ( Ship Configuration CLRPRICES .PRICE             A
+23 ( Ship Configuration PARTADDR                     A
+24 ( Ship Configuration .VALUE                       A
+25 ( Ship Configuration BUYPOD ?GOTPART              A
+26 ( Ship Configuration BUYPART                      A
+27 ( Ship Configuration Buy Ship Parts               A
+28 ( Ship Configuration Sell Ship Parts              A
+29 ( Ship Configuration Sell Ship Parts              A
+30 ( Ship Configuration Buy Ship Parts               A
+31 ( Ship Configuration                              A
+32 ( Ship Configuration                              A
+33 ( Ship Configuration                              A
+34 ( Ship Configuration  CONFIG-FUNCTION             A
+35 ( Ship Configuration User Interface               A
+36 ( ---------------overlay suffix for SHIP-CONFIGURA
+
+==== Page 1 | 11-05-85 -- CONFIG CMP -- Binary Systems | image CONFIG_CMP_p02 ====
+---- Screen 0 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+( ---------------overlay prefix for SHIP-CONFIGURATION------- )
+
+
+VOCABULARY CONFIG-VOC IMMEDIATE
+84 OPEN-OVERLAY
+CONFIG-VOC DEFINITIONS
+
+2300 TRANS-ALLOT
+
+NEWT-DP
+
+
+
+
+
+
+---- Screen 2 ----
+( BANK Module Callers                                          )
+
+HEAD: mINIT-BALANCE ( -- )   T: ' ovINIT-BALANCE MODULE T;
+HEAD: mTRANSACT   ( n -- )   T: ' ovTRANSACT MODULE T;
+HEAD: mD@BALANCE  ( -- d )   T: ' ovD@BALANCE MODULE T;
+HEAD: mD!BALANCE  ( d -- )   T: ' ovD!BALANCE MODULE T;
+HEAD: m?BALANCE   ( d -- f ) T: ' OV?BALANCE MODULE T;
+HEAD: m!TFLAG     ( -- )     T: ' ov!TFLAG MODULE T;
+
+
+
+
+
+
+
+
+---- Screen 3 ----
+( MISCELLANEOUS Module Callers                                 )
+
+HEAD: CMESS T: ' ovCMESS MODULE T;
+HEAD: OMESS T: ' ovOMESS MODULE T;
+HEAD: #IN$  T: ' ov#IN$ MODULE T;
+HEAD: QUITMESS T: ' ovQUITMESS MODULE T;
+HEAD: .0$$$ T: ' ov.0$$$ MODULE T;
+HEAD: 0$$$MESS T: ' ov0$$$MESS MODULE T;
+
+
+
+
+
+
+
+
+---- Screen 4 ----
+( SHIPGRPH Module Callers                                      )
+
+HEAD: .MASS T: ' ov.MASS MODULE T;
+HEAD: .ACC T: ' ov.ACC MODULE T;
+HEAD: .END T: ' ov.END MODULE T;
+HEAD: .HULL T: ' ov.HULL MODULE T;
+HEAD: .SHIELDS T: ' ov.SHIELDS MODULE T;
+HEAD: .PODS T: ' ov.PODS MODULE T;
+HEAD: .MISSILES T: ' ov.MISSILES MODULE T;
+HEAD: .LASERS T: ' ov.LASERS MODULE T;
+HEAD: .SHIP T: ' ov.SHIP MODULE T;
+HEAD: BALANCEMESS T: ' ovBALANCEMESS MODULE T;
+HEAD: .CONFIG T: ' ov.CONFIG MODULE T;
+
+
+
+---- Screen 5 ----
+  ( contd.  SHIP                                  AWK 10/23/85 )
+
+20 17  2 IFIELD: %ARMOR      20 19  2 IFIELD: %ENGINE
+20 21  2 IFIELD: %SENSORS    20 23  2 IFIELD: %COMMUNICATION
+20 25  2 IFIELD: %SHIELD     20 27  2 IFIELD: %MISSILE
+20 29  2 IFIELD: %LASER      20 31  2 IFIELD: %PODS
+20 33  2 IFIELD: %FPODS      20 35  2 IFIELD: %HOLD
+20 37  2 IFIELD: %ACC        20 39  2 IFIELD: %MASS
+20 41  7 IFIELD: %REPAIR     20 48  2 IFIELD: %SHIELD-CNT
+20 50  2 IFIELD: %ARMOR-CNT
+20 67  2 IFIELD: %CARGO      20 69  4 IFIELD: %STATUS
+
+
+
+
+
+
+==== Page 2 | 11-05-85 -- CONFIG CMP -- Binary Systems | image CONFIG_CMP_p03 ====
+---- Screen 6 ----
+( Miscellaneous Utilities  BKSPACE KEY-PAUSE FLASH-CURSOR      )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 7 ----
+( Miscellaneous Utilities  #IN$                                )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 8 ----
+( Text Output                                     AWK 10/01/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 9 ----
+( Miscellaneous Messages                          AWK 03/14/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 10 ----
+( Ship Configuration Cursors                      AWK  8/12/85 )
+
+V: CONFIG-CURSOR -2 DP +!
+ 4 C, 10 C, 2 C, 9 C, 19 C, 10 C, 22 C, 9 C, 37 C,
+      10 C, 60 C, 9 C, 39 C, 10 C, 100 C, 9 C, 27 C,
+      10 C, 128 C, 9 C, 30 C,
+
+V: PARTS-CURSOR -2 DP +!
+ 5 C, 176 C, 6 C, 9 C, 41 C,     161 C, 6 C, 9 C, 29 C,
+      151 C, 6 C, 9 C, 37 C,     141 C, 6 C, 9 C, 21 C,
+      131 C, 6 C, 9 C, 65 C,     121 C, 6 C, 9 C, 49 C,
+
+
+
+
+
+---- Screen 11 ----
+( Ship Configuration  Ship BLT data               AWK 03/05/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==== Page 3 | 11-05-85 -- CONFIG CMP -- Binary Systems | image CONFIG_CMP_p04 ====
+---- Screen 12 ----
+( Ship Configuration  Ship BLT data & Cursor      AWK 03/05/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 13 ----
+( Ship Configuration  .MASS .ACC                  AWK 10/25/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 14 ----
+( Ship Configuration  .END .HULL                  AWK 10/25/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 15 ----
+( Ship Configuration Shield                       AWK 06/20/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 16 ----
+( Ship Configuration  Missiles, Lasers            AWK 06/20/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 17 ----
+( Ship Configuration ?CLASS ?PODS .CLASS          AWK 06/20/84 )
+
+HEAD: ?CLASS ( class line# -- )
+T: 7 BLACK ROT 10 * 119 + 125 2DUP SWAP POS. POS.PXT
+ WHITE !COLOR 7 AND ?DUP IF ." CLASS " . ELSE ." NONE" THEN T;
+
+HEAD: ?PODS ( -- )
+T: @CRS >1FONT 2 BLACK 174 133 2DUP SWAP POS. POS.PXT
+ WHITE !COLOR %PODS @ +BIT 2 .R !CRS .MASS .ACC T;
+
+HEAD: .CLASS ( -- )
+T: >1FONT @CRS XORMODE OFF
+ %ENGINE 1+ C@ 4 ?CLASS %SHIELD 1+ C@ 3 ?CLASS
+ %ARMOR 1+ C@ 2 ?CLASS %MISSILE 1+ C@ 1 ?CLASS
+ %LASER 1+ C@ 0 ?CLASS ?PODS !CRS T;
+
+
+==== Page 4 | 11-05-85 -- CONFIG CMP -- Binary Systems | image CONFIG_CMP_p05 ====
+---- Screen 18 ----
+( Ship Configuration BALANCEMESS   Frame          AWK 09/12/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 19 ----
+( Ship Configuration Info                         AWK 03/13/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 20 ----
+( Ship Configuration  BSFRAME    KEY'TIL          AWK  9/21/85 )
+
+HEAD: BSFRAME ( c -- )
+T: !COLOR 2 181 79 OVER LLINE 2 27 79 OVER LLINE
+          2 181 2 27 LLINE 79 181 OVER 27 LLINE T;
+
+
+HEAD: KEY'TIL ( -- )
+T: TIME D@
+   BEGIN TIME D@ 2OVER D- 2500. D> ?TERMINAL OR UNTIL 2DROP T;
+
+
+
+
+
+
+---- Screen 21 ----
+( Ship Configuration  PRICETABLE                  AWK 03/15/84 )
+
+V: #PART
+
+V: PRICETABLE -2 DP +! ( in 100's of MUs )
+ 1250 , 640 , 270 ,  80 ,  10 , ( engines )
+  625 , 280 , 175 , 100 ,  25 , ( shields )
+  100 ,  80 ,  60 ,  40 ,  20 , ( armor )
+  400 , 200 , 100 ,  50 ,  25 , ( missiles )
+  240 , 120 ,  60 ,  30 ,  15 , ( lasers )
+
+
+
+
+
+
+---- Screen 22 ----
+( Ship Configuration CLRPRICES .PRICE             AWK 03/13/84 )
+
+HEAD: CLRPRICES ( -- )
+T: 5 0 DO 6 0 54 I 10 * + 54 POS.PXT LOOP
+ 4 BLACK 174 55 POS.PXT WHITE !COLOR T;
+
+HEAD: .PRICE ( line# -- )
+T: >R @CRS R> >1FONT XORMODE OFF CLRPRICES ?DUP 0=
+ IF 59 174 POS. 500 .
+ ELSE 1- 5 * 5 OVER + SWAP DO
+   55 I 5 MOD 10 * 54 + POS. PRICETABLE I 2* + @ 100 M*
+ 6 D.R LOOP THEN !CRS T;
+
+
+
+
+---- Screen 23 ----
+( Ship Configuration PARTADDR                     AWK 10/23/85 )
+
+CASE (PARTADDR)
+  1 IS %ENGINE
+  2 IS %SHIELD
+  3 IS %ARMOR
+  4 IS %MISSILE
+OTHERS %LASER
+
+HEAD: PARTADDR ( line# -- line# addr ) T:  DUP (PARTADDR) T;
+
+CASE (PTS)   2 IS %SHIELD-CNT  3 IS %ARMOR-CNT    OTHERS 0
+
+HEAD: !POINTS ( n line# -- )
+T: (PTS) ?DUP IF ! ELSE DROP THEN T;
+
+
+==== Page 5 | 11-05-85 -- CONFIG CMP -- Binary Systems | image CONFIG_CMP_p06 ====
+---- Screen 24 ----
+( Ship Configuration .VALUE                       AWK 10/14/85 )
+2V: SALEVALUE
+
+HEAD: (.VALUE) ( line# partaddr -- )
+T: DUP 1+ C@ 7 AND ?DUP
+ IF 5 SWAP - 10 * 54 + yBLT !
+ SWAP 1- 10 * OVER 1+ C@ 5 SWAP - 2* + PRICETABLE + @
+ SWAP C@ 105 */ 100 U* 5. DMAX 2DUP SALEVALUE D! 6 D.R
+ ELSE 2DROP 0 0 SALEVALUE D! THEN T;
+
+HEAD: .VALUE ( line# -- )
+T: >R @CRS R> >1FONT XORMODE OFF CLRPRICES 55 xBLT ! ?DUP 0=
+ IF 174 yBLT ! %PODS @ ?DUP
+   IF +BIT 500 * 4 .R THEN
+   ELSE PARTADDR (.VALUE)
+ THEN !CRS T;
+---- Screen 25 ----
+( Ship Configuration BUYPOD ?GOTPART              AWK 09/21/85 )
+
+HEAD: BUYPOD ( -- )
+T: %PODS @ +BIT 16 < 500. m?BALANCE AND
+ IF mD@BALANCE 500. D- mD!BALANCE BALANCEMESS
+   1 16 0 DO DUP %PODS @ AND 0=
+     IF %PODS +! 500 %CARGO +! LEAVE ELSE 2* THEN
+   LOOP m!TFLAG .PODS ?PODS
+   ELSE 1 OMESS %PODS @ +BIT 16 =
+   IF 1 28 CMESS ." NO CARGO POD BAYS AVAILABLE." !CRS
+     ELSE 0$$$MESS
+ THEN KEY'TIL QUITMESS THEN T;
+
+HEAD: ?GOTPART ( line# -- f )
+T: PARTADDR 1+ C@ 7 AND SWAP DROP T;
+
+---- Screen 26 ----
+( Ship Configuration BUYPART                      AWK 10/23/85 )
+
+HEAD: BUYPART ( -- f )
+T: PRICETABLE #PART @ 1- 10 * + 4 OCRS @ - 2* + @
+ DUP 100 U* m?BALANCE
+ IF mD@BALANCE ROT 100 U* D- mD!BALANCE
+   OCRS @ 1+ #PART @ PARTADDR SWAP DROP 100 OVER C! 1+ C!
+   OCRS @ 500 * #PART @ >R I 3 = 250 * + R> !POINTS
+   .SHIP .CLASS BALANCEMESS m!TFLAG 1
+ ELSE DROP 0$$$MESS XORMODE ON 0 THEN T;
+
+
+
+
+
+
+---- Screen 27 ----
+( Ship Configuration Buy Ship Parts               AWK 09/21/85 )
+HEAD: GET-CLASS ( -- )
+T: BEGIN XYSCAN 0=
+   IF -1 * NCRS +! NCRS @ OCRS @ = NOT NCRS @ 0 5 WITHIN AND
+     IF BLT 96 NCRS @ DUP OCRS ! 10 * - yBLT ! BLT
+       ELSE OCRS @ NCRS !
+     THEN 0
+   ELSE DROP 1 THEN
+ ?TRIG IF DROP BUYPART THEN UNTIL XORMODE ON FQUIT OFF T;
+
+HEAD: GET-PART ( -- )
+T: OCRS @ ?DUP IF DUP #PART ! ?GOTPART
+   IF 1 OMESS 1 15 CMESS ." DE-EQUIP FIRST." !CRS
+     KEY'TIL QUITMESS   ELSE @CRS 14 96 POS. 29 wBLT !
+     NCRS OFF OCRS OFF XORMODE ON CRSCOLOR @ !COLOR
+ BLT GET-CLASS BLT !CRS THEN ELSE BUYPOD THEN T;
+---- Screen 28 ----
+( Ship Configuration Sell Ship Parts              AWK 09/21/85 )
+
+HEAD: SELLPOD ( -- )
+T: %CARGO @ 499 > %PODS @ AND
+ IF 1 16 DO
+     I BIT %PODS @ AND %CARGO @ 499 > *
+     IF I BIT -1 * %PODS +! 500. mD@BALANCE D+ mD!BALANCE
+       .PODS ?PODS BALANCEMESS m!TFLAG LEAVE -500 %CARGO +!
+     THEN
+     -1 +LOOP
+   ELSE %PODS @
+     IF 1 OMESS 1 17 CMESS ." POD IS NOT EMPTY." !CRS
+       KEY'TIL QUITMESS
+     THEN
+ THEN T;
+
+---- Screen 29 ----
+( Ship Configuration Sell Ship Parts              AWK 10/23/85 )
+
+HEAD: PUT-PART ( -- )
+T: OCRS @ ?DUP
+ IF SALEVALUE D@ OR
+   IF PARTADDR OFF DROP 0 OCRS @ !POINTS
+     SALEVALUE D@ mD@BALANCE D+ mD!BALANCE m!TFLAG
+     .SHIP .CLASS BALANCEMESS OCRS @ .VALUE
+   ELSE DROP THEN
+ ELSE SELLPOD OCRS @ .VALUE THEN T;
+
+
+
+
+
+
+
+==== Page 6 | 11-05-85 -- CONFIG CMP -- Binary Systems | image CONFIG_CMP_p07 ====
+---- Screen 30 ----
+( Ship Configuration Buy Ship Parts               AWK 05/14/85 )
+V: ?BUY
+
+HEAD: BUY/SELL-SHIP ( -- )
+T: QUITMESS BLUE BSFRAME
+ @CRS NCRS OFF OCRS OFF PARTS-CURSOR BLD-CRS 0 ?BUY @
+ IF .PRICE ELSE .VALUE THEN
+ BEGIN XYSCAN 0=
+   IF -1 * NCRS +! PARTS-CURSOR SET-CRS
+     IF OCRS @ ?BUY @ IF .PRICE ELSE .VALUE THEN THEN ?TRIG
+     IF ?BUY @
+       IF GET-PART ELSE PUT-PART THEN
+     THEN
+   ELSE DROP THEN ?QUIT
+ UNTIL >1FONT CLRPRICES BLACK BSFRAME
+ PARTS-CURSOR BLD-CRS !CRS 1 OMESS T;
+---- Screen 31 ----
+( Ship Configuration                              AWK 10/03/84 )
+
+HEAD: REPAIR-COST ( -- d )
+T: 0 14 0 DO
+   100 %ARMOR I + C@ - %ARMOR I + 1+ C@ 7 AND * +
+ 2 +LOOP 90 U* T;
+
+HEAD: .REPAIR-COST ( d -- )
+T: >R >R 0 38 CMESS ." COST TO REPAIR ENTIRE SHIP: " R> R> D.
+ ."  MU" !CRS T;
+
+HEAD: ?REPAIR ( d -- f )
+T: .REPAIR-COST
+ 1 33 CMESS ." SHALL WE REPAIR THE SHIP?  [N Y]" !CRS Y/N T;
+
+
+---- Screen 32 ----
+( Ship Configuration                              AWK 10/23/85 )
+
+HEAD: (REPAIR-SHIP) ( d -- )
+T: mD@BALANCE 2SWAP D- mD!BALANCE m!TFLAG
+ 14 0 DO 100 %ARMOR I + C! 2 +LOOP
+ %SHIELD 1+ C@ 7 AND 500 *      %SHIELD-CNT !
+ %ARMOR  1+ C@ 7 AND 500 * 250 + %ARMOR-CNT  ! T;
+
+HEAD: REPAIR-SHIP ( -- )
+T: 0 OMESS 1 OMESS REPAIR-COST 2DUP OR
+ IF 2DUP m?BALANCE
+   IF 2DUP ?REPAIR
+     IF (REPAIR-SHIP) ELSE 2DROP THEN
+   ELSE .REPAIR-COST 1 18 CMESS .0$$$ !CRS KEY'TIL THEN
+   ELSE 2DROP 0 22 CMESS ." NO REPAIRS ARE NEEDED." !CRS
+ KEY'TIL THEN 1 OMESS BALANCEMESS T;
+---- Screen 33 ----
+( Ship Configuration                              AWK  9/21/85 )
+
+HEAD: NAME-SHIP ( -- )
+T: 0 OMESS 1 OMESS %NAME C@ ?DUP
+ IF 19 + 0 SWAP CMESS ." SHIP IS NAMED: ISS " %NAME $. !CRS
+   1 38 CMESS ." TYPE NEW SHIP NAME: ISS "
+   ELSE 0 34 CMESS ." TYPE SHIP NAME: ISS "
+ THEN XORMODE ON 14 #IN$ %NAME $! !CRS
+ 0 OMESS 1 OMESS %NAME C@ 19 +
+ 0 SWAP CMESS ." SHIP IS NAMED: ISS " %NAME $. !CRS KEY'TIL
+ BALANCEMESS T;
+
+
+
+
+
+---- Screen 34 ----
+( Ship Configuration  CONFIG-FUNCTION             AWK  4/22/85 )
+
+HEAD: BUY-SHIP ( -- )  T: ?BUY ON BUY/SELL-SHIP T;
+
+HEAD: SELL-SHIP ( -- ) T: ?BUY OFF BUY/SELL-SHIP T;
+
+CASE CONFIG-FUNCTION
+  0 IS BUY-SHIP
+  1 IS SELL-SHIP
+  2 IS REPAIR-SHIP
+  3 IS NAME-SHIP
+  4 IS NOT
+OTHERS NOP
+
+
+
+---- Screen 35 ----
+( Ship Configuration User Interface               AWK 10/03/84 )
+
+: (U-CONFIG)
+ #SHIP >C+S
+ mINIT-BALANCE
+ DK-GREEN CRSCOLOR ! OCRS OFF NCRS OFF
+ >HIDDEN >LORES DARK .CONFIG .CLASS CONFIG-CURSOR BLD-CRS
+ >DISPLAY SCR-RESTORE
+ BEGIN
+   XYSCAN NCRS +! DROP CONFIG-CURSOR SET-CRS DROP ?TRIG
+   IF 0 OCRS @ CONFIG-FUNCTION ELSE 0 THEN
+ UNTIL 1 mTRANSACT ICLOSE ;
+
+
+
+
+==== Page 7 | 11-05-85 -- CONFIG CMP -- Binary Systems | image CONFIG_CMP_p08 ====
+---- Screen 36 ----
+( ---------------overlay suffix for SHIP-CONFIGURATION------- )
+DISPOSE
+CLOSE-OVERLAY
+84 OVERLAY CONFIG-OV
+CONFIG-OV
+FORTH DEFINITIONS
+
+: U-CONFIG CONFIG-OV CONFIG-VOC (U-CONFIG) ;
+
+OV-CANCEL
+
+
+
+
+
+
+---- Screen 37 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

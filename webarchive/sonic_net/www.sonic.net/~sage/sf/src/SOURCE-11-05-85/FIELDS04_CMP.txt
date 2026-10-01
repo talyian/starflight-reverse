@@ -1,0 +1,103 @@
+==== Page 1 | 11-05-85 -- FIELDS04CMP -- Binary Systems | image FIELDS04_CMP_p01 ====
+---- Screen 0 ----
+( AFIELDS  BOX                                                 )
+
+( 11 0 16 AFIELD BOX-NAME )
+
+: !BOX ( $addr record# -- )
+ RECORD# ! BOX-NAME 16 32 FILL BOX-NAME SWAP CMOVE ;
+
+11 FILE# !
+
+"                 "  0 !BOX   " MERCATORS       "   7 !BOX
+" SECS            "  1 !BOX   " -CONTOUR-REGION "   8 !BOX
+" SEC             "  2 !BOX   " POSITIVE-OBJECTS"   9 !BOX
+" STARSYSTEMS     "  3 !BOX   " ELEMENTS        "  10 !BOX
+" ORBIT           "  4 !BOX   " LIFEFORMS       "  11 !BOX
+"                 "  5 !BOX   " MOBILE          "  12 !BOX
+" ENVIRONMENTAL   "  6 !BOX   " SESSILE         "  13 !BOX
+---- Screen 1 ----
+( AFIELDS  BOX                                                 )
+
+" SPECIMENS       " 14 !BOX   " NOTICES         "  28 !BOX
+" ARTIFACTS       " 15 !BOX   " PICTURES        "  29 !BOX
+" RUINS           " 16 !BOX   " ALIEN-PICS      "  30 !BOX
+" MESSAGE RECORDER" 17 !BOX   " SENSOR-PICS     "  31 !BOX
+" NEGATIVE-OBJECTS" 18 !BOX   " STARPORT-PICS   "  32 !BOX
+" OLD-CONTOURS    " 19 !BOX   " TITLE-PICS      "  33 !BOX
+" CONTOUR-REGION  " 20 !BOX   " WORDS           "  34 !BOX
+" CONTOURS        " 21 !BOX   " PHRASES         "  35 !BOX
+" ITEMS FOR SALE  " 22 !BOX   " COMMUNICATIONS  "  36 !BOX
+" STARSHIP HOLD   " 23 !BOX   " LIFEFORM-PICS   "  37 !BOX
+" TILES           " 24 !BOX   " BIO-DATA HOPPER "  38 !BOX
+" FLUX-NODES      " 25 !BOX   " SPECIAL PHRASES "  39 !BOX
+" GAS-CLOUDS      " 26 !BOX   " TERRAIN VEHICLE "  40 !BOX
+" ENCOUNTERS      " 27 !BOX   " SCROLL-TEXTS    "  41 !BOX
+---- Screen 2 ----
+( AFIELDS  BOX                                                 )
+
+" GEN-PHRASE      " 42 !BOX   "                 "  53 !BOX
+" CAPTAIN'S LOG   " 43 !BOX   "                 "  54 !BOX
+" PLANET SURFACE  " 44 !BOX   "                 "  55 !BOX
+" EVALUATIONS     " 45 !BOX   "                 "  56 !BOX
+" SUPER BOX       " 46 !BOX   "                 "  57 !BOX
+" RANDOM MESSAGES " 47 !BOX   "                 "  58 !BOX
+"                 " 48 !BOX   "                 "  59 !BOX
+"                 " 49 !BOX   "                 "  60 !BOX
+"                 " 50 !BOX   "                 "  61 !BOX
+"                 " 51 !BOX   "                 "  62 !BOX
+"                 " 52 !BOX   "                 "  63 !BOX
+
+FORGET !BOX
+
+---- Screen 3 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 4 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 5 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

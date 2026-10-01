@@ -1,0 +1,1019 @@
+==== Page (none) | (no header) | image ITEMS-OV_CMP_p01 ====
+0 \ OVERLAY PREFIX: Items routines
+1 \ cursor functions, .items, .item-page
+2 \ wpos: window positioning  -xtrailing
+3 \ write phrase
+4 \ constants for file#'s, some fields
+5 \ whichguy force current CREATURE attribute file
+6 ( CASE STATEMENT BY CHARLES EAKER )
+7 \ window definitions
+8 \ window erase for the current window + cleanit
+9 \ INSERT  BLANK-OPTS
+10 \ macros for menus
+11 \ options for items activity:
+12 \ final options menus
+13 \ display options
+14 \ options for items activity:
+15 \ more options for tvehicle/tv-hold contents
+16 \ display options
+17 \ change-vol, ?volume
+18 \ (extract)
+19 \ lifeform valuation
+20 \ lifeform valuation  ?dist
+21 \ conversion from a lifeform to a specimen or bio-
+22 \ continue conversion from life to spec/bio-data
+23 \ tvxy and xy!
+24 \ convert a creature into a specimen
+25 \ convert a creature into a specimen
+26 \ pickup and drop-it
+27 \ new>box: problem with multiple mineral deposits
+28 \ ?deposited
+29 \ drop-it
+30 \ describe options for artifacts
+31 \ do routines for specimens
+32 \ start of options dispatcher: do.ele
+33 \ options dispatcher:  do.art
+34 \ message action
+35 \ ruin action
+36 \ lifeform action
+37 \ dispatcher
+38 \ print scroll message at bottom of current window
+39 \ this item movement
+40 \ ?expand + ?contract window, reposition cursor
+41 \ |!line!, set-inside : do function interface
+42 \ prep? : setup window, present options and reposi
+43 \ do.options | needs refactoring
+44 \ highlighting buttons
+45 \ ?inside test for scrolling text up or down
+46 \ scroll text up or down
+47 \ item-loop , td-scroll
+48 \ (?this) and try-this
+49 \ try-these
+50 \ find-item and gather
+51 \  ?near + gather-items
+52 \ return-items to this-region
+53 \  ?tv-flat: use in ITEMS
+54 \ (/items)
+55 ( OVERLAY SUFFIX: ITEMS INTERFACE ----------------
+==== Page 1 | 11-05-85 -- ITEMS-OVCMP -- Binary Systems | image ITEMS-OV_CMP_p02 ====
+---- Screen 0 ----
+\ OVERLAY PREFIX: Items routines                  (rfg19sep85)
+9 width !
+ vocabulary items immediate
+ 111 open-overlay
+items definitions
+2200 trans-allot
+newt-dp
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+\ cursor functions, .items, .item-page            rfg21jun85)
+v: revision
+v: ttlines \ total lines output in recent seesion
+v: phrase-mem 399 allot
+v: do-line#
+
+head: (CRS-TOGGLE) ( y -- )
+t: >R @CRS 3 R> POS. CURSORSPACE aBLT ! 7 lBLT ! 154 wBLT !
+ DK-BLUE !COLOR 1 XORMODE ! BLT !CRS xormode off t;
+
+head: CRS-TOGGLE ( -- ) t:  WTOP @ (CRS-TOGGLE) t;
+
+
+
+
+
+---- Screen 2 ----
+\ wpos: window positioning  -xtrailing            rfg14jun85)
+
+head: wpos \ x,y ---
+t:  swap 4 * \ width of characters
+  wleft @ 2+ + \ horizontal offset
+  wtop @ 1-  \ vertical offset
+  rot 7 * - \ width of characters
+  pos. t; \  position it
+
+ascii . c: xtrail
+
+head: -xtrailing
+t: ' xtrail ! ' xtrail cfa ' -trailing 14 + !
+   -trailing ' bl cfa ' -trailing 14 + ! t;
+
+
+---- Screen 3 ----
+\ write phrase                                    rfg06jun85)
+
+head: WRITE-PHRASE ( --- )
+t:   PHRASE-MEM PM-PTR !               \ SET PM-PTR
+   LINE-COUNT @ 0                    \ DO LINE COUNT TIMES
+     DO PM-PTR @
+        IGNORE-CURSOR @
+          IF WLINE-UP
+          ELSE DUP C@ 1+ TYPE THEN  \ SCROLL LINE
+        TEXTC/L 1+ PM-PTR +!
+     LOOP  line-count @ ttlines +!
+   0 PHRASE-WAITING ! t;              \ OK TO EXIT
+
+
+
+
+---- Screen 4 ----
+\ constants for file#'s, some fields              rfg12jun85)
+decimal
+
+ 32 c: planet
+ 24 c: star
+ 67 c: regions
+ 68 c: creature
+ 28 c: artifact
+ 57 c: analyze-text
+ 11 17 2 ifield: content-vol
+ creature 58 2 afield: volume
+ creature 17 1 ifield: hits
+ creature 27 1 ifield: behave \ bit0 is attacking
+
+
+
+---- Screen 5 ----
+\ whichguy force current CREATURE attribute file  rfg14jun85)
+ transient  trace @ >r trace off
+: 2OF            4 ?PAIRS COMPILE 2OVER COMPILE d= COMPILE
+                0BRANCH HERE 0 , COMPILE 2DROP 5 ; IMMEDIATE
+ resident  r> trace !
+
+head: whichguy \ force current attribute file to be referent
+t:  creature dup file# ! record# @ @record drop t;
+
+head: reorg t: -5000 dup anchor 2! orglist t;
+
+head: keypause \ maximal delay ---| wait for delay or key
+t: time 2@ lkeytime 2!
+ begin dup 0 lkeytime 2@ d+ time 2@ d< 'key or
+ until drop t;
+
+==== Page 2 | 11-05-85 -- ITEMS-OVCMP -- Binary Systems | image ITEMS-OV_CMP_p03 ====
+---- Screen 6 ----
+( CASE STATEMENT BY CHARLES EAKER )
+DECIMAL  transient  trace @ >r trace off
+: !CSP SP@ CSP ! ;
+: ECASE          ?COMP CSP @ !CSP 4 ; IMMEDIATE
+
+: EOF            4 ?PAIRS COMPILE OVER COMPILE = COMPILE
+                0BRANCH HERE 0 , COMPILE DROP 5 ; IMMEDIATE
+
+: ENDOF         5 ?PAIRS COMPILE BRANCH HERE 0 ,
+                SWAP 2 [COMPILE] THEN  4 ; IMMEDIATE
+
+: ENDCASE       4 ?PAIRS COMPILE DROP BEGIN SP@
+                CSP @ = 0= WHILE 2 [COMPILE]
+                THEN  REPEAT CSP ! ; IMMEDIATE
+ resident  r> trace !
+
+---- Screen 7 ----
+\ window definitions                              rfg21aug85)
+
+head: tvtwindow \ terrain vehicle text
+t:   64 3 7 38 window -1 wbottom +! t;
+
+head: newscr \ not full screen, for doing an action
+t:  tvtwindow -7 wtop +! -1 wlines +! t;
+
+head: redisplay
+   t: >mainview .background
+      .local-icons v>display >display t;
+
+
+
+
+
+---- Screen 8 ----
+\ window erase for the current window + cleanit   rfg14jun85)
+
+head: werase \ using current window
+t:  color @
+  wtop @  wleft @  wbottom @ 1- wright @ 1+
+  black poly-window-fill
+  0 0 wpos
+  !color t;
+
+head: cleanit \ scroll up lines in TVTWINDOW
+t:  [ base @ hex ] 2001 pad !   \ 1 blank is packed string
+  ttlines @ wlines @ over - + \ total lines to clear window
+    0 do pad wline-up loop    \ clear prior description
+  ttlines off [ base ! ] t;    \ clear total line count
+
+
+---- Screen 9 ----
+\ INSERT  BLANK-OPTS                                  6nov84rd |
+head: >= t: 2dup = >r > r> or t;
+
+head: INSERT ( $ADDR,CNT --- )
+t:   PM-PTR @ PHRASE-MEM -  TEXTC/L 1+ /  \ CALC OFF INTO PM
+   TEXTC/L 1+ * PHRASE-MEM  +           \ CALC CURR LINE#
+   DUP C@ 3 PICK + TEXTC/L >=           \ WILL EXCEED CURR LINE?
+    IF TEXTC/L 1+ +                     \ GO TO NEXT LINE
+       DUP 0 SWAP C!                    \ SET THAT LINE CNT=0
+       DUP 1+ PM-PTR !  1 LINE-COUNT +! \ SET NEW PM PTR
+    THEN
+   DUP C@ 3 PICK + SWAP C!              \ UPDATE LINE CNT
+   DUP >R PM-PTR @ SWAP CMOVE           \ MOVE INTO PHRASE MEM
+   R> PM-PTR +! t;                       \ UPDATE PM PTR
+
+
+---- Screen 10 ----
+\ macros for menus
+
+head: .pick t: ." PICKUP" t;
+head: .drop t: ." DROP" t;
+head: .desc t: ." DESCRIBE" t;
+head: .eras t: ." ERASE" t;
+head: .reco t: ." RECORD" t;
+
+head: lpos t: 0 swap wpos t;
+     \ n --- position at left, line n in tvtwindow
+
+v: #options #options off
+v: option# \ use to index into case for doing the option
+head: #options! t: #options ! t;
+
+
+---- Screen 11 ----
+\ options for items activity:                     rfg07may85
+\ assume color preset, in tvtwindow, but do their own positionin
+head: te.opts \ options for elements
+t:   1 dup lpos .drop  #options! t;
+
+head: ta.opts \ options for artifacts
+t: 1 lpos .drop
+ 2 dup lpos .desc #options! t;
+
+head: tm.opts \ options for messages
+t: 1 lpos ." READ"
+ 2 dup lpos .eras #options! t;
+
+
+
+
+==== Page 3 | 11-05-85 -- ITEMS-OVCMP -- Binary Systems | image ITEMS-OV_CMP_p04 ====
+---- Screen 12 ----
+\ final options menus                             rfg16may85)
+
+head: tl.opts \ options for lifeforms, inside hold
+t:  1 dup lpos .desc #options! t; \ does SAYIT (same as LOOK...
+
+head: ts.opts \ options for specimens , on land or in hold??
+t:  1 dup lpos .drop
+  2 lpos .desc
+  3 dup lpos .eras #options! t;
+
+head: tb.opts \ options for bio-data, prerecorded
+t:  1 lpos .desc
+  2 dup lpos .eras #options! t;
+
+
+
+---- Screen 13 ----
+\ display options                                 rfg12jun85)
+head: opt.err t: delete-scroll-box
+           abort" error in display.options" t;
+
+case t.options
+26 is te.opts
+28 is ta.opts
+27 is tm.opts
+30 is tl.opts
+68 is tl.opts
+40 is ts.opts
+43 is tb.opts
+11 is exit ( until we figure it out )
+others opt.err
+
+
+---- Screen 14 ----
+\ options for items activity:
+\ assume color preset, in tvtwindow, but do their own positionin
+head: pe.opts \ options for elements
+  t: 1 dup lpos .pick  #options! t;
+
+head: pa.opts \ options for artifacts
+t: 1 lpos .pick
+ 2 dup lpos .desc #options! t;
+
+head: pm.opts \ options for messages
+t: 1 lpos .reco
+ 2 dup lpos ." READ"  #options! t;
+
+
+
+
+---- Screen 15 ----
+\ more options for tvehicle/tv-hold contents
+head: pr.opts \ options for ruins
+t:  1 lpos ." DESCRIBE"
+  2 lpos ." ENTER"
+  3 dup lpos ." DESTROY" #options! t;
+
+head: pl.opts \ options for lifeforms, on planet surface
+t:   hits c@
+if  1 lpos ." CAPTURE"
+else  1 lpos .pick
+then  2  lpos  .reco ."  BIO-DATA" \ make bio-data object, in
+      3 dup lpos .desc #options! t; \ does SAYIT (same as LOOK..
+
+head: ps.opts \ options for specimens , on land or in hold??
+t:  1 dup lpos .pick #options! t;
+
+---- Screen 16 ----
+\ display options                                 rfg16may85)
+
+case p.options
+26 is pe.opts
+28 is pa.opts
+27 is pm.opts
+30 is pl.opts
+68 is pl.opts
+40 is ps.opts
+41 is pr.opts
+11 is exit ( until we figure it out )
+others opt.err
+
+
+
+
+---- Screen 17 ----
+\ change-vol, ?volume                             rfg10aug85)
+head: volume+! \ volume ---
+t:  tv-hold 1.5@ >c+s
+  content-vol +! iclose t;
+
+head: ?volume \  --- volume,1 or 0,0 | error if won't fit
+t: @inst-class 26 = not
+   if inst-qty @ else elem-amt @ then dup
+    tv-hold 1.5@ >c+s
+    content-vol @ + inst-qty @ >
+  if drop NULL tvtwindow werase revision off
+   ." NOT ENOUGH ROOM IN CARGO HOLD "  1000 keypause
+  else 1
+  then iclose t;
+
+
+==== Page 4 | 11-05-85 -- ITEMS-OVCMP -- Binary Systems | image ITEMS-OV_CMP_p05 ====
+---- Screen 18 ----
+\ (extract)                                       rfg14jun85)
+\ remove from a box within a box
+: (extract) \ boxbox --- iaddr ( item -- boxbox ) |
+  ci  2swap  @inst-class >r iclose \ class of item to remove
+  ( boxBOX ) >c+s iopen r> box>tocs
+  IOPEN CDROP \ ?first bug
+  >c+s (box>)
+  ?null iclose
+  if idelete then
+  iclose revision on ;
+\ boxbox is tv-hold or surface
+head: plextract t: (surface) 1.5@ (extract) t;
+head: tvextract t: tv-hold 1.5@ (extract) t;
+
+
+
+---- Screen 19 ----
+\ lifeform valuation                              rfg12jun85)
+68 12 1 afield: niche
+68 54 1 afield: i.level
+68 11 1 afield: size.index
+
+head: niche>val
+t:   niche c@ dup
+   4 mod 0= if drop 10
+            else 2 mod 0=
+               if 30 else 50 then
+            then t;
+
+
+
+
+
+---- Screen 20 ----
+\ lifeform valuation  ?dist                       rfg22may85)
+
+head: ?dist \ --- distance
+t:  (system) 1.5@ >c+s
+    inst-x @ 125 - dup * 0
+    inst-y @ 100 - dup * 0
+    d+ sqrt iclose t;
+
+head: valuate  \ --- monetary value
+t: niche>val i.level c@ 10 / +
+   size.index c@  *
+   ?dist 2 * 1+ *
+   hits c@ 0= if 10 / then t; \ dead critters are worth less
+
+
+
+---- Screen 21 ----
+\ conversion from a lifeform to a specimen or bio-rfg21aug85)
+
+head: l$= \ count --- count,flag | life string at pad
+t:   1 spec-name 3 pick 0
+   do dup i + c@ pad i + c@ = not
+     if swap 0= swap leave then loop drop t;
+
+
+head: info-setup
+  t: 0 5 wpos lt-blue !color t;
+
+
+
+
+
+
+---- Screen 22 ----
+\ continue conversion from life to spec/bio-data  rfg13may85)
+
+head: $setup \ --- count |ci is a lifeform
+t:  resembles 1.5@ 2dup or 0=
+   if 2drop shape 1.5@ then
+  >c+s phrase pad phr-cnt c@ dup >r cmove
+  r> iclose t;
+
+head: $match  \ --- record# |of specimen corresponding to crit
+t:  $setup 40 file# !
+  64 1 do i record# ! l$=
+    if i leave then loop  swap drop t;
+\ assumes always succesfully completed
+
+
+
+---- Screen 23 ----
+\ tvxy and xy!                                    (rfg06sep85)
+head: tvxy \ --- x,y of terrain vehicle
+t:  tvehicle 1.5@ >c+s
+    inst-x @ inst-y @ iclose t;
+
+head: xy! \ x,y --- | store into current object's x,y fields
+t: inst-y ! inst-x ! t;
+
+head: .cargo
+t: 116 157 pos. 3 black poly-erase-text
+   tv-hold 1.5@ >c+s
+   content-vol @  dup if 5 max 5 /  then
+   white !color 3 .r ." % FULL"
+   iclose t;
+
+
+==== Page 5 | 11-05-85 -- ITEMS-OVCMP -- Binary Systems | image ITEMS-OV_CMP_p06 ====
+---- Screen 24 ----
+\ convert a creature into a specimen              rfg10aug85)
+
+head: ?>spec \ --- value,species,volume,flag | true if tvroom
+ t:  valuate \ get monetary value
+     $match  \ get specimen/bio-data species
+     ?volume dup
+     if  plextract >c+s
+     else 0. >c+s
+     then swap t;
+
+
+head: ?attack \ --- flag | true if attacking+succes or not atack
+ t: behave c@ 1 and hits c@ 0= 0= and
+    if 0 100 rrnd 10 <
+    else 1
+    then t;
+---- Screen 25 ----
+\ convert a creature into a specimen              rfg21aug85)
+head: crit>spec
+t: tvtwindow -7 wtop +! werase ?attack
+ if  ?>spec >r
+    if -icon redisplay do-line# @ 1 =  \ bio-data or specimen
+      if 40 info-setup    \ phrase below, for specimens only
+      ." LIFEFORM CAPTURED AND PUT IN STASIS "
+      else swap 08 / swap 43
+       r> drop 0 >r    \ bio-data has no volume
+      then  swap icreate >c+s
+     inst-val ! tvxy xy! R@ INST-QTY !
+     c> tv-hold 1.5@ >c+s >box cdrop
+    else 2drop
+    then iclose r> volume+!
+ else info-setup ." THE CAPTURE ATTEMPT WAS UNSUCCESSFUL "
+ then 7 wtop +! .cargo 1000 keypause t;
+---- Screen 26 ----
+\ pickup and drop-it                              rfg14jun85)
+head: pickup \  ( n --- n ) | put object n into (tv-hold)
+t: ?volume
+ if plextract
+    >c+s -icon \ reorg
+   c> tv-hold 1.5@ >c+s >box iclose
+ then volume+! .cargo t;
+
+
+head: delete.it \ from the terrain vehicle hold or land
+t: -icon reorg idelete revision on t;
+
+head: pldelete t:  plextract -icon 2drop revision off t;
+head: tvdelete t: tvextract -icon 2drop t;
+
+
+---- Screen 27 ----
+\ new>box: problem with multiple mineral deposits rfg01jul85)
+
+head: new>box \ as in >box
+t:  2dup >c+s @inst-class >r iclose
+  iopen 11 i class>box-spec ifind 0=
+  if i class>box-spec 11 swap 1 *create  \ make-class-box
+  then r> box>tocs
+  2dup >c+s @inst-class @inst-species iclose
+  2drop ( redundant!) ci iinsert iclose t;
+
+
+
+
+
+
+
+---- Screen 28 ----
+\ ?deposited                                      rfg01jul85)
+2v: clsp
+head: ?deposited \ class,species --- tflag| true if cl,sp minera
+ t: clsp 2!  tvxy ilocal @ ?icons-at ?dup
+     if 0 swap 0  do dup 0=
+    if  swap point>icon @il @ih >c+s
+        >r @inst-class @inst-species clsp 2@ d= r> swap
+        if drop 1
+        then iclose
+    else swap drop
+    then loop
+     then ( >r 2drop r> ) t;
+
+
+
+
+---- Screen 29 ----
+\ drop-it                                         rfg05jul85)
+head: dropit \  --- \ put on planet surface
+t:  tvextract
+  >c+s
+  inst-qty @ negate volume+! .cargo
+   @inst-class @inst-species ?deposited
+  tvxy xy!   \ position same as vehicle
+   ' icon-parm module +icon reorg
+  c> (surface) 1.5@ >c+s
+ rot   if >box else new>box then
+  iclose t;
+
+
+
+
+
+==== Page 6 | 11-05-85 -- ITEMS-OVCMP -- Binary Systems | image ITEMS-OV_CMP_p07 ====
+---- Screen 30 ----
+\ describe options for artifacts                  rfg14jun85)
+\ assume the artifact is TOCS
+artifact 29 1 afield: art-anlyz
+artifact 24 1 afield: art-text
+
+head: arttalk \ addr --- | print analysis, given string address
+ t:  5 0 do dup i 38 * + 38 type gcr loop drop t;
+
+head: art.desc
+t:  werase art-anlyz c@
+  if analyze-text art-text c@ @record
+     arttalk set-current \ restore object, pause
+  else gcr ." THIS ITEM NOT ANALYZED"
+  then 3000 keypause t;
+
+
+---- Screen 31 ----
+\ do routines for specimens                       rfg10aug85)
+v: inside
+head: .spec
+t:   newscr werase
+   spec-name 16 ascii . -xtrailing type ."  SPECIMEN"
+   1500 keypause t;
+
+case ts.act
+ 1 is dropit  2 is .spec 3 is tvdelete others nop
+
+case ps.act
+ 1 is pickup others nop
+
+head: do.spec
+t: inside @ if ts.act else ps.act then t;
+
+---- Screen 32 ----
+\ start of options dispatcher: do.ele             rfg10aug85)
+
+head: set-elem-amt
+ t: inst-qty @ dup 11 < not
+  if 2/ then elem-amt ! t;
+
+head: elem-drop
+   t: elem-amt @ set-elem-amt dropit elem-amt ! t;
+
+head: elem-pick
+   t: elem-amt @ set-elem-amt
+      pickup elem-amt ! t;
+
+head: do.ele \ do something with an element
+t: drop inside @ if elem-drop else elem-pick then t;
+
+---- Screen 33 ----
+\ options dispatcher:  do.art                     rfg10aug85)
+
+case pa.act \ artifact on planet surface
+  1 is pickup  2 is art.desc  others nop
+case ta.act
+ 1 is dropit   2 is art.desc   others nop
+
+head: do.art
+t:  inside @ if ta.act else pa.act then t;
+
+
+
+
+
+
+
+---- Screen 34 ----
+\ message action                                  rfg14jun85)
+27 24 3 ifield: inst-text
+: read.msg \ writes it to display
+crs-toggle newscr cleanit
+1 line-count ! 0 phrase-mem dup 1+ pm-ptr ! c!
+ inst-text 1.5@ >c+s
+ phrase phr-cnt c@ insert write-phrase iclose 3000 keypause ;
+
+case pm.act
+  1 is pickup 2 is read.msg  others nop
+case tm.act
+  1 is  read.msg  2 is tvdelete others nop
+
+head: do.msg
+t: inside @ if tm.act else pm.act then t;
+
+---- Screen 35 ----
+\ ruin action                                     rfg14jun85)
+
+\ : r.desc 0 4 wpos ." THIS IS A RUIN." ;
+
+\ head: r.enter \ WOT A MESS!
+\ t: inst-x @ inst-y @
+\    tvehicle 1.5@ >c+s xy!
+\   ci ?icon=iaddr drop point>icon
+\   inst-x @ dup !ix iclose t;
+
+\ case do.ruin
+\  1 is r.desc 2 is beep ( r.enter) 3 is pldelete others nop
+
+head: do.esc \ for incorrect cases, such as boxes
+t: drop  fquit on t;
+
+==== Page 7 | 11-05-85 -- ITEMS-OVCMP -- Binary Systems | image ITEMS-OV_CMP_p08 ====
+---- Screen 36 ----
+\ lifeform action                                 rfg14jun85)
+head: do-say
+   t: crs-toggle 14 wtop +! werase
+       6 ttlines ! @inst-class ' sayit module
+      3000 keypause t;
+
+case pl.act
+  1 is crit>spec  2 is crit>spec 3 is do-say   others nop
+
+head: do.life
+t:  inside @ if drop do-say  else pl.act then t;
+
+case do.bio
+   1 is beep 2 is tvdelete others nop
+
+
+---- Screen 37 ----
+\ dispatcher                                      (rfg19sep85)
+
+case dispatch
+11 is do.esc
+\ 41 is do.ruin
+68 is do.life
+27 is do.msg
+26 is do.ele
+28 is do.art
+40 is do.spec
+43 is do.bio
+others  do.esc
+
+
+
+
+---- Screen 38 ----
+\ print scroll message at bottom of current windowrfg01jul85)
+
+head: .bottom \  --- | position and print
+t: 6 6  wpos color @ lt-blue !color
+  ." SCROLL ITEMS: ^\   QUIT: ]"
+  7 wbottom +! -1 wlines +!
+     !color t;
+
+head: tvrevise
+t:  revision @
+if -7 wtop +! werase 7 wtop +! \ preserve object of action
+ >mainview .background .local-icons v>display >display
+ lt-blue !color 0 6 wpos ." REVISING TERRAIN VEHICLE INVENTORY"
+ revision off white !color
+ then t;
+
+---- Screen 39 ----
+\ this item movement                              rfg12jun85)
+
+head: THIS-ITEM ( -- iaddr ) t:  (THIS-ITEM) 1.5@ t;
+
+head: NEXT-THIS-ITEM ( -- )
+t: THIS-ITEM >c+s INEXT CI (THIS-ITEM) 1.5! ICLOSE t;
+
+head: PREV-THIS-ITEM ( -- )
+t: THIS-ITEM >c+s IPREV CI (THIS-ITEM) 1.5! ICLOSE t;
+
+head: GET-THIS-INST ( ( -- n ) )
+t: THIS-ITEM >c+s
+ TEXT-INST 1.5@ ICLOSE >c+s t;
+
+
+
+---- Screen 40 ----
+\ ?expand + ?contract window, reposition cursor     rfg15apr85
+head: reposition
+t: crs-toggle  -7 wtop +! crs-toggle t;
+
+head: ?contract \ contract textwindow if too few lines to fill
+t:  scroll-len @  6 - dup 0<  \ 6 lines really used in tvtwindow
+   if abs 0 do black wshorten loop
+   else drop
+   then t;
+
+head: full-text \ expand tvtwindow to full size
+t: [ tvtwindow wbottom @ wlines @ ] literal literal
+   wbottom ! wlines ! t;
+
+
+
+---- Screen 41 ----
+\ |!line!, set-inside : do function interface     (rfg19sep85)
+head: |!line| \ n --- | increment do-line#, with bounds
+t: crs-toggle  do-line# +! do-line# dup
+   @ 1 max #options @  min swap !
+  tvtwindow do-line# @ 7 * negate wtop +! crs-toggle t;
+
+head: set-inside
+t: super-box 1.5@ >c+s iopen
+   ci (surface) 1.5@ d=
+   if 0 else -1 then inside ! iclose iclose t;
+
+head: do.revision
+t:        tvtwindow full-text tvrevise delete-scroll-box
+          make-scroll-box super-box 1.5@ get-boxes set-inside
+          ?contract t;
+
+==== Page 8 | 11-05-85 -- ITEMS-OVCMP -- Binary Systems | image ITEMS-OV_CMP_p09 ====
+---- Screen 42 ----
+\ prep? : setup window, present options and reposirfg14jun85)
+head: prep? \  ( --- n ) | iaddr of this item
+t:  -7 wtop +! werase 7 wtop +!
+ white !color
+ get-this-inst  @inst-class
+ inside @  if t.options else p.options then
+  reposition t;
+
+head: .ITEMS (  ( n -- n' ) --- )  \ xy position prompt
+t: .bottom WLINES @ 0 DO
+ WLEFT @ WTOP @ 1- I 7 * - POS. TEXT>PAD PAD $. INEXT LOOP t;
+
+head: .ITEM-PAGE ( --- )
+t: (SCROLL-BOX) 1.5@ >c+s IOPEN CI
+ (this-item) 1.5! 0 BEGIN 1+ INEXT ?FIRST UNTIL
+ >1FONT  .ITEMS IPREV CRS-TOGGLE drop t;
+---- Screen 43 ----
+\ do.options | needs refactoring                  rfg14jun85)
+head: do.options \ (scrollbox,scrolltext --- same )
+t: 1 do-line# ! revision off fquit off
+begin ?quit not while xyscan
+  ecase  1 0 ( U0) 2of -1 |!line| endof
+        -1 0 ( DZ) 2of  1 |!line| endof
+   drop ?trig
+    if  do-line# @  @inst-class dispatch
+      revision @
+      if do.revision
+      then  fquit on
+   then endcase
+ repeat  cdrop cdrop iclose \ close scrlbox,scrltext,inst
+  tvtwindow werase ?contract white !color .item-page t;
+
+
+---- Screen 44 ----
+\ highlighting buttons
+head: svcolor t: color @ swap !color t;
+
+head: dnbtn
+t: svcolor  black svcolor
+  85 21 pos. ."  " !color 85 21 pos. ." ^" !color t;
+
+head: upbtn
+t: svcolor black svcolor
+ 91 21 pos. ."  " !color 91 21 pos. ." \" !color t;
+
+head: qtbtn
+t: svcolor  black svcolor
+133 21 pos. ."  " !color  133 21 pos. ." ]" !color t;
+
+\ actually, not the buttons, merely text, but looks nice...
+---- Screen 45 ----
+\ ?inside test for scrolling text up or down      rfg15may85)
+
+head: (?inside) \ --- -1 if ci is SURFACE, 1 if TV-HOLD, 0 other
+ t: get-this-inst @inst-class 11 =
+      if @inst-species dup 40 =
+       if drop 1 else 44 =
+          if -1 else 0 then then
+      else 0 then iclose t;
+
+head: inside! \ flag, sets inside accordingly
+t:   dup 0> if -1 inside ! then
+       0< if 0 inside ! then t;
+
+head: up-inside t:  (?inside) inside! t;
+head: down-inside t:    (?inside) negate inside! t;
+
+---- Screen 46 ----
+\ scroll text up or down                          rfg14jun85)
+
+head: TD-UP ( -- )
+t: green dnbtn INEXT NEXT-THIS-ITEM  up-inside
+ TEXT>PAD PAD CRS-TOGGLE  white !color
+  -1 wtop +! WLINE-UP 1 wtop +!
+ CRS-TOGGLE lt-blue dnbtn t;
+
+head: TD-DOWN ( -- )
+t: green upbtn down-inside IPREV PREV-THIS-ITEM
+ THIS-ITEM >c+s TEXT>PAD ICLOSE white !color
+ PAD CRS-TOGGLE -1 wtop +! WLINE-DOWN 1 wtop +!
+ CRS-TOGGLE lt-blue upbtn t;
+
+
+
+---- Screen 47 ----
+\ item-loop , td-scroll                           rfg01jul85)
+CASE TD-SCROLL
+  1 IS TD-UP
+  -1 IS TD-DOWN
+  others nop
+
+
+: (item-loop)
+   BEGIN xyscan 0=
+        if  td-scroll
+        else drop
+        then  ?trig
+        if prep? fquit off do.options
+        then fquit @
+   UNTIL  ;
+
+==== Page 9 | 11-05-85 -- ITEMS-OVCMP -- Binary Systems | image ITEMS-OV_CMP_p10 ====
+---- Screen 48 ----
+\ (?this) and try-this                            rfg12jun85)
+head: (?this) \ ( iaddr --- iaddr )
+          \ aboxiaddr --- 0. or abox if within abox
+t:    \ debugger break
+       NULL 2swap  >c+s iopen
+ ?null not              \ handle empty box case
+  if  begin 2dup D0=  \ found one
+            ?last 0= and
+      while cj ci d=    \ current is target iaddr
+        if 2drop ci'    \ change flag. to exit
+        then inext
+      repeat cj ci d= if 2drop ci' then \ cover last one
+   then  cdrop iclose t;
+
+
+
+---- Screen 49 ----
+\ try-these                                       rfg06jun85)
+
+head: try-these \ ( iaddr --- iaddr ) --- 0. or container
+t:  0. \ initial failure flag
+     begin 2dup or 0= ?last 0= and
+     while 11 0 ifind               \ any old box
+           if ci cj >c+s
+              (?this) iclose 2dup or \ found a match
+              if 2swap then 2drop
+            then inext
+     repeat t;
+
+head: ?delete \ (box,item --- another box,item) delete if empty
+ t:  ?null if iclose idelete iprev 0. >c+s then t;
+
+
+---- Screen 50 ----
+\ find-item and gather                            rfg29jun85)
+
+head: find-item \ ( iaddr --- box,iaddr) | searches planet tree
+ t: this-region 1.5@ (?this) 2dup or 0= \ not locally ?
+   if 2drop
+      (planet) 1.5@ >c+s
+      iopen try-these cdrop iclose
+   then c> 2swap >c+s iopen cdrop
+        >c+s t;
+
+head: gather \ (box,item --- box,item or inext) moved to (SURFAC
+t:   iextract
+   (surface) 1.5@ >c+s new>box
+    cj >c+s
+    -1 inst-qty +! iclose t; \ decrement count in box
+
+---- Screen 51 ----
+\  ?near + gather-items                           rfg12aug85)
+
+head: ?near \ ( something --- something) --- true if within
+t:  tvxy   inst-y @ - abs 2 <  swap
+         inst-x @ - abs 2 < and t;
+
+: gather-items \ moves from THIS-REGION to (SURFACE)
+  32000 elem-amt !
+  ilocal @ 0 do
+     i point>icon
+     @id dup >r 17 < r@ 20 23 within or r> 254 = or
+     if @il @ih >c+s ?near
+        if find-item gather cdrop iclose
+        then iclose
+     then  loop 10 elem-amt ! ;
+\ handles creatures, invisible, avoids flying, ruins
+---- Screen 52 ----
+\ return-items to this-region                     rfg10aug85)
+
+head: (return) \ (surface,box,item --- surface,box,inext)
+t:  (box>) this-region 1.5@ iinsert t;
+
+head: (return-items) \ do return for items in box
+t:  iopen begin ?null not
+        while (return)
+        repeat iclose idelete iprev t;
+
+: return-items
+ 32000 elem-amt !
+ (surface) 1.5@ >c+s
+ iopen ' (return-items) all  cdrop iclose
+ 10 elem-amt ! ;
+
+---- Screen 53 ----
+\  ?tv-flat: use in ITEMS                         rfg12jun85)
+
+head: flat-scan  \ (container,box --- same)
+t:  11 15 ifind
+  if iopen 28 5 ifind iclose
+  else 0
+  then ?flat ! t;
+
+head: ?tv-flat  \ resets ?flat if not on tv anymore.
+t:  tv-hold 1.5@ >c+s iopen
+   flat-scan cdrop iclose t;
+
+
+
+
+
+==== Page 10 | 11-05-85 -- ITEMS-OVCMP -- Binary Systems | image ITEMS-OV_CMP_p11 ====
+---- Screen 54 ----
+\ (/items)                                        rfg14aug85)
+
+: (/ITEMS) ( box-in-box,box-variable -- )
+begin (scroll-box) 1.5@ D0=
+if  make-scroll-box gather-items
+    super-box 1.5@ get-boxes
+then tvtwindow  werase xormode off
+white !color  ?contract white !color .item-page
+set-inside
+(item-loop) ?quit until
+green qtbtn delete-scroll-box NULL (scroll-box) 1.5!
+return-items cdrop iclose full-text
+ 7 ttlines ! lt-blue qtbtn crs-toggle
+ ?tv-flat  ; \ is flat device in TV- modify flag
+
+
+---- Screen 55 ----
+( OVERLAY SUFFIX: ITEMS INTERFACE ----------------rfg19aug85)
+trace @ trace off   dispose trace !
+close-overlay
+111  overlay items-ov
+items-ov
+forth definitions
+: /items items-ov items (/items) ;
+
+save-buffers ov-cancel
+31 width !
+\ freeze
+
+
+
+
+

@@ -1,0 +1,86 @@
+==== Page 1 | 11-05-85 -- DEHUFF  CMP -- Binary Systems | image DEHUFF_BLK_p01 ====
+---- Screen 0 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+( Huffman Decoder: variables                   11/06/85 AWK )
+
+V= BTADDR                  \ branch table address
+V= BTOFFSET                \ offset from BTADDR
+V= HB$-PTR                 \ pointer to current byte in HB$
+V= D$-OFF                  \ offset of current char in D$
+V= HBIT                    \ current bit of HB$ + HB$-PTR
+' DROP C= 'DVECTOR         \ pfa of display vector
+' NOP C= 'DVECTOR-INIT     \ pfa of display vector initializer
+' NOP C= 'DVECTOR-FINAL    \ pfa of display vector final
+\ : THERE PAD 288 + ;
+
+\ : B>PAD ( b -- )  THERE DUP C@ + 1+ C! 1 THERE +! ;
+\ ' B>PAD ' 'DVECTOR !
+\ : 0PAD ( -- )  THERE OFF ;
+\ ' 0PAD ' 'DVECTOR-INIT !
+---- Screen 2 ----
+( Huffman Decoder: DELTA-PTRS BRANCH-OR-OUT       3/29/85 AWK )
+
+: DELTA-PTRS ( -- )
+ HBIT @ DUP 128 = HB$-PTR +! 2/ DUP 0= 128 * + HBIT ! ;
+
+: BRANCH-OR-OUT ( b -- f )
+ HBIT C@ AND 0>                       \ left or right branch
+ BTADDR @ + BTOFFSET @ + C@ DUP 128 AND
+ IF 127 AND 2* BTOFFSET +!
+ ELSE 1 D$-OFF +! 'DVECTOR EXECUTE BTOFFSET OFF THEN
+ DELTA-PTRS HBIT @ 128 = ;
+
+\ execute 'DVECTOR if cell is a char else branch to new cell
+
+
+
+---- Screen 3 ----
+( Huffman Decoder: HUFF>)                          11/06/85 AWK )
+
+: HUFF> ( addr cnt -- )
+ BTOFFSET OFF D$-OFF OFF HB$-PTR OFF 128 HBIT !
+ 'DVECTOR-INIT EXECUTE
+ BEGIN DUP D$-OFF @ >
+ WHILE
+   BEGIN OVER HB$-PTR @ + C@ BRANCH-OR-OUT UNTIL
+ REPEAT 2DROP 'DVECTOR-FINAL EXECUTE ;
+
+\ translate Huffman compressed string into uncompressed string
+\ process each character through 'DVECTOR to send to display,
+\ string address, etc.
+
+
+
+---- Screen 4 ----
+( Huffman Decode Vectors                                AWK 11/06/85)
+
+: 0HUFFSPACE ( -- )  LSCAN OFF ;
+' 0HUFFSPACE ' 'DVECTOR-INIT !
+
+: B>HUFFSPACE ( b -- )
+ LSCAN DUP C@ + 1+ C! 1 LSCAN +! ;
+' B>HUFFSPACE ' 'DVECTOR !
+
+: CNT>LSCAN ( ( n -- n ) )
+ PHRASE$ 1+ C@ LSCAN C! ;
+
+' CNT>LSCAN ' 'DVECTOR-FINAL !
+
+
+

@@ -1,0 +1,293 @@
+==== Page 1 | 7-15-85 FILE: FLUX.CMP -- BINARY SYSTEMS | image FLUX_CMP_p01 ====
+---- Screen 1 ----
+STARMAP-X: 69            STARMAP-Y: 66                 ( 1    )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 9~        DESTINATION-Y: 79
+
+STARMAP-X: 9~            STARMAP-Y: 79                 ( 2    )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 69        DESTINATION-Y: 66
+
+STARMAP-X: 61            STARMAP-Y: 131                ( 3    )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 101       DESTINATION-Y: 77
+
+STARMAP-X: 101           STARMAP-Y: 77                 ( 4    )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 61        DESTINATION-Y: 131
+
+[handwritten: 98 written over last digit of DESTINATION-X value (near line 2)]
+[handwritten: 8 written over last digit of STARMAP-X value, reading 98 (near line 4)]
+---- Screen 2 ----
+STARMAP-X: 101           STARMAP-Y: 83                 ( 5    )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 142       DESTINATION-Y: 51
+
+STARMAP-X: 142           STARMAP-Y: 51                 ( 6    )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 101       DESTINATION-Y: 83
+
+STARMAP-X: 93            STARMAP-Y: 62                 ( 7    )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 97        DESTINATION-Y: 76
+
+STARMAP-X: 97            STARMAP-Y: 76                 ( 8    )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 93        DESTINATION-Y: 62
+
+---- Screen 3 ----
+STARMAP-X: 95            STARMAP-Y: 82                 ( 9    )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 150       DESTINATION-Y: 96
+
+STARMAP-X: 150           STARMAP-Y: 96                 ( 10   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 95        DESTINATION-Y: 82
+
+STARMAP-X: ~             STARMAP-Y: 82                 ( 11   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 118       DESTINATION-Y: 107
+
+STARMAP-X: 118           STARMAP-Y: 107                ( 12   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: ~         DESTINATION-Y: 82
+
+[handwritten: STARMAP-X value blacked out, 104 written beside it (near line 8)]
+[handwritten: DESTINATION-X value blacked out, 104 written beside it (near line 14)]
+---- Screen 4 ----
+STARMAP-X: 176           STARMAP-Y: 123                ( 13   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 217       DESTINATION-Y: 80
+
+STARMAP-X: 217           STARMAP-Y: 80                 ( 14   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 176       DESTINATION-Y: 123
+
+STARMAP-X: 178           STARMAP-Y: 127                ( 15   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 189       DESTINATION-Y: 190
+
+STARMAP-X: 189           STARMAP-Y: 190                ( 16   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 178       DESTINATION-Y: 127
+
+---- Screen 5 ----
+STARMAP-X: 9             STARMAP-Y: 16                 ( 17   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 135       DESTINATION-Y: 84
+
+STARMAP-X: 135           STARMAP-Y: 84                 ( 18   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 9         DESTINATION-Y: 16
+
+STARMAP-X: 22            STARMAP-Y: 22                 ( 19   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 25        DESTINATION-Y: 48
+
+STARMAP-X: 25            STARMAP-Y: 48                 ( 20   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 22        DESTINATION-Y: 22
+
+---- Screen 6 ----
+STARMAP-X: 130           STARMAP-Y: 108                ( 21   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 173       DESTINATION-Y: 6~
+
+STARMAP-X: 173           STARMAP-Y: 6~                 ( 22   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 130       DESTINATION-Y: 108
+
+STARMAP-X: 128           STARMAP-Y: 24                 ( 23   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 179       DESTINATION-Y: 52
+
+STARMAP-X: 179           STARMAP-Y: 52                 ( 24   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 128       DESTINATION-Y: 24
+
+[handwritten: last digit of DESTINATION-Y value blacked out, 1 written beside it, reading 61 (near line 2)]
+[handwritten: last digit of STARMAP-Y value blacked out, 1 written beside it, reading 61 (near line 4)]
+==== Page 2 | 7-15-85 FILE: FLUX.CMP -- BINARY SYSTEMS | image FLUX_CMP_p02 ====
+---- Screen 7 ----
+STARMAP-X: 180           STARMAP-Y: 52                 ( 25   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 232       DESTINATION-Y: 40
+
+STARMAP-X: 232           STARMAP-Y: 40                 ( 26   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 180       DESTINATION-Y: 52
+
+STARMAP-X: 190           STARMAP-Y: 28                 ( 27   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 194       DESTINATION-Y: 134
+
+STARMAP-X: 194           STARMAP-Y: 134                ( 28   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 190       DESTINATION-Y: 28
+
+---- Screen 8 ----
+STARMAP-X: 65            STARMAP-Y: 181                ( 29   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 106       DESTINATION-Y: 139
+
+STARMAP-X: 106           STARMAP-Y: 139                ( 30   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 65        DESTINATION-Y: 181
+
+STARMAP-X: 31            STARMAP-Y: 184                ( 31   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 64        DESTINATION-Y: 186
+
+STARMAP-X: 64            STARMAP-Y: 186                ( 32   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 31        DESTINATION-Y: 184
+
+[handwritten: pen stroke drawn around "( 29 )" (near line 0)]
+---- Screen 9 ----
+STARMAP-X: 23            STARMAP-Y: 199                ( 33   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 35        DESTINATION-Y: 186
+
+STARMAP-X: 35            STARMAP-Y: 186                ( 34   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 23        DESTINATION-Y: 199
+
+STARMAP-X: 54            STARMAP-Y: 143                ( 35   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 71        DESTINATION-Y: 151
+
+STARMAP-X: 71            STARMAP-Y: 151                ( 36   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 54        DESTINATION-Y: 143
+
+---- Screen 10 ----
+STARMAP-X: 53            STARMAP-Y: 143                ( 37   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 58        DESTINATION-Y: 140
+
+STARMAP-X: 58            STARMAP-Y: 140                ( 38   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 53        DESTINATION-Y: 143
+
+STARMAP-X: 56            STARMAP-Y: 142                ( 39   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 60        DESTINATION-Y: 146
+
+STARMAP-X: 60            STARMAP-Y: 146                ( 40   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 56        DESTINATION-Y: 142
+
+---- Screen 11 ----
+STARMAP-X: 55            STARMAP-Y: 146                ( 41   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 59        DESTINATION-Y: 144
+
+STARMAP-X: 59            STARMAP-Y: 144                ( 42   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 55        DESTINATION-Y: 146
+
+STARMAP-X: 51            STARMAP-Y: 132                ( 43   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 55        DESTINATION-Y: 145
+
+STARMAP-X: 55            STARMAP-Y: 145                ( 44   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 51        DESTINATION-Y: 132
+
+---- Screen 12 ----
+STARMAP-X: 15            STARMAP-Y: 135                ( 4~   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 54        DESTINATION-Y: 14~
+
+STARMAP-X: 54            STARMAP-Y: 14~                ( 4~   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 15        DESTINATION-Y: 135
+
+STARMAP-X: ~             STARMAP-Y: 94                 ( 47   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 71        DESTINATION-Y: 84
+
+STARMAP-X: 71            STARMAP-Y: 84                 ( 48   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: ~         DESTINATION-Y: 94
+
+[handwritten: last digit of DESTINATION-Y value blacked out, 6 written beside it, reading 146 (near line 2)]
+[handwritten: last digit of STARMAP-Y value blacked out, 6 written beside it, reading 146 (near line 4)]
+[handwritten: STARMAP-X value marked over ("12" partly visible), 7 written beside it (near line 8)]
+[handwritten: DESTINATION-X value marked over ("12" partly visible), 7 written beside it (near line 14)]
+[handwritten: record numbers in ( ) on lines 0,4,8,12 marked over with pen; 47 and 48 still readable (near lines 0-12)]
+==== Page 3 | 7-15-85 FILE: FLUX.CMP -- BINARY SYSTEMS | image FLUX_CMP_p03 ====
+---- Screen 13 ----
+STARMAP-X: 148           STARMAP-Y: ~                  ( 49   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 170       DESTINATION-Y: 93
+
+STARMAP-X: 170           STARMAP-Y: 93                 ( 50   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 148       DESTINATION-Y: ~
+
+STARMAP-X: 109           STARMAP-Y: 204                ( 51   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 234       DESTINATION-Y: 167
+
+STARMAP-X: 234           STARMAP-Y: 167                ( 52   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 109       DESTINATION-Y: 204
+
+[handwritten: STARMAP-Y value blacked out, 166 written beside it (near line 0)]
+[handwritten: DESTINATION-Y value blacked out, 166 written beside it (near line 6)]
+[handwritten: record numbers 49 and 50 marked over with pen but readable (near lines 0, 4)]
+---- Screen 14 ----
+STARMAP-X: 126           STARMAP-Y: 87                 ( 53   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 173       DESTINATION-Y: 88
+
+STARMAP-X: 173           STARMAP-Y: 88                 ( 54   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 126       DESTINATION-Y: 87
+
+STARMAP-X: 180           STARMAP-Y: 86                 ( 55   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 237       DESTINATION-Y: 153
+
+STARMAP-X: 237           STARMAP-Y: 153                ( 56   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 180       DESTINATION-Y: 86
+
+---- Screen 15 ----
+STARMAP-X: 229           STARMAP-Y: 148                ( 57   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 235       DESTINATION-Y: 49
+
+STARMAP-X: 235           STARMAP-Y: 49                 ( 58   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 229       DESTINATION-Y: 148
+
+STARMAP-X: ~             STARMAP-Y: 99                 ( ~    )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 248       DESTINATION-Y: 1
+
+STARMAP-X: 248           STARMAP-Y: 1                  ( ~    )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: ~         DESTINATION-Y: 99
+
+[handwritten: STARMAP-X value circled/marked over, 55 written beside it (near line 8)]
+[handwritten: DESTINATION-X value blacked out, 55 written beside it (near line 14)]
+[handwritten: record numbers on lines 8 and 12 blacked out (near lines 8, 12)]
+---- Screen 16 ----
+STARMAP-X: 128           STARMAP-Y: 105                ( 61   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 146       DESTINATION-Y: 112
+
+STARMAP-X: 146           STARMAP-Y: 112                ( 62   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 128       DESTINATION-Y: 105
+
+STARMAP-X: 123           STARMAP-Y: 127                ( 63   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 128       DESTINATION-Y: 143
+
+STARMAP-X: 128           STARMAP-Y: 143                ( 64   )
+OBJECT: FLUX             TRAVERSED: FALSE
+DESTINATION-X: 123       DESTINATION-Y: 127
+

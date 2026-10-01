@@ -1,0 +1,86 @@
+==== Page 1 | 11-05-85 -- BLT-OV CMP -- Binary Systems | image BLT-OV_CMP_p01 ====
+---- Screen 0 ----
+( --------- Overlay Prefix for BLT-OV ------------------------)
+
+VOCABULARY BLT-VOC IMMEDIATE
+78 OPEN-OVERLAY
+BLT-VOC DEFINITIONS
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+( COMBLT - .RUNBIT                                     9-12-85)
+HEX
+CREATE .RUNBIT ( seg off -- \ given location of run encoded)
+  ( string and XBLT, YBLT, WBLT, LBLT and COLOR set, plot BLT)
+  HERE DUP 2- ! FA C, FF C, 36 C, XBLT , 8F C, 06 C, X1 ,
+  FF C, 36 C, YBLT , 8F C, 06 C, Y1 , 5B C, 07 C, 26 C, 8B C,
+  0F C, 06 C, 8F C, 06 C, BLTSEG , 56 C, 57 C, 83 C, C3 C, 02 C,
+  89 C, 1E C, X2 , 8B C, 06 C, XBLT , 03 C, 06 C, WBLT , 89 C,
+  06 C, Y2 , 51 C, 33 C, C9 C, FF C, 36 C, BLTSEG , 07 C, 26 C,
+  8A C, 0F C, 43 C, 0B C, C9 C, 74 C, 7C C, 8B C, C3 C, 48 C,
+  2B C, 06 C, X2 , 25 C, 01 C, 00 C, 75 C, 52 C, FF C, 36 C,
+  BUF-SEG , 07 C, 8B C, 16 C, Y1 , D1 C, E2 C, 8B C, 06 C, X1 ,
+  03 C, 16 C, YTABL , 8B C, FA C, D1 C, E8 C, BA C, F0 C, 00 C,
+  73 C, 02 C, B2 C, 0F C, 03 C, 05 C, 8B C, F8 C, 26 C, 8A C,
+  05 C, 8A C, 36 C, COLOR , 22 C, F2 C, F6 C, D2 C, 22 C, C2 C,
+  0A C, C6 C, 26 C, 88 C, 05 C, FF C, 06 C, X1 , 8B C, 06 C,
+---- Screen 2 ----
+( COMBLT - .RUNBIT                                     9-12-85)
+HEX
+  X1 , 3B C, 06 C, Y2 , 75 C, 0C C, FF C, 36 C, XBLT , 8F C,
+  06 C, X1 , FF C, 0E C, Y1 , E2 C, B5 C, EB C, 1E C, 01 C,
+  0E C, X1 , 8B C, 06 C, X1 , 3B C, 06 C, Y2 , 78 C, 0C C,
+  2B C, 06 C, WBLT , FF C, 0E C, Y1 , EB C, F0 C, EB C, 04 C,
+  89 C, 06 C, X1 , 59 C, 49 C, 74 C, 03 C, E9 C, 6D C, FF C,
+  5F C, 5E C, 1E C, 07 C, FB C, AD C, 8B C, D8 C, FF C, 27 C,
+DECIMAL
+
+
+
+
+
+
+
+---- Screen 3 ----
+( COMBLT - .HYBRID                                     9-12-85)
+
+: .HYBRID ( seg -- \ plot a hybrid packed blt at seg: assumes)
+  ( xblt, yblt are set)
+  DUP BLTSEG ! >R  5 ABLT !
+  I 2 LC@ LBLT !  I 3 LC@ WBLT !
+  R> 4 LC@ 0 DO ABLT @ >R BLTSEG @ >R  4 ABLT +!
+                I I' 2+ LC@ COLOR !  R> R> 3 + LC@
+                IF   BLTSEG @ ABLT @ .RUNBIT
+                ELSE (BLT)
+                THEN
+                BLTSEG @ ABLT @ 4 - L@ 4 - ABLT +!
+             LOOP ;
+
+: PIC>PAD ( file# -- )  PAD ADDR>SEG 1+ SWAP FILE< ;
+
+---- Screen 4 ----
+( --------- Overlay Suffix for BLT-OV ------------------------)
+
+CLOSE-OVERLAY
+78 OVERLAY BLT-OV
+BLT-OV
+FORTH DEFINITIONS
+
+: .RUNBIT ( seg off -- ) BLT-OV BLT-VOC .RUNBIT ;
+: .HYBRID ( seg -- )     BLT-OV BLT-VOC .HYBRID ;
+: PIC>PAD ( file# -- )   BLT-OV BLT-VOC PIC>PAD ;
+
+OV-CANCEL
+
+
+
+

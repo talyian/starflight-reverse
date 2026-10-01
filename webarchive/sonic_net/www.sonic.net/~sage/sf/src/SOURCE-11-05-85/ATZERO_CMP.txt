@@ -1,0 +1,18 @@
+==== Page 1 | 7-15-85  FILE: ATZERO.CMP  --  BINARY SYSTEMS | image ATZERO_CMP_p01 ====
+---- Screen 1 ----
+( INSTALL /0 VECTOR FOR AT)
+
+HEX
+( CODE 0/ 0 POP 0 INC 0 PUSH )
+(  29 C, C0 C, 29 C, D2 C, CF C, NEXT )
+DECIMAL
+: >ATMODE ' 0/ 0 0 L! ( install vector) ;
+
+>ATMODE FORGET >ATMODE
+
+
+
+
+
+
+

@@ -1,0 +1,122 @@
+==== Page 1 | 7-15-85  FILE: FLUXEFCT.CMP  --  BINARY SYSTEMS | image FLUXEFCT_CMP_p01 ====
+---- Screen 0 ----
+( ----------------Flux Effect Overlay Prefix-------------------)
+
+VOCABULARY FLUX-VOC IMMEDIATE
+109 OPEN-OVERLAY
+FLUX-VOC DEFINITIONS
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 2 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 3 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 4 ----
+( Hyper WHOOSH                                   AWK 07/02/84 )
+
+CREATE HYPER-DOTS 50 ALLOT   V= ?STAR-TRAIL
+
+: NOVA ( n -- )
+ >R 5 20 RRND I C! 0 2 RRND DUP 0=
+ 72 * 0 2 RRND 2* 1- * -36 36 RRND + -36 MAX 35 MIN I 1+ !
+ 120 * 0 2 RRND 2* 1- * -60 60 RRND + -60 MAX 59 MIN R> 3 + ! ;
+
+: INIT-HYPER-STARS ( -- )
+ 50 0 DO HYPER-DOTS I + NOVA 5 +LOOP ;
+
+
+
+
+
+---- Screen 5 ----
+( Hyper WHOOSH                                   AWK 07/02/84 )
+: HYPER-PLOT ( n -- )
+ HYPER-DOTS + >R
+ I 3 + @ I C@ / 36 + 0 MAX 71 MIN
+ I 1+ @ I C@ / 60 +  0 MAX 119 MIN LPLOT I C@ 1- ?DUP 0=
+ IF R> NOVA ELSE R> C! THEN ;
+
+: HYPER-FRAME ( -- )
+ ?STAR-TRAIL @ IF DARK THEN
+ 50 0 DO I HYPER-PLOT 5 +LOOP V>DISPLAY ;
+
+: FLUX-EFFECT ( -- )
+ >MAINVIEW 1 ?STAR-TRAIL ! INIT-HYPER-STARS
+ 100 0 DO HYPER-FRAME
+ LOOP DARK V>DISPLAY >DIS~~AY ;
+
+[note: screen 5 line 14, two characters after ">DIS" are hidden by a binder hole]
+==== Page 2 | 7-15-85  FILE: FLUXEFCT.CMP  --  BINARY SYSTEMS | image FLUXEFCT_CMP_p02 ====
+---- Screen 6 ----
+( ----------------Flux Effect Overlay Suffix-------------------)
+
+CLOSE-OVERLAY
+109 OVERLAY FLUX-OV
+FLUX-OV FORTH DEFINITIONS
+: ovFLUX-EFFECT FLUX-OV FLUX-VOC FLUX-EFFECT ;
+
+OV-CANCEL
+
+
+
+
+
+
+
+

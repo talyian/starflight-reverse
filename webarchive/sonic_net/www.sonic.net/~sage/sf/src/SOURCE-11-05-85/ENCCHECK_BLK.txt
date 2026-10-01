@@ -1,0 +1,138 @@
+==== Page 1 | 11-05-85 -- ENCCHECKBLK -- Binary Systems | image ENCCHECK_BLK_p01 ====
+---- Screen 0 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+
+
+61 22 1 IFIELD ?VES-CLASS0   61 23 1 IFIELD ?VES-CLASS1
+61 24 1 IFIELD ?VES-CLASS2   61 25 1 IFIELD ?VES-CLASS3
+
+25 34 42 AFIELD VES-READINGS
+
+
+
+
+
+
+
+
+
+
+---- Screen 2 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 3 ----
+( Sensor Readings Graphics                        AWK 8/13/85 )
+CREATE E-TABLE   RED C, ORANGE C, YELLOW C,
+CREATE B-TABLE   LT-BLUE C, BLUE C, GREEN C,
+
+: >RCOLOR ( addr -- )
+ C@ IF B-TABLE ELSE E-TABLE THEN 0 3 RRND + C@ !COLOR ;
+
+: RSHAPE ( addr -- x y )
+ >R I 1+ C@
+ IF 0 I 4 + C@ 1+ RRND I 4 + C@ DUP *
+   OVER DUP * - 0 SQRT 1+ 0 SWAP RRND
+   0 2 RRND IF NEGATE THEN >R
+   0 2 RRND IF NEGATE THEN    2/   I' 2+ C@ + R> I 3 + C@ +
+ ELSE
+   I 2+ C@ I 4 + C@ 1+ RRND I 5 + C@ I 3 + C@ 1+ RRND
+ THEN R> DROP ;
+---- Screen 4 ----
+( Sensor Readings Graphics                        AWK 8/13/85 )
+
+: .READING ( addr -- )
+ DUP >RCOLOR RSHAPE 2DUP OR
+ IF >R xBLT @ 80 > 80 * + R> yBLT @ + 5 + LPLOT
+ ELSE 2DROP THEN ;
+
+: .VREADINGS ( -- )
+ 75 0 DO
+   VES-READINGS 42 OVER + SWAP DO I .READING 6 +LOOP
+ LOOP ;
+
+: .VESSEL ( n -- )
+ ?DUP IF RECORD# ! 25 FILE# ! COLOR @ .VREADINGS !COLOR
+ SET-CURRENT THEN ;
+
+---- Screen 5 ----
+
+: .01 ." ELOWAN" ;     : .02 ." GAZURTOID" ;
+: .03 ." MECHAN" ;     : .04 ." MYSTERION" ;
+: .05 ." NOMAD" ;      : .06 ." SPEMIN" ;
+: .07 ." THRYNN" ;     : .08 ." VELOX" ;
+: .09 ." UHLEK" ;      : .010 ." VELOX PROBE" ;
+: .011 ." MINSTREL" ;  : .018 ." ENTERPRISE" ;
+: .019 ." DERELICT" ;  : .DUN ." UNDEFINED" ;
+
+CASE .ORIGINATOR
+ 1 IS .01  2 IS .02  3 IS .03  4 IS .04  5 IS .05  6 IS .06
+ 7 IS .07  8 IS .08  9 IS .09 10 IS .010 11 IS .011 18 IS .018
+ 19 IS .019
+OTHERS .DUN
+
+
+==== Page 2 | 11-05-85 -- ENCCHECKBLK -- Binary Systems | image ENCCHECK_BLK_p02 ====
+---- Screen 6 ----
+
+: .ENCOUNTER ( -- )
+ >DISPLAY DARK BLUE !COLOR >1FONT
+ 4 180 POS. ." ADDRESS: " CI D.
+ 4 172 POS. @INST-SPECIES .ORIGINATOR
+ 4 164 POS. ." X: " INST-X @ *MAPSCALE / 3 .R
+      SPACE ." Y: " INST-Y @ *MAPSCALE / .
+ 4 100 POS. ." UNKNOWNS:   " ?VES-CLASS0 C@ DUP . .VESSEL
+84 100 POS. ." TRANSPORTS: " ?VES-CLASS1 C@ DUP . .VESSEL
+ 4  20 POS. ." SCOUTS:     " ?VES-CLASS2 C@ DUP . .VESSEL
+84  20 POS. ." WARSHIPS:   " ?VES-CLASS3 C@ DUP . .VESSEL ;
+
+
+
+
+
+---- Screen 7 ----
+
+
+: .ENCOUNTERS ( -- )
+ IROOT >C+S SUBROOT IOPEN
+ BEGIN @INST-CLASS 61 =
+   IF .ENCOUNTER KEY 27 =
+     IF QUIT THEN
+   THEN NEXT-NODE CI IROOT D=
+ UNTIL ICLOSE ICLOSE >0FONT ;
+
+
+
+
+
+
+

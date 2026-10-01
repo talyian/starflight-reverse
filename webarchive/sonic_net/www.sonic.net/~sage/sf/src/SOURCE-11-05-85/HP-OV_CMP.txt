@@ -1,0 +1,1057 @@
+==== Page (none) | (no header) | image HP-OV_CMP_p01 ====
+ 0 \ OVERLAY PREFIX: SETTING CLASS/ORDER AFIELDS
+ 1 \ constants
+ 2 \ phrased getter/debugger
+ 3 \ start of phrase to iaddr retrieval
+ 4 \ localized search
+ 5 \ scanning word for finding a particular phrase
+ 6 \ actual s" word compiles double literal instance
+ 7
+ 8 \ find a phrase,species,ord object
+ 9 \ find a phrase,species,ord object
+10 \ test species of a phrase for singular or plural
+11 ( RANDOM NUMBER GENERATOR FROM STARTING FORTH
+12
+13
+14 \ PERCENTAGE ARRAYS FOR COMPUTING EXISTENCE OF LIF
+15 \ attribute fields for planets
+16 \ orders fields
+17 \ continue orders
+18 \ whichguy force current CREATURE attribute file
+19 \ PROBABILITY ARRAY : CURRENTLY ONE OF A KIND
+20 \ store an offset into prob array header
+21 ( CASE STATEMENT BY CHARLES EAKER )
+22 ( RESULT FROM ACCESSING PROBABILITY ARRAY
+23 \ maybe and =chance for probability arrays
+24 \ start of context object
+25 \ "shape table"
+26 \ probs for animal class  surfacing
+27 \ classes shaping routine
+28 \ continue classes epiderm
+29 \ generate CLASS.PARMS
+30 \ probs arrays for animal orders ground appendages
+31 \ textures for surfaces
+32 \ continue surface textures
+33 \ continue surface textures
+34 \ continue (patch) surface textures
+35 \ finish surface textures
+36 \ weapon fetature probability array
+37 \ decorative feature probability array
+38 \ #of... legs
+39 \ movement mode for beings with legs
+40 \  orders sizing and setting class fields
+41 \ color selection forall plants orders
+42 \ color selection forall plants orders
+43 \ select weapon
+44 \ animate #of legs
+45 \ flying generation
+46 \ continue setting flying orders
+47 \ plant mobility
+48 \ continue with plants/animals
+49 \ choose animals orders ground appendage (and plan
+50 \ choosing ground movement mode
+51 \ setting ground movement mode
+52 \ animate #of legs
+53 \ finish surface textures
+54 \ copying order information: stack, retrieve and d
+55 \ copying minimal information: regions and niches
+55 \ copying minimal information: regions and niches
+56 \ OVERLAY SUFFIX: SETTING CLASS/ORDER AFIELDS
+57 \ BIO module caller
+
+==== Page 1 | 11-05-85 -- HP-OV  CMP -- Binary Systems | image HP-OV_CMP_p02 ====
+---- Screen 0 ----
+\ OVERLAY PREFIX: SETTING CLASS/ORDER AFIELDS     rfg14jun85)
+vocabulary hiparms immediate
+
+89 open-overlay
+hiparms definitions
+
+ 2250 trans-allot
+newt-dp
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+\ constants                                       rfg14jun85)
+decimal
+
+ 32 c: planet
+ 24 c: star
+ 67 c: regions
+ 68 c: creature
+regions iheadlen 2 ifield: crowding
+
+
+
+
+
+
+
+
+---- Screen 2 ----
+\ phrased getter/debugger
+
+head: difind  t: 2dup ifind t;
+
+ transient
+: PRESENT
+ BOX-IADDR 1.5@ >c+s IOPEN ;
+ resident
+
+
+
+
+
+
+
+
+---- Screen 3 ----
+\ start of phrase to iaddr retrieval
+ transient
+2V= found
+
+: scan" \ parse to " --- addr,count
+  ascii " word count 2dup >uppercase ;
+
+: ?match
+0 dup found 1.5!
+dup phr-cnt c@ =
+  if CI found 1.5!  phrase phr-cnt c@  0 do
+    3 pick i + c@ over i + c@  -
+    if 0 DUP found 1.5! leave then loop drop
+  then ;
+
+
+---- Screen 4 ----
+\ localized search
+\ still uses ?first exit test, so doesn't wrap
+2v= (Starting)
+
+: defaultStart
+ file# @ record# @ >r >r
+ present ci (starting) 1.5! cdrop  iclose
+ r> r> record# ! file# ! ;
+defaultstart
+: startAt
+  box-iaddr 1.5@ >c (starting) 1.5@ >c+s ;
+
+
+
+
+
+---- Screen 5 ----
+\ scanning word for finding a particular phrase
+\ follow s" with the phrase object to be found
+: (s") 0 dup found 1.5!
+record# @ >r file# @ >r
+' nop 'map ! ' inext 'travers ! ' ?>first '?exit !
+startat  scan"
+begin ?match inext ?first found 1.5@ or or until
+found 1.5@ - 0=
+if ." Phrase " type ."  not found" abort then
+2drop cdrop  iclose found 1.5@
+r> file# ! r> record# ! ;
+
+\ leaves Instance address on top of stack; use >c+s!!
+
+
+
+==== Page 2 | 11-05-85 -- HP-OV  CMP -- Binary Systems | image HP-OV_CMP_p03 ====
+---- Screen 6 ----
+\ actual s" word compiles double literal instance addresses
+
+: s" (s") [compile] 2literal ; immediate
+: start" [compile] s" (starting) 1.5! ;
+ resident
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 7 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 8 ----
+\ find a phrase,species,ord object
+head: rput t:  record# @ file# @ t;
+head: rget t: file# ! record# ! t;
+
+head: 1.5, t:  here 3 allot 1.5! t;
+
+head: iaddr-array  \ run-time: ord --- addr | contains iaddr
+t:  create
+  does> swap 3* + t;
+
+exit
+
+
+
+
+
+---- Screen 9 ----
+\ find a phrase,species,ord object
+
+defaultstart
+27 iaddr-array ?color
+s" red" 1.5, s" red" 1.5,
+s" maroon" 1.5, s" rust-colored" 1.5,
+s" pink" 1.5,  s" reddish orange" 1.5, s" brown" 1.5,
+s" beige" 1.5, s" copper-colored" 1.5, s" orange" 1.5,
+s" yellowish orange" 1.5, s" yellow" 1.5, s" lemon yellow" 1.5,
+s" yellowish green" 1.5, s" brownish green" 1.5, s" green" 1.5,
+s" lime green" 1.5, s" blue-green" 1.5, s" turquoise" 1.5,
+s" blue" 1.5, s" lavendar" 1.5,  s" violet" 1.5,
+s" purple" 1.5, s" white" 1.5, s" grey" 1.5, s" black" 1.5,
+s" very blue" 1.5,
+
+
+---- Screen 10 ----
+\ test species of a phrase for singular or plural
+
+head: ?s \ phrase object# --- object#,tflag if plural only
+t: rput >r >r \ save the creature file,record
+  2dup >c+s phr-cnt c@ 1-
+  phrase + c@ ascii S = \ check last letter of ph
+  @inst-species  4 = or \ plural only ?
+  iclose r> r> rget t; \ restore creature
+
+head: ?. t: rput >r >r 2dup >c+s \ test for 'no dtrm
+     @inst-species 5 = iclose r> r> rget t;
+
+head: .?  t: rput >r >r 2dup >c+s \ test for singular
+  @inst-species 3 = iclose r> r> rget t;
+\ above two, same parm. format as ?s
+
+---- Screen 11 ----
+( RANDOM NUMBER GENERATOR FROM STARTING FORTH         12/23/83 )
+ DECIMAL
+
+head: crandom t: 0 256 rrnd t;
+head: COIN t:  0 2  rrnd t;
+head: RAND% t:  1 100 rrnd t;
+head: constrain \ lo,hi,value --- value clipped within lo,hi
+t:    min max t;
+
+head: scale t: >r 1+ over - r> 256 */ + t;
+head: slipper t: crandom (slipper) t;
+head: slip! t: begin slipper until  scale t;
+
+
+
+
+==== Page 3 | 11-05-85 -- HP-OV  CMP -- Binary Systems | image HP-OV_CMP_p04 ====
+---- Screen 12 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 13 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 14 ----
+\ PERCENTAGE ARRAYS FOR COMPUTING EXISTENCE OF LIFrfg14jun85)
+v: probable
+head: %likely t: probable ! t;
+head: probably t:  rand% probable @ < t;
+
+head: %% t:  CREATE 0 ,
+     DOES> OVER + + @ t;
+
+
+(  THIS IS USED TO BUILD ARRAYS WHICH CONTAIN PERCENTAGES
+THESE %S ARE USED TO ADD OR SUBTRACT FROM A BASE % FOR A
+TEMPERATURE REGION. THE RESULTING PERCENTAGE, WHEN COMPARED
+TO A RANDOMLY DERIVED % , WILL DETERMINE IF THERE IS LIFE
+ON THE PLANET AS A WHOLE, AND ALSO IF THERE IS LIFE IN A
+PARTICULAR TEMPERATURE REGION.)
+
+---- Screen 15 ----
+\ attribute fields for planets                    rfg14jun85)
+
+planet 4 1 afield: plan-life
+planet 19 1 afield: atmo.density
+planet 20 3 afield: narrowest
+planet 21 2 afield: flattest
+planet 2 2 afield: plan-mass
+
+
+
+
+
+
+
+
+
+---- Screen 16 ----
+\ orders fields                                   rfg14jun85)
+creature   0  2   afield:   cllo \ lo record# for this class
+creature   2  2   afield:   clhi  \ hi record#
+creature   4  3   afield:   shape      \ token
+creature   7  3   afield:   exterior \ token
+\ creature 10  1 afield region \ record# in REGIONS file
+creature 11  1 afield: size.index
+creature 12  1 afield: niche
+creature 13  3 afield: reddest
+creature 16  3 afield: bluest
+creature 19  3 afield: texture
+creature 22  3 afield: w.append
+creature 25  1 afield: w#
+creature 26  3 afield: d.append
+creature 29  1 afield: d#
+
+---- Screen 17 ----
+\ continue orders                                 rfg14jun85)
+creature 30  3 afield: a.append
+creature 33  1 afield: a#
+creature 34  3 afield: g.append
+creature 37  1 afield: g#
+creature 38 3 afield: g.mobility
+creature 41 3 afield: a.mobility
+creature 44 2 afield: orlo \ lo record# for an order
+creature 46 2 afield: orhi \ hi record#
+
+
+
+
+
+
+
+==== Page 4 | 11-05-85 -- HP-OV  CMP -- Binary Systems | image HP-OV_CMP_p05 ====
+---- Screen 18 ----
+\ whichguy force current CREATURE attribute file
+ transient
+: 2OF             4 ?PAIRS COMPILE 2OVER COMPILE d= COMPILE
+                 0BRANCH HERE 0 , COMPILE 2DROP 5 ; IMMEDIATE
+ resident
+head: 2pick t:  dup >r pick r> pick t;
+
+head: ?2dup t: 2dup or if 2dup then t;
+
+head: whichguy \ force current attribute file to be referent
+t: creature dup file# ! record# @ @record drop t;
+
+
+
+
+
+---- Screen 19 ----
+\ PROBABILITY ARRAY : CURRENTLY ONE OF A KIND
+head: MAPS \ [CELL W/LENGTH OF MAP] --- [HI] [LO] FOR DO...LOOP
+  t:  DUP @ 2+ RANGE 2+ t;
+
+head: PROBS \ <N> PROBS , N IS NUMBER OF (SINGULAR) ROW VALUES
+t: CREATE 6 * DUP , here over allot swap 0 fill
+DOES> 0 4 roll 4 roll 4 roll  MAPS
+    DO I 2@ 3 pick = >r 3 pick = r> and
+        IF I 4 roll DROP rot rot LEAVE THEN
+    6 +LOOP 2DROP ?DUP
+    IF 4 + @ ELSE
+    ." INDEX NOT IN PROBABILITY ARRAY! " unravel quit
+    THEN t;
+
+
+
+---- Screen 20 ----
+\ store an offset into prob array header
+ transient
+decimal variable %total 100 %total !
+: %remain 100 %total @ - ;
+: mark \ row value ---
+  latest pfa maps
+   do i 2@ or 0= if i leave then 6 +loop
+  here over 4 + ! 2!
+  0 %total ! ;
+
+: %, \ result, 0<=probability<=100 ---
+  %total over over @ + c, +! \ compiled prob. is a byte
+ 1.5, ; \ the stored result may be a literal, pfa, etc..
+: 0p 0 %, ;
+
+
+---- Screen 21 ----
+( CASE STATEMENT BY CHARLES EAKER )
+ DECIMAL
+: !CSP SP@ CSP ! ;
+: ECASE            ?COMP CSP @ !CSP 4 ; IMMEDIATE
+
+: EOF              4 ?PAIRS COMPILE OVER COMPILE = COMPILE
+                  0BRANCH HERE 0 , COMPILE DROP 5 ; IMMEDIATE
+
+: ENDOF           5 ?PAIRS COMPILE BRANCH HERE 0 ,
+                  SWAP 2 [COMPILE] THEN  4 ; IMMEDIATE
+
+: ENDCASE         4 ?PAIRS COMPILE DROP BEGIN SP@
+                  CSP @ = 0= WHILE 2 [COMPILE]
+                  THEN  REPEAT CSP ! ; IMMEDIATE
+ resident
+
+---- Screen 22 ----
+( RESULT FROM ACCESSING PROBABILITY ARRAY                01/10/84 )
+decimal
+
+head: CHANCE \ [SAMPLE BYTE] [KEYED ADDRESS] --- [PROB CELL]
+t:   BEGIN OVER OVER C@
+    DUP 100 = NOT >R
+          > R> AND
+     WHILE 1+ 3+ \ SKIP PAST THIS PROB.  AND RESULT
+     REPEAT t;
+
+head: RESULT t: CHANCE 1+ 1.5@ rot DROP t;
+
+\ THE RESULT MAY BE A VALUE, ADDRESE, ETC.
+\ for niches THE PROBABILITY ROW IS 0<=AN OFFSET<=15
+
+
+---- Screen 23 ----
+\ maybe and =chance for probability arrays
+ transient
+: maybe \ row# --- start address   in multirow prob array
+   mark here 2 ;
+variable fraction variable quotient
+
+: =chance \ start addr
+  2 ?pairs 1 %total ! \ intial counter
+ here swap over over - 300 over /mod
+  quotient !  100 * swap / dup fraction ! rot rot
+    do quotient @ over 49 > if 1+ then %total +!
+      %total @ 100 min i c! fraction @ + 100 mod \ patch 0p's
+  4 +loop drop
+  100 here 4 - c! ; \ fudge final
+ resident
+
+==== Page 5 | 11-05-85 -- HP-OV  CMP -- Binary Systems | image HP-OV_CMP_p06 ====
+---- Screen 24 ----
+\ start of context object                              rfg13apr84
+decimal
+
+
+head: (kng) t: 4 mod if plants else animals then t;
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 25 ----
+\ "shape table"                                        rfg18may84
+start" bilateral"
+2 probs shapes animals 0 mark
+s" amorphous" 10 %,  s" irregular"  10 %,  s" spherical"  15 %,
+s" radial"  25 %,   s" bilateral" 40 %,
+
+plants 0 mark
+s" amorphous"  5 %,  s" irregular"  5 %, s" spherical"  5 %,
+s" radial"  30 %,   s" bilateral" 55 %,
+defaultstart
+
+
+
+
+
+
+---- Screen 26 ----
+\ probs for animal class  surfacing                      rfg18may
+5 probs epiderm  start" hair"
+s" bilateral" mark  s" scales" 10 %, s" exoskeleton" 10 %,
+s" skin" 5 %, s" hair" 5 %, s" feathered surface"  5 %,
+s" armor"  5 %, s" surface" 10 %, s" patterned surface" 7 %,
+s" fur" 10 %, -1. %remain %,
+s" radial" mark s" scales" 10 %, s" exoskeleton" 10 %,
+s" fur" 10 %, s" skin" 5 %, s" hair" 5 %, s" armor" 5 %,
+s" surface"  10 %, s" patterned surface" 7 %,    -1. %remain %,
+
+s" spherical" mark
+s" scales" 10 %, s" fur" 0 %, s" hair" 5 %, s" armor" 5 %,
+s" surface" 10 %,                          -1. %remain %,
+s" irregular" mark  s" surface" 100 %,
+s" amorphous" mark s" surface"  100 %,
+defaultstart
+---- Screen 27 ----
+\ classes shaping routine
+
+head: shaper
+t:  rand% niche c@ (kng) 0  shapes result
+ shape 1.5! t;
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 28 ----
+\ continue classes epiderm                                 rfg19may84
+
+head: outfit \  --- [exterior]
+ t: shape 1.5@
+    begin 2dup rand% rot rot epiderm result
+       over 1+ ?dup 0= if drop 1+ then
+     until >r >r 2drop r> r> t;
+
+head: pelts  \ runs at classes level
+  t:  niche c@ (kng) animals =
+        if  outfit
+        else s" surface"
+        then exterior 1.5!  t;
+
+
+
+---- Screen 29 ----
+\ generate CLASS.PARMS                                     rfg14jun85)
+head: class.parms
+ t:  plhi @ 1+ record# off
+     begin whichguy record# @ over <
+     while shaper  pelts
+    shape 1.5@ exterior 1.5@
+      clhi @  1+ cllo @ 1+ 2dup -  \ more than one order?
+   if  do i record# ! whichguy
+         2dup exterior 1.5! 2over  shape 1.5!
+       loop
+   else 2drop
+   then 2drop 2drop 1 record# +!
+     repeat drop  t;
+
+
+
+==== Page 6 | 11-05-85 -- HP-OV  CMP -- Binary Systems | image HP-OV_CMP_p07 ====
+---- Screen 30 ----
+\ probs arrays for animal orders ground appendages    rfg05jun84
+
+5 probs animal.appendage
+start" cilia"
+s" bilateral" mark 0. 20 %, s" leg" 40 %,
+s" tentacle" 30 %, s" pseudopod" 5 %, s" cilia" %remain %,
+s" radial" mark 0. 5 %, s" leg" 30 %,
+s" tentacle" 40 %, s" pseudopod" 20 %, s" cilia" %remain %,
+s" spherical" mark  0. 40 %, s" leg" 5 %,
+s" tentacle" 5 %, s" pseudopod" 30 %, s" cilia"  %remain %,
+s" amorphous" mark  0. 20 %, s" leg" 5 %,
+s" tentacle" 5 %, s" pseudopod" 40 %, s" cilia"  %remain %,
+s" irregular" mark 0.  20 %, s" leg"  5 %,
+s" tentacle" 5 %, s" pseudopod" 30 %,  s" cilia" %remain %,
+defaultstart
+
+---- Screen 31 ----
+\ textures for surfaces                              rfg04jul8
+9 probs appearance defaultstart
+s" surface"  maybe  start" soft"
+s" waxy" 0p s" downy" 0p s" filmy" 0p  s" dull" 0p
+s" shivering" 0p s" metallic" 0p s" serrated" 0p s" bristly" 0p
+s" fuzzy" 0p s" hairy" 0p s" warty" 0p s" rubbery" 0p
+s" plastic-like" 0p  s" hard" 0p s" fleshy" 0p  s" leathery" 0p
+s" spongy" 0p s" fibrous" 0p s" oily" 0p s" thorny" 0p
+s" veined" 0p s" pocked" 0p s" bumpy" 0p s" jagged" 0p
+s" dripping" 0p s" cracked" 0p s" shiney" 0p
+s" smooth" 0p s" sticky" 0p s" gooey" 0p s" gummy" 0p
+s" dry" 0p s" horny" 0p  s" mucousy" 0p s" soft" 0p
+s" glassy" 0p s" crystalline" 0p s" gnarly" 0p =chance
+defaultstart
+
+
+---- Screen 32 ----
+\ continue surface textures                          rfg04jul84
+s" skin" maybe s" waxy" 0p s" filmy" 0p s" dull" 0p
+s" leafy" 0p s" mucousy" 0p s" hairy" 0p s" warty" 0p
+s" horny" 0p s" plastic-like" 0p s" hard" 0p s" fleshy" 0p
+s" dry" 0p s" spongy" 0p s" oily" 0p s" veined" 0p s" pocked" 0p
+ s" coarse" 0p s" bumpy" 0p s" crusty" 0p s" slick" 0p
+s" cracked" 0p s" shiney" 0p s" wet" 0p s" rough" 0p s" soft" 0p
+ s" dripping" 0p s" sticky" 0p s" gooey" 0p s" gummy" 0p
+s" chitenous" 0p s" leathery" 0p s" rubbery" 0p =chance
+s" hair" maybe  s" flowing" 0p  s" wirey" 0p s" tangled" 0p
+s" matted" 0p s" bristly" 0p s" fuzzy" 0p s" oily" 0p
+s" curly" 0p s" shiney" 0p s" smooth" 0p s" soft" 0p
+s" coarse" 0p =chance
+s" fur" maybe s" wirey" 0p s" tangled" 0p s" curly" 0p
+s" matted" 0p s" bristly" 0p s" fuzzy" 0p s" oily" 0p
+s" coarse" 0p s" shiney" 0p s" smooth" 0p s" soft" 0p  =chance
+---- Screen 33 ----
+\ continue surface textures
+s" feathered surface" maybe s" curly" 0p s" matted" 0p
+start" soft" s" curly" 0p s" matted" 0p
+s" downy" 0p s" bristly" 0p s" bristly" 0p s" fuzzy" 0p
+s" fleshy" 0p s" leathery" 0p s" coarse" 0p s" shiney" 0p
+s" soft" 0p s" leafy" 0p  =chance defaultstart
+s" scales" maybe
+start" soft" s" filmy" 0p s" dull" 0p s" boney" 0p
+s" chitenous" 0p s" leafy" 0p s" serrated" 0p s" fuzzy" 0p
+s" rubbery" 0p s" horny" 0p s" plastic-like" 0p s" hard" 0p
+s" fleshy" 0p s" leathery" 0p s" dry" 0p s" spongy" 0p
+s" oily" 0p s" gnarly" 0p s" striated" 0p s" bumpy" 0p
+s" crusty" 0p s" slick" 0p s" jagged" 0p s" glassy" 0p
+s" shiney" 0p s" crystalline" 0p s" rough" 0p
+s" soft" 0p s" smooth" 0p  =chance defaultstart
+
+---- Screen 34 ----
+\ continue (patch) surface textures
+s" armor" maybe
+start" soft"  s" filmy" 0p s" dull" 0p s" boney" 0p
+s" chitenous" 0p s" horny" 0p s" plastic-like" 0p
+s" hard" 0p s" leathery" 0p s" dry" 0p s" thorny" 0p
+s" gnarly" 0p s" striated" 0p s" pocked" 0p
+s" bumpy" 0p s" crusty" 0p s" shiney" 0p s" crystalline" 0p
+s" rocky" 0p s" rough" 0p s" smooth" 0p =chance
+defaultstart
+
+
+
+
+
+
+
+---- Screen 35 ----
+\ finish surface textures
+s" exoskeleton" maybe
+start" soft"  s" filmy" 0p s" dull" 0p s" boney" 0p
+s" chitenous" 0p s" horny" 0p s" plastic-like" 0p
+s" hard" 0p s" leathery" 0p s" dry" 0p s" thorny" 0p
+s" gnarly" 0p s" striated" 0p s" pocked" 0p s" bumpy" 0p
+s" crusty" 0p s" shiney" 0p s" crystalline" 0p
+s" rough" 0p s" smooth" 0p =chance  defaultstart
+s" patterned surface" mark 0. 100 %,
+
+
+
+
+
+
+
+==== Page 7 | 11-05-85 -- HP-OV  CMP -- Binary Systems | image HP-OV_CMP_p08 ====
+---- Screen 36 ----
+\ weapon fetature probability array
+2 probs weaponry
+animals 0 mark
+0. 30 %, s" mandible" 5 %, s" teeth" 5 %,
+s" beak" 5 %, s" claws" 5 %, s" quills" 5 %, s" pincer" 5 %,
+s" tusk" 5 %, s" horn" 5 %, s" stinger" 5 %, s" poison sac" 5 %,
+ s" acid sac" %remain %,
+plants 0 mark
+0. 20 %, s" thorns" 30 %, s" poison sac" 20 %,
+s" acid sac" %remain  %,
+
+
+
+
+
+
+---- Screen 37 ----
+\ decorative feature probability array
+2 probs decorations
+plants 0 mark
+s" protrusion" 5 %, s" flowers" 15 %, s" fruits" 4 %,
+s" berries" 4 %, s" projection" 5 %, s" bark" 4 %,
+s" bulbs" 5 %, s" leaves" 20 %, s" vines" 10 %,
+s" stem" 10 %, s" branches" %remain %,
+animals 0 mark
+s" snout" 5 %, s" feeler" 3 %, s" shell" 5 %,
+s" protrusion" 4 %, s" crest" 2 %, s" mane" 2 %,
+s" ear" 7 %, s" compound eye" 9 %, s" eye spot" 7 %,
+s" eye stalk" 7 %, s" eye" 10 %, s" head" 9 %,
+s" mouth" 5 %, s" whiskers" 3 %, s" plumes" 2 %,
+s" projection" 4 %, s" tata" 1 %, s" hooter" 1 %,
+s" bazwango" 1 %, s" fendibular extremulator" 3 %,
+s" tail" %remain %,
+---- Screen 38 ----
+\ #of... legs                                         rfg18jun84
+5 probs #legs  s" bilateral" mark
+1. 10 %, 1. 5 %, 2. 18 %, 4. 10 %, 6. 12 %, 8. 12 %, 12. 10 %,
+3. 1 %, 5. 1 %, 7. 3 %, 9. 3 %, 11. 3 %, 10. %remain %,
+s" radial" mark
+2. 2 %,  4. 2 %,  6. 12 %,  8. 12 %,  10. 12 %,  12. 2 %,
+1. 2 %,  3. 2 %,  5. 2 %,  7. 12 %,  9. 12 %,   11. 12 %,
+32767. %remain %, \ this represents 'many' in this instance
+s" spherical" mark
+  0. 30 %,  2. 10 %,  4. 2 %, 6. 5 %, 8. 5 %, 10. 5 %, 12. 2 %,
+ 1. 2 %, 3. 2 %, 5. 2 %, 7. 5 %, 9. 5 %, 11. 5 %,
+ 32767. %remain %,
+s" irregular" mark 0. 20 %, 6. 4 %, 7. 4 %, 8. 4 %, 9. 4 %,
+ 10. 4 %, 11. 4 %, 32767. %remain %,
+s" amorphous" mark 0. 100 %,
+
+---- Screen 39 ----
+\ movement mode for beings with legs                       rfg08jun8
+start" sessile"
+6 probs legg  \ indexed by gravity
+1. mark  s" walking" 5 %,    s" hopping" 10 %,
+         s" jumping" 30 %,  s" leaping" 55 %,
+2. mark  s" walking" 10 %,  s" hopping" 15 %,
+         s" jumping" 30 %,  s" leaping" 45 %,
+3. mark  s" walking" 15 %,  s" hopping" 20 %,
+         s" jumping" 30 %,  s" leaping" 35 %,
+4. mark  s" walking" 35 %,  s" hopping" 30 %,
+         s" jumping" 20 %,  s" leaping" 15 %,
+5. mark  s" walking" 45 %,  s" hopping" 30 %,
+         s" jumping" 15 %,  s" leaping" 10 %,
+6. mark  s" walking" 55 %,  s" hopping" 30 %,
+         s" jumping" 10 %,  s" leaping" 5 %,
+defaultstart
+---- Screen 40 ----
+\  orders sizing and setting class fields            rfg18apr85
+head: sizing
+t: record# @ >r (planet) 1.5@
+  >c+s plan-mass @ 100 / 5 min 1+ iclose
+   6 swap - 20 * peak ! 10 100 slip! 12 / 1+ 1 max 9 min
+   r> record# ! whichguy  size.index c! t;
+
+head: spec>color
+t: rput  >r >r (system) 1.5@ >c+s @inst-species
+ecase ascii M eof ( red) 1 endof  ascii K eof ( orange) 9 endof
+ascii G eof ( yellow) 11 endof  ascii F eof ( white) 24 endof
+ascii A eof ( green) 15 endof  ascii B eof ( blue) 19 endof
+ascii O eof  ( very blue) 27  endof
+abort" Spectral class not found" endcase iclose
+r> r> rget  t;
+
+---- Screen 41 ----
+\ color selection forall plants orders                     rfg20may84
+head: chloro \ lo,hi ---
+t: record# @ >r  2dup rrnd dup
+r@ record# !  whichguy  reddest c! swap 1+ 27 min
+ rrnd   r> record# ! whichguy  bluest c!  drop t;
+
+head: phyll \ runs before kingdoms
+t: spec>color ( yellowish green) 13  over <
+      if drop ( brownish green) 14
+              ( purple) 22
+       else ( yellow) 11 <
+         if ( red) 1
+            ( yellowish orange) 10
+        else ( copper-colored) 8
+         ( blue) 19 then then t;
+
+==== Page 8 | 11-05-85 -- HP-OV  CMP -- Binary Systems | image HP-OV_CMP_p09 ====
+---- Screen 42 ----
+\ color selection forall plants orders                 rfg20may8
+
+head: dye
+t: rput >r >r niche c@ (kng) animals =
+  if ( red) 1 ( black) 26
+  else coin
+    if ( multi-colored) 23
+       ( black) 26
+    else phyll
+    then
+  then r> r> rget whichguy chloro t;
+
+head: ?pure \ color object --- object,tflag if pure color
+t:  rput >r >r 2dup >c+s \ color object --- object,fla
+ @inst-species 7 = iclose r> r> rget t;
+
+---- Screen 43 ----
+\ select weapon
+
+head: fortify
+t:  rand%  niche c@ (kng) 0 weaponry result 2dup or
+       if ?s if 255
+             else ?.  if 0
+                      else 1
+                      then
+            then
+       else dup
+       then w# c! w.append 1.5! t;
+
+head: decorate
+t: rand%  niche c@ (kng) 0 decorations result
+    d.append 1.5! t;
+
+---- Screen 44 ----
+\ animate #of legs                                     rfg19jun8
+decimal
+head: trimming
+t:      d.append 1.5@ 2dup  or
+    if .?
+      if  1
+      else ?s 0=
+       if rand%  shape 1.5@ #legs result drop
+          dup 16 /  0= if 1+ then
+       else 0
+       then
+      then
+    else 0
+    then  d# c! 2drop t;
+
+
+---- Screen 45 ----
+\ flying generation                                        rfg14jun85) 4
+%% grounded 30 , 10 , 0 , -30 , -100 , -100 ,
+%% bouyant -50 , 0 , 20 , 40 , 50 ,
+v: .fly v: .large
+head: 5'0 t: 0 0 0 0 0 t;
+head: %fly \ --- %flying,size.index
+t: record# @ >r
+  (planet) 1.5@  >c+s  plan-mass @ 100 / 5 min 1+
+   dup >r grounded atmo.density c@ iclose
+  dup >r bouyant +
+  0 100 constrain
+  r> r> - 5 + dup * 9 /
+ r> record# ! whichguy t;
+head: ?large t: size.index c@ .large @ < t;
+head: ?fly t:   .fly @ rand% < t;
+
+---- Screen 46 ----
+\ continue setting flying orders                           rfg04jul84
+head: elevate \ call only after ground appendage set
+t: record# @ >r  %fly  .large ! .fly !
+     niche c@ (kng) animals =    ?large and
+    if .fly @ rand% <
+      if rand% 80 <
+            if s" wing" s" flying"
+             else s" float sac" s" floating"  then
+          coin 1+ 2*
+      else 5'0  then
+ else ?large if ?fly if coin if s" float sac" s" floating" 1
+ else 5'0 then else 5'0 then else 5'0 then
+ then r> record# ! whichguy
+    a# c! a.mobility 1.5! a.append 1.5! t;
+
+
+---- Screen 47 ----
+\ plant mobility                                           rfg14jun85) 4
+ v: %mobile
+head: ?mobile  \ --- [%mobile] for plants; all animals move
+t:    plants @ dup
+   if drop 30 peak ! 0 40 slip! \ this is the 'y' value
+     25 +
+   then t;  \ leaves either 0 or some useable percentage
+
+ \ remember: peak is really scaled 256 100 */ (still??)
+
+
+
+
+
+
+
+==== Page 9 | 11-05-85 -- HP-OV  CMP -- Binary Systems | image HP-OV_CMP_p10 ====
+---- Screen 48 ----
+\ continue with plants/animals                         rfg04jun84
+
+head: nubile
+t:  ?mobile %mobile !
+   niche c@ (kng) plants =
+  if %mobile @ niche c@ ( producer) 02  =
+     if  25 - 0 max then
+     rand% >
+     if s" mobile"
+     else s" sessile"
+     then
+  else s" mobile"
+  then g.mobility 1.5! t;
+
+
+
+---- Screen 49 ----
+\ choose animals orders ground appendage (and plants) rfg05jun8
+
+head: walk \ [order] --- sets ground appendage
+t:    rand%  shape 1.5@
+   animal.appendage result t;
+
+head: stroll
+t:    niche c@ (kng) animals =
+  if walk
+  else g.mobility 1.5@ s" mobile"  d=
+   if rand% 35 <
+    if s" sessile" g.mobility 1.5! 0 0
+    else s" tentacle" then
+   else 0 0 then
+ then whichguy  g.append 1.5! t;
+
+---- Screen 50 ----
+\ choosing ground movement mode                        rfg08jun84
+
+head: ?move \  [ground appendage] ---  [moblity mode]
+t: ecase s" tentacle" 2of  s" crawling" endof
+   s" pseudopod" 2of  s" oozing" endof
+       s" cilia" 2of  s" creeping" endof
+       s" leg" 2of  rand% (planet) 1.5@  >c+s
+   plan-mass @ 100 / 5 min 1+ iclose  0 legg result endof
+       0 0 2of shape 1.5@ 2dup s" spherical" d=
+   if 2drop s" rolling" else s" bilateral" d=
+      if s" slithering" else s" moving" then then endof
+   abort" something wrong in ?move " endcase t; exit
+
+
+
+
+---- Screen 51 ----
+\ setting ground movement mode                             rfg16may85)
+head: movea t: g# c@ 0= if s" moving" else
+          g.append 1.5@ ?move then t;
+
+head: movep t: g.mobility 1.5@ s" mobile" d=
+   if s" crawling" else s" sessile"  then t;
+
+head: movem t: record# @ >r
+       niche c@  (kng) animals =
+     if movea  else movep then
+       r> record# ! whichguy g.mobility 1.5! t;
+
+
+
+
+
+---- Screen 52 ----
+\ animate #of legs                                         rfg28jul8
+head: animate
+t:      g.append 1.5@ >r >r i i' or
+ if i i' ?s not
+    if ?.
+     if 255
+     else rand%  shape 1.5@ #legs result drop
+     then
+    else 255
+    then >r 2drop r> dup  g# c!
+      0= if 0  0 g.append 1.5! then
+ then r> r> 2drop  t;
+
+
+
+
+---- Screen 53 ----
+\ finish surface textures
+
+head: texturize
+t:  rand%  exterior 1.5@
+  appearance result  texture 1.5!  t;
+
+
+
+
+
+
+
+
+
+
+
+==== Page 10 | 11-05-85 -- HP-OV  CMP -- Binary Systems | image HP-OV_CMP_p11 ====
+---- Screen 54 ----
+\ copying order information: stack, retrieve and drfg14jun85)
+
+head: do.oparms
+t: sizing  dye fortify   decorate  trimming
+ elevate  nubile   stroll  animate   movem   texturize  t;
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 55 ----
+\ copying minimal information: regions and niches rfg14jun85)
+head: order.parms
+t:    plhi @ 1+ record# off
+      begin whichguy record# @ over <
+      while do.oparms
+      orhi   @ 1+ record# !
+      repeat drop t;
+: c+oparms class.parms order.parms ;
+
+exit
+cr ."  ova= " ova ?
+cr ." t-dp= " t-dp ?
+cr ."   +2= " t-dp 2+ ?
+cr ."   +4= " t-dp 4 + ?
+cr ." here= " here u.
+
+---- Screen 56 ----
+\ OVERLAY SUFFIX: SETTING CLASS/ORDER AFIELDS     rfg14jun85)
+trace @ trace off dispose trace !
+close-overlay
+89 overlay hp-ov
+hp-ov
+
+forth definitions
+: c+oparms \ sets class and order creatures afields
+  hp-ov hiparms c+oparms
+  save-buffers ov-cancel ;
+
+ov-cancel save-buffers
+31 width !
+
+
+
+---- Screen 57 ----
+\ BIO module caller
+
+: bio plhi off ov-cancel
+     dio save-buffers ov-cancel
+ plhi @
+   if c+oparms ov-cancel then ;
+
+
+
+
+
+
+
+
+
+

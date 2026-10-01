@@ -1,0 +1,174 @@
+==== Page 1 | 11-05-85 -- LAUNCH CMP -- Binary Systems | image LAUNCH_CMP_p01 ====
+---- Screen 0 ----
+( -----------------Overlay Prefix for COUNTDOWN---------------)
+
+VOCABULARY LAUNCH-VOC IMMEDIATE
+108 OPEN-OVERLAY
+LAUNCH-VOC DEFINITIONS
+
+250 TRANS-ALLOT NEWT-DP
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+( Launch Countdown sequence                       AWK 10/11/85)
+
+HEAD: 2CNT ( n -- )   T: 38 135 POS. >2FONT . T;
+HEAD: 1CNT ( n -- )   T: 39 134 POS. >1FONT . T;
+HEAD: 0CNT ( -- )     T: 40 132 LPLOT T;
+
+HEAD: COUNTDOWN ( -- )
+T: 2000 BEEPTONE ! 200 BEEPMS !
+ 0 5 DO
+   V>DISPLAY I 2CNT BEEP 100 MS
+   V>DISPLAY I 1CNT 200 MS
+   V>DISPLAY 0CNT 100 MS
+   V>DISPLAY 400 MS
+ -1 +LOOP T;
+
+
+---- Screen 2 ----
+( Launch Countdown sequence                       AWK 10/11/85)
+
+HEAD: LAUNCH ( -- )
+T: CTINIT CTERASE ." COMMENCING LAUNCH SEQUENCE..."
+ COUNTDOWN CTERASE CONTEXT-ID# @ 0=
+ IF 1 CONTEXT-ID# ! THEN T;
+
+
+
+
+
+
+
+
+
+
+---- Screen 3 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 4 ----
+( Launch Undock    sequence                       AWK 10/11/85)
+
+HEAD: VSYCONSTRAIN ( y -- y' ) T: 72 MAX 191 MIN T;
+
+HEAD: VSXLINE ( y c -- )
+T: !COLOR VSYCONSTRAIN 4 SWAP 75 OVER LLINE T;
+
+HEAD: .STARLINE ( y -- )
+T: DUP >R BLACK VSXLINE 0 8 RRND 0=
+ IF 1 15 RRND DUP 16* + !COLOR 4 76 RRND I 2DUP LPLOT
+    72 - SWAP 4 - SWAP >MAINVIEW LPLOT >DISPLAY
+ THEN
+ R> DROP T;
+
+
+
+---- Screen 5 ----
+( Launch Undock    sequence                       AWK 09/10/85)
+
+HEAD: .3D ( n n' -- )
+T: >R VSYCONSTRAIN DUP LT-BLUE VSXLINE BLACK !COLOR
+ 4 OVER 4 I + OVER LLINE
+ 75 R> - SWAP 75 OVER LLINE T;
+
+HEAD: .B3D ( y -- )
+T: 0 3 DO DUP I + 131 MIN I .3D
+ -1 +LOOP 4 + 131 MIN .STARLINE T;
+
+HEAD: .T3D ( y -- )
+T: 4 0 DO DUP I - 132 MAX I .3D
+ LOOP 4 - 132 MAX .STARLINE T;
+
+
+
+==== Page 2 | 11-05-85 -- LAUNCH CMP -- Binary Systems | image LAUNCH_CMP_p02 ====
+---- Screen 6 ----
+( Launch Undock    sequence                       AWK 10/11/85)
+
+HEAD: PORTLEAVE
+T: >MAINVIEW DARK >DISPLAY
+ CTINIT CTERASE ." OPENING DOCKING BAY DOORS"
+ 29000 TONE BEEPON
+ 64 0 DO 131 I - .B3D  132 I + .T3D
+   29000 TONE 30 MS
+ LOOP BEEPOFF T;
+
+
+
+
+
+
+
+---- Screen 7 ----
+( Launch sequence                                 AWK 10/15/85)
+
+: &LAUNCH ( -- )
+ CONTEXT-ID# @ 5 = DUP
+ IF PORTLEAVE THEN LAUNCH
+ IF ' SETUP-MOV MODULE
+    WHITE !COLOR " STANDING BY TO MANEUVER" .TTY
+ THEN ;
+
+
+
+
+
+
+
+
+---- Screen 8 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 9 ----
+( -----------------Overlay Suffix for COUNTDOWN---------------)
+DISPOSE
+CLOSE-OVERLAY
+108 OVERLAY LAUNCH-OV
+
+LAUNCH-OV
+FORTH DEFINITIONS
+: ovCOUNTDOWN LAUNCH-OV LAUNCH-VOC &LAUNCH SAVE-OVERLAY ;
+
+OV-CANCEL
+
+
+
+
+
+
+

@@ -1,0 +1,454 @@
+==== Page  |  | image ICON-OV_CMP_p01 ====
+ 0
+ 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10 ( ICONP-OV --------- OVERLAY PREFIX --------------
+11 ( ICONP-OV   Object fields
+12 ( ICONP-OV   Constants
+13 ( ICONP-OV   #ID-PLAYER #ID-ALIEN
+14 ( ICONP-OV   STAR-ID-CASES #ID-STAR
+15 ( ICONP-OV   PLANET-ID-CASES #ID-PLANET  #ID-NEBUL
+16 ( ICONP-OV   BOX-ID #ID-BOX
+17 ( ICONP-OV   SPACE-ID
+18 ( ICONP-OV   #ID-RUIN  RUIN-ID-CASES
+19 ( ICONP-OV   #ID-CREATURE
+20 ( ICONP-OV   PLANET-ID
+21 ( ICONP-OV   #ID
+22 ( ICONP-OV   STAR-IC-CASES STAR-IC
+23 ( ICONP-OV   CREATURE-IC  PLAN-IC-CASES  PLANET-IC
+24 ( ICONP-OV   BOX-IC #IC-BOX
+25 ( ICONP-OV   #IC  #IC-CASES
+26 ( ICONP-OV           ICON-PARM
+27 ( ICONP-OV --------- OVERLAY SUFFIX --------------
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+
+==== Page 2 | 11-05-85 -- ICON-OV CMP -- Binary Systems | image ICON-OV_CMP_p02 ====
+---- Screen 6 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 7 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 8 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 9 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 10 ----
+( ICONP-OV --------- OVERLAY PREFIX ----------------- 7/16/85)
+
+VOCABULARY VICONP IMMEDIATE
+
+72 OPEN-OVERLAY
+
+VICONP DEFINITIONS
+
+1000 TRANS-ALLOT NEWT-DP
+
+( 1153 BYTES)
+
+
+
+
+
+---- Screen 11 ----
+( ICONP-OV   Object fields                              3-05-85)
+
+ 20  73 1 IFIELD: %HEADING
+ 25  32 1 AFIELD: VES-DIRECTIONAL
+ 25  11 1 IFIELD: VES-HEADING
+ 68 144 2 AFIELD: ICON  ( CREATURE)
+ 68  21 1 IFIELD: MOVE-MODE
+ 68  17 1 IFIELD: HITS
+ 32   1 1 AFIELD: PLAN-SURFTYPE
+ 61  27 1 IFIELD: ?ENCOUNTER-ON
+
+
+
+
+
+
+==== Page 3 | 11-05-85 -- ICON-OV CMP -- Binary Systems | image ICON-OV_CMP_p03 ====
+---- Screen 12 ----
+( ICONP-OV   Constants                                 9/25/85)
+
+52 C: ID-STAR-ORBIT  ( orbit level)
+52 C: ID-STAR-SYSLVL ( system level)
+51 C: ID-PLAN-ORBIT  ( orbit level)
+51 C: ID-PLAN-SYSLVL ( system level)
+
+20 C: ID-SPECIMEN
+21 C: ID-MINERAL
+22 C: ID-ARTIFACT
+23 C: ID-RECENT-RUIN
+24 C: ID-ANCIENT-RUIN
+25 C: ID-SHIP-ON-PLANET
+26 C: ID-TVEHICLE
+
+
+---- Screen 13 ----
+( ICONP-OV   #ID-PLAYER #ID-ALIEN                      3-15-85)
+
+HEAD: #ID-PLAYER ( -- id \ find right blt for player's ship)
+  ( based on heading)
+T:  %HEADING C@ 27 + T;
+
+HEAD: #ID-ALIEN ( -- id \ find right blt for alien ship )
+  ( based on heading)
+T:  VES-DIRECTIONAL C@
+  IF   VES-HEADING C@ 35 +
+  ELSE 43 ( non-directional icon#)
+  THEN T;
+
+
+
+
+---- Screen 14 ----
+( ICONP-OV   STAR-ID-CASES #ID-STAR                    3-05-85)
+
+CASE STAR-ID-CASES ( n -- blt#)
+\  1 IS ID-STAR-ORBIT   ( orbit level)
+   2 IS ID-STAR-SYSLVL ( system level)
+\  4 IS ID-STAR-ORBIT   ( encounter in orbit)
+OTHERS ID-STAR-ORBIT \ UNRAVEL
+
+HEAD: #ID-STAR ( -- icon#\ set blt# )
+  ( based on context ie. either )
+  ( at system level or in encounter.)
+T:  CONTEXT-ID# @  STAR-ID-CASES T;
+
+
+
+
+---- Screen 15 ----
+( ICONP-OV   PLANET-ID-CASES #ID-PLANET  #ID-NEBULA    3-05-85)
+
+CASE PLANET-ID-CASES ( n -- id)
+\  1 IS ID-PLAN-ORBIT   ( orbit level)
+   2 IS ID-PLAN-SYSLVL ( system level)
+\  4 IS ID-PLAN-ORBIT   ( encounter in orbit)
+OTHERS ID-PLAN-ORBIT \ UNRAVEL
+
+HEAD: #ID-PLANET ( -- id \ set icon#)
+  ( based on context ie. either )
+  ( at system level or in encounter.)
+T:  CONTEXT-ID# @  PLANET-ID-CASES T;
+
+HEAD: #ID-NEBULA ( -- id \ for nebula w/ variable radii)
+T: @INST-SPECIES 50 + T;
+
+---- Screen 16 ----
+( ICONP-OV   BOX-ID #ID-BOX                             7/16/85)
+
+CASE BOX-ID
+  24 IS #ID-STAR
+  32 IS #ID-PLANET
+OTHERS INVIS-ICON
+
+HEAD: #ID-BOX ( -- id \ get id of contents of box )
+T: IOPEN @INST-CLASS BOX-ID ICLOSE T;
+
+
+
+
+
+
+
+---- Screen 17 ----
+( ICONP-OV   SPACE-ID                                   7/18/85)
+
+CASE SPACE-ID ( class -- icon-id)
+  11 IS #ID-BOX
+  20 IS #ID-PLAYER
+  23 IS SYS-ICON
+  24 IS #ID-STAR
+  25 IS #ID-ALIEN
+  32 IS #ID-PLANET
+  45 IS FLUX-ICON
+  46 IS #ID-NEBULA
+OTHERS INVIS-ICON
+
+
+
+
+==== Page 4 | 11-05-85 -- ICON-OV CMP -- Binary Systems | image ICON-OV_CMP_p04 ====
+---- Screen 18 ----
+( ICONP-OV   #ID-RUIN  RUIN-ID-CASES                   3-05-85)
+
+CASE RUIN-ID-CASES ( type -- icon#)
+ \ 1 IS ID-RECENT-RUIN
+   2 IS ID-ANCIENT-RUIN
+\  3 IS ID-RECENT-RUIN
+   4 IS ID-ANCIENT-RUIN
+OTHERS ID-RECENT-RUIN \ UNRAVEL
+
+HEAD: #ID-RUIN ( -- id \ distinguish between ancient & recent)
+T:  @INST-SPECIES RUIN-ID-CASES T;
+
+
+
+
+
+---- Screen 19 ----
+( ICONP-OV   #ID-CREATURE                              7/18/85)
+
+HEAD: #ID-CREATURE ( -- id \ select lifeform icon# based on )
+  ( motion & type)
+T:  MOVE-MODE C@ ?DUP
+  IF 16 + ( flying=17, floating=18)
+  ELSE ICON @ THEN T;
+
+
+
+
+
+
+
+
+
+---- Screen 20 ----
+( ICONP-OV   PLANET-ID                                 3-05-85)
+
+CASE PLANET-ID ( class -- icon-id)
+  40 IS ID-SPECIMEN
+  41 IS #ID-RUIN
+  42 IS ID-TVEHICLE
+  68 IS #ID-CREATURE
+  20 IS ID-SHIP-ON-PLANET
+  26 IS ID-MINERAL
+  28 IS ID-ARTIFACT
+OTHERS UNRAVEL
+
+
+
+
+
+---- Screen 21 ----
+( ICONP-OV   #ID                                        3-05-85)
+
+HEAD: #ID ( ( i -- i ), -- id \ get icon id based on i and )
+  ( context )
+T: @INST-CLASS
+ CONTEXT-ID# @
+ IF   SPACE-ID
+ ELSE PLANET-ID
+ THEN T;
+
+
+
+
+
+
+
+---- Screen 22 ----
+( ICONP-OV   STAR-IC-CASES STAR-IC                      3-05-85)
+
+CASE STAR-IC-CASES ( type -- color)
+  ASCII M IS RED
+  ASCII K IS ORANGE
+  ASCII G IS YELLOW
+  ASCII F IS WHITE
+  ASCII A IS GREEN
+  ASCII B IS BLUE
+\  ASCII O IS LT-BLUE
+OTHERS LT-BLUE \ UNRAVEL
+
+HEAD: STAR-IC ( -- clr \ determine star color based on class# )
+T:  @INST-SPECIES STAR-IC-CASES T;
+
+
+---- Screen 23 ----
+( ICONP-OV   CREATURE-IC  PLAN-IC-CASES  PLANET-IC      6/06/85)
+
+HEAD: CREATURE-IC ( -- clr \ lifeform dead marker indicator)
+T:  HITS C@ IF DEFAULT-IC ELSE DEAD-IC THEN T;
+
+CASE PLAN-IC-CASES
+  1 IS VIOLET     2 IS BLUE
+  3 IS WHITE      4 IS ORANGE
+\  5 IS BROWN
+OTHERS BROWN \ UNRAVEL
+
+HEAD: PLANET-IC  ( -- clr \ set pln color code based on type)
+T: PLAN-SURFTYPE C@ PLAN-IC-CASES T;
+
+HEAD: FLUX-IC ( -- clr / get flux color based on trav flag )
+T: @INST-SPECIES IF 3 ELSE DEFAULT-IC THEN T;
+==== Page 5 | 11-05-85 -- ICON-OV CMP -- Binary Systems | image ICON-OV_CMP_p05 ====
+---- Screen 24 ----
+( ICONP-OV   BOX-IC #IC-BOX                            7/16/85)
+
+CASE BOX-IC
+  24 IS STAR-IC        ( star)
+  32 IS PLANET-IC      ( planet)
+OTHERS DEFAULT-IC
+
+HEAD: #IC-BOX ( -- c \ get color of contents of box )
+T: IOPEN @INST-CLASS BOX-IC ICLOSE T;
+
+
+
+
+
+
+
+---- Screen 25 ----
+( ICONP-OV   #IC  #IC-CASES                            7/18/85)
+
+CASE #IC-CASES ( class --code)
+  11 IS #IC-BOX        ( star or planet )
+  23 IS STAR-IC        ( starsys)
+  32 IS PLANET-IC      ( planet)
+  24 IS STAR-IC        ( starsys)
+  68 ( not 30!!) IS CREATURE-IC   ( dead marker ck)
+  45 IS FLUX-IC        ( flux color un?traversed )
+  46 IS DK-GREEN       ( nebula)
+OTHERS DEFAULT-IC
+
+HEAD: #IC ( -- color-code \ get icon color override code)
+T: @INST-CLASS #IC-CASES T;
+
+
+---- Screen 26 ----
+( ICONP-OV           ICON-PARM                          7/16/85)
+
+: ICON-PARM ( (i--), -- x y id ic i \ given instance address )
+  ( compute the icon parms)
+  INST-X @ INST-Y @ #ID #IC CI ;
+
+
+: +ICP ICON-PARM +ICON ;
+
+: +ICONBOX ' +ICP ALL ;
+
+
+
+
+
+
+---- Screen 27 ----
+( ICONP-OV --------- OVERLAY SUFFIX ------------------ 3-05-85)
+dispose
+CLOSE-OVERLAY
+72 OVERLAY ICONP-OV
+
+ICONP-OV
+FORTH DEFINITIONS
+: ICON-PARM ( i -- x y id ic i) ICONP-OV VICONP ICON-PARM ;
+: +ICONBXOV ( --, (ii'--ii')) ICONP-OV VICONP +ICONBOX ;
+
+
+
+OV-CANCEL
+
+' ICON-PARM 'ICON-PRM !  ( patch kernel forward link)
+' +ICONBXOV 'ICONBOX  !  ( patch kernel forward link)
+---- Screen 28 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 29 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

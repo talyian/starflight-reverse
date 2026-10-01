@@ -1,0 +1,291 @@
+==== Page (none) | (no header) | image HYPERMSG_CMP_p01 ====
+0 ( Hyper Misc------- OVERLAY PREFIX ---------------
+1 ( SHPMOV - UNNEST-FINIS-MESS
+2 ( SHPMOV - UNNEST-START-MESS
+3 ( SHPMOV - UNNEST-START-MESS
+4 ( SHPMOV - NEST-FINIS-MESS
+5 ( SHPMOV - NEST-START-MESS
+6 ( SHPMOV - NEST-START-MESS
+7 ( Context dependent 'EXTERNAL-EVENTs
+8
+9
+10
+11
+12
+13
+14
+==== Page 1 | 11-05-85 -- HYPERMSGCMP -- Binary Systems | image HYPERMSG_CMP_p02 ====
+---- Screen 0 ----
+( Hyper Misc------- OVERLAY PREFIX -------------------10/15/85)
+
+' NOP C= 'ANSYS V= TCLR WHITE TCLR !
+
+VOCABULARY HMISC-VOC  IMMEDIATE
+
+74 OPEN-OVERLAY
+HMISC-VOC DEFINITIONS
+
+1000 TRANS-ALLOT
+NEWT-DP
+
+
+
+HEAD: >TEXT-COLOR ( -- ) T: TCLR @ !COLOR T;
+
+---- Screen 1 ----
+( SHPMOV - UNNEST-FINIS-MESS                          10/15/85)
+HEAD: .ORBUEND  T: " ...COMMENCING SYSTEM TRAVEL." .TTY T;
+HEAD: .SYSUEND
+      T: " ...COMMENCING INTER-STELLAR TRAVEL." .TTY T;
+HEAD: .PRTUEND T: " ...STARPORT CLEAR." .TTY T;
+HEAD: .ENCUEND T: " ...ENCOUNTER TERMINATED." .TTY T;
+HEAD: .CANTORBIT   T: " OUTSIDE ORBITAL RANGE" .TTY T;
+CASE UF-M ( id# -- \ display message after nest )
+  6 IS .ORBUEND
+  2 IS .SYSUEND
+  4 IS .ENCUEND
+  5 IS .PRTUEND
+  1 IS .CANTORBIT
+OTHERS NOP
+: UF-MESS ( id# -- ) >TEXT-COLOR UF-M ;
+
+---- Screen 2 ----
+( SHPMOV - UNNEST-START-MESS                           10/15/85)
+
+HEAD: .SYSUSTART   T: " LEAVING SYSTEM ..." .TTY T;
+HEAD: .PRTUSTART   T: " LEAVING STARPORT..." .TTY T;
+HEAD: .ENCUSTART   T: " LEAVING ENCOUNTER..." .TTY T;
+HEAD: .ORBUSTART   T: " LEAVING ORBIT..." .TTY T;
+
+CASE US-M ( id# -- \ display message at start of )
+ ( nesting transition)
+  6 IS .ORBUSTART
+  2 IS .SYSUSTART
+  4 IS .ENCUSTART
+  5 IS .PRTUSTART
+OTHERS NOP
+
+: US-MESS ( id# -- ) >TEXT-COLOR US-M ;
+---- Screen 3 ----
+( SHPMOV - UNNEST-START-MESS                           10/11/85)
+
+HEAD: .CANDOCK T: " STANDING BY TO DOCK WITH STARPORT" .TTY T;
+HEAD: .CANPLANET T: " STANDING BY TO ORBIT" .TTY T;
+
+
+HEAD: .CANORBIT ( -- )
+T: (PLANET) 1.5@ >C+S IOPEN 12 0 IFIND CDROP ICLOSE
+ IF .CANDOCK ELSE .CANPLANET THEN T;
+
+
+
+
+
+
+
+---- Screen 4 ----
+( SHPMOV - NEST-FINIS-MESS                             10/15/85)
+
+HEAD: .ORBEND T: " ...ORBIT ESTABLISHED." .TTY T;
+HEAD: .SYSEND T: " ...SYSTEM ENTRY COMPLETE." .TTY 1000 MS
+              (SYSTEM) 1.5@ SENSE-ADDR 1.5! 0 'ANSYS MODULE T;
+HEAD: .PRTEND T:   " ...DOCKING COMPLETE." .TTY T;
+
+CASE NF-M ( id# -- \ display message after )
+ ( nesting transition)
+  1 IS .CANORBIT
+  6 IS .ORBEND
+  2 IS .SYSEND
+  5 IS .PRTEND
+OTHERS NOP
+
+: NF-MESS ( id# -- ) >TEXT-COLOR NF-M ;
+---- Screen 5 ----
+( SHPMOV - NEST-START-MESS                              9/26/85)
+
+HEAD: .PLNSTART
+   T: " COMPUTING SUB-ORBITAL TRAJECTORY..." .TTY T;
+HEAD: .ORBSTART
+   T: " INITIATING ORBITAL MANEUVER..." .TTY T;
+HEAD: .SYSSTART T: " COMMENCING SYSTEM PENETRATION..." .TTY T;
+HEAD: .PRTSTART T: " INITIATING DOCKING PROCEDURE..." .TTY T;
+HEAD: .ENCSTART
+   T: " SCANNERS INDICATE UNIDENTIFIED OBJECT!" .TTY T;
+
+
+
+
+
+
+==== Page 2 | 11-05-85 -- HYPERMSGCMP -- Binary Systems | image HYPERMSG_CMP_p03 ====
+---- Screen 6 ----
+( SHPMOV - NEST-START-MESS                             10/15/85)
+
+
+
+CASE NS-M ( id# -- \ display message at start of )
+ ( nesting transition)
+  0 IS .PLNSTART
+  6 IS .ORBSTART
+  2 IS .SYSSTART
+  4 IS .ENCSTART
+  5 IS .PRTSTART
+OTHERS NOP
+
+: NS-MESS ( id# -- ) >TEXT-COLOR NS-M ;
+
+
+---- Screen 7 ----
+( Context dependent 'EXTERNAL-EVENTs              AWK 10/22/85 )
+
+\ HEAD: EX3 T: ' TRAK-ENC T;
+HEAD: EX4 T: ' CEX+WAX T;
+HEAD: 'NOP T: ' NOP T;
+
+
+CASE @'EXT
+ ( 2 IS EX3  3 IS EX3 )   4 IS EX4
+OTHERS 'NOP
+
+: (!'EXT) ( -- ) CONTEXT-ID# @ @'EXT 'EXTERNAL-EVENTS ! ;
+
+\ setup 'EXTERNAL-EVENT when MANEUVER is selected, based on
+\ context in which selection was made.
+
+---- Screen 8 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 9 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 10 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 11 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==== Page 3 | 11-05-85 -- HYPERMSGCMP -- Binary Systems | image HYPERMSG_CMP_p04 ====
+---- Screen 12 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 13 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 14 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 15 ----
+( Hyper Misc------- OVERLAY PREFIX -------------------10/22/85)
+
+DISPOSE
+CLOSE-OVERLAY
+74 OVERLAY HMISC-OV
+HMISC-OV   FORTH DEFINITIONS
+
+: UF-MESS ( id# -- ) HMISC-OV HMISC-VOC UF-MESS ;
+: US-MESS ( id# -- ) HMISC-OV HMISC-VOC US-MESS ;
+: NF-MESS ( id# -- ) HMISC-OV HMISC-VOC NF-MESS ;
+: NS-MESS ( id# -- ) HMISC-OV HMISC-VOC NS-MESS ;
+: !'EXT ( -- ) HMISC-OV HMISC-VOC (!'EXT) ;
+
+
+OV-CANCEL
+

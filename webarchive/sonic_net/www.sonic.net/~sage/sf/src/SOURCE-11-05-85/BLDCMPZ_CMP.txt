@@ -1,0 +1,52 @@
+==== Page 1 | 11-05-85 -- BLDCOMPZCMP -- Binary Systems | image BLDCMPZ_CMP_p01 ====
+---- Screen 0 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+( BLDCOMPZ.CMP                                        8-26-85)
+
+CR ." TYPE: EMPTY NODRIVES SYSGEN KERNEL.COM BYE"
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 2 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

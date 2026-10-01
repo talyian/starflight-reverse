@@ -1,0 +1,1438 @@
+==== Page - | [no header printed; screen index listing] | image COMBAT_CMP_p01 ====
+ 0 ( overlay prefix---------COMBAT--------------------
+ 1 \ basic routines
+ 2 \ instance and species variables: VESSEL
+ 3 \ instance and species variables: SHIP
+ 4 \ crew variables
+ 5 \ dist
+ 6 \ delta-xy
+ 7 \ cases to orientations
+ 8 \ conditions: ?attacking, ?start-attacking-hostile
+ 9 \ ?has-missles ?has-lasers
+10 \ ?oh to fire, ?fire laser now
+11 \ ?terminated  ?go-now ?can-surrender
+12 \ ?nothing-happening
+13 \ ?stop-attacking ?move-rate>0
+14 \ ?range-long
+15
+16  \ ?in-combat  ?p-has/missles/lasers
+17 \ posture stuff
+18 \ ?move-rnd-now
+19 \ refresh auxilliary screen
+20 \ missle record
+21 \ missle array
+22 \ (.missles)
+23 \ missle DDA
+24 \ step-dda showspace
+25
+26 \ missle utilities- find, install
+27 \ missle utilities- find, install
+28 \ ?hit
+29 \ ?any-hits
+30
+31 \ ?move-.icon if it is visible
+32 \ macros using delta-xy
+33 \ find-bomb
+34 \ ?plasma, advance
+35 \ all-repair for test
+36 \ attack simulation
+37 \ orient current vessel
+38 \ display start
+39 \ install-icons, reorient
+40 \ init-space-map
+41 \ 4:1scale  2:1scale
+42 \ 8map
+43 \ dist-test  finds greatest distance
+44 \ dist-test  finds greatest distance
+45 \ determine which scale to use
+46 \ space-disp
+47 \ fire-missle
+48 \ fire-laser and execute alien
+49 \ flee, approach
+50 \ >approaching   move-randomly
+51 exit \ raise-shields, lower-shields
+52 exit \ arm-weapons, disarm-weapons
+53 \ combat expert
+54 \ more rules
+55 \ yet more rules
+55 \ yet more rules
+56 \ and yet more rules
+57 \ simulation loop
+58 \ simulate does it for each creature
+59 \ simula wraps the experts up
+60 \ simulate does it for each creature
+61 \ probe offsets
+62 \ compute xy of probe
+63 \ check if player has mounted weapons
+64 \ find-fuel
+65 \ deplete energy for using armaments
+66 \ ?empty-tank save-fuel
+67 \ compute nav skill dithering
+68 \ compute target coordinates, given probe
+69 \ fire missle from our side
+70 \ fire-laser and execute alien
+71 \ pchoose - laser or missle ( if got )
+72 \ combat-tasks
+73 \ tv-untasks
+74 \ tv-key
+75 \ combat-init
+76 \ war
+77 ( overlay suffix---------COMBAT--------------------
+78 \ module callers for combat
+==== Page 1 | 11-05-85 -- COMBAT CMP -- Binary Systems | image COMBAT_CMP_p02 ====
+---- Screen 0 ----
+( overlay prefix---------COMBAT--------------------- (rfg03oct85)
+
+9 width !
+ vocabulary combat-voc immediate
+132 open-overlay
+ combat-voc definitions
+( sp0 @ ova ! )
+1600 trans-allot newt-dp
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+\ basic routines                                    (rfg11oct85)
+head: >flag t: 0= 0= t; \ insures 0bit set
+
+head: rand% t: 1 100 rrnd t;
+
+head: ship-coords \ --- x,y
+t:    xabs @ yabs @ t;
+
+head: ves-coords \ --- x,y ! assume pointed to ci vessel icon
+t:    @ix @iy t;
+
+head: @xy t:  inst-x @ inst-y @ t;
+
+head: ship>c t: *ship >c+s t;
+
+
+---- Screen 2 ----
+\ instance and species variables: VESSEL            (rfg17oct85)
+decimal 25 c: vessel
+
+vessel 11 1 afield ves-firert
+\ vessel 12 2 afield ves-armorpts
+vessel 14 2 afield ves-shieldpts
+vessel 18 1 afield ves-missle
+vessel 19 1 afield ves-laser
+vessel 20 1 afield ves-plasma
+vessel 23 4 ifield ves-last-fired
+vessel 12 1 ifield ves-speed
+vessel 18 2 ifield ves-armor-hits
+vessel 20 2 ifield ves-shield-hits
+vessel 17 1 ifield ves-behave
+vessel 11 1 ifield ves-heading
+
+---- Screen 3 ----
+\ instance and species variables: SHIP              (rfg13oct85).
+20 c: sship
+sship 17 1 ifield %hull-pts     sship 18 1 ifield %armor-cls
+sship 19 1 ifield: %engine-pts  sship 20 1 ifield: %engine-cls
+sship 21 1 ifield: %sensor-pts  sship 22 1 ifield: %sensor-cls
+sship 23 1 ifield: %comm-pts    sship 24 1 ifield: %comm-cls
+sship 25 1 ifield %shield-pts   sship 26 1 ifield %shield-cls
+sship 27 1 ifield: %missle-pts  sship 28 1 ifield: %missle-cls
+sship 29 1 ifield: %laser-pts   sship 30 1 ifield %laser-cls
+sship 48 2 ifield shield-cnt    sship 69 4 ifield %status
+sship 50 2 ifield armor-cnt
+sship 73 1 ifield: %heading
+
+
+
+
+---- Screen 4 ----
+\ crew variables                                    (rfg06oct85)
+
+17 23 3 ifield navigator
+16 27 1 ifield  ^nav
+16 31 1 ifield ^vit \ crewmember vitality
+16 19 1 afield: ^dur
+
+
+
+
+
+
+
+
+
+
+---- Screen 5 ----
+\ dist                                              (rfg25sep85)
+2v: probe \ holds xy of probe point
+v: tdist
+2v: target
+v= ?combat \ not used
+v= ?attack
+
+head: dist \ x,y,x1,y1 --- distant
+t:  rot - dup * >r
+      - dup * 0 r> 0 d+ sqrt t;
+
+head: @rclass \ --- resource class
+   t: c@ 7 and t;
+
+
+
+==== Page 2 | 11-05-85 -- COMBAT CMP -- Binary Systems | image COMBAT_CMP_p03 ====
+---- Screen 6 ----
+\ delta-xy                                          (rfg11oct85)
+\ x,y are the moving coordinates, x1,y1 are fixed
+
+: rdit begin -1 2 rrnd ?dup until ;
+
+: delta-xy \ x,y x1,y1 --- x,y deltax,deltay
+ 2over 2over d=
+  if 2drop 0. \ rdit rdit \ force movement in case same points
+  else  2over  rot swap - dup
+       if dup abs / then >r
+        - dup
+       if dup abs / then r>
+  then ;
+
+
+
+---- Screen 7 ----
+\ cases to orientations                             (rfg11oct85)
+head: save-face
+t: @inst-class 25 = if ves-heading \ vessel orientation
+                    else   %heading
+                    then c@  t;
+
+case x=-1
+  ( y= ) -1 is 5   1 is 3  0 is 4     others unravel
+case x=0
+  ( y= ) -1 is 6   1 is 2   0 is save-face  others unravel
+case x=1
+  ( y= ) -1 is 7   1 is 1  0 is 0     others unravel
+
+case key>orient
+ ( x= )  -1 is x=-1  0 is x=0  1 is x=1 others unravel
+
+---- Screen 8 ----
+\ conditions: ?attacking, ?start-attacking-hostile(rfg26sep85)
+
+head: ?attacking
+   t: ?attack @ >flag
+      a-posture @ 4 > and dup ?attack ! t;
+
+head: ?start-attacking-hostile
+t:   rand% 20 < t;
+
+
+
+
+
+
+
+
+---- Screen 9 ----
+\ ?has-missles ?has-lasers                          (rfg17oct85)
+
+
+head: ?has-lasers
+t:   ves-laser c@ >flag  t;
+
+head: ?has-plasma
+   t: ves-plasma c@ >flag  t;
+
+head: ?has-missles
+t:   ves-missle c@ >flag  ?has-plasma or t;
+
+
+
+
+
+---- Screen 10 ----
+\ ?oh to fire, ?fire laser now                      (rfg01oct85)
+: sometime ;
+
+
+
+
+
+head: ?fire-miss-now
+   t: ves-firert c@ 10 * rand% < t;
+
+
+head: ?fire-laser-now
+      t: ves-firert c@ 5 * rand% < t;
+
+
+
+---- Screen 11 ----
+\ ?terminated  ?go-now ?can-surrender               (rfg09oct85)
+52 12 1 ifield: csurrender \ can surrender flag
+
+head: ?terminated  t: terminated @ >flag t;
+
+
+
+head: ?go-now t: rand% 70 < t;
+
+
+
+head: ?can-surrender
+t:  (aoriginator) 1.5@ >c+s csurrender c@ iclose t;
+
+
+
+==== Page 3 | 11-05-85 -- COMBAT CMP -- Binary Systems | image COMBAT_CMP_p04 ====
+---- Screen 12 ----
+\ ?nothing-happening                                (rfg06oct85)
+120000. 2c= boredom
+2v= excite \ time lasttime something happened
+
+: ?nothing-happening
+   time d@ boredom excite d@ d+ d> ;
+
+
+: !time
+  time d@ excite d! ;
+
+\ talkcount is a global variable, modified by communications
+\ set to some initial-value, it counts down every time
+\ external-events executes (i guess)
+
+
+---- Screen 13 ----
+\ ?stop-attacking ?move-rate>0                      (rfg19sep85)
+
+head: ?stop-attacking
+t:  rand% 5 < t;
+
+
+head: ?move-rate>0
+t:  ves-speed c@ >flag t;
+
+
+
+
+
+
+
+
+---- Screen 14 ----
+\ ?range-long                                       (rfg06oct85)
+11 c: long-distance    5 c: short-distance
+
+head: ?range \ distance --- flag ! true if within distance
+t: >r  @xy
+ ship-coords
+ rot - abs r@ < >r
+     - abs r> swap r> < and t;
+
+head: ?range-long t: long-distance ?range not t;
+head: ?range-short t: short-distance ?range t;
+head: ?range-medium t: ?range-long not ?range-short not and t;
+\ should agree with VISWINDOW
+\ may recode to speed access ( keep object on stack)
+\ rather than space savings
+
+---- Screen 15 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 16 ----
+ \ ?in-combat  ?p-has/missles/lasers                (rfg13oct85).
+
+\ : ?in-combat  ?combat @ >flag ;
+\ ?combat on
+
+ head: ?p-has-missles
+ t:  *ship >c+s %missle-cls @rclass >flag
+                %missle-pts c@ >flag and iclose t;
+
+ head: ?p-has-lasers
+ t:  *ship >c+s %laser-cls @rclass >flag
+                %laser-pts c@ >flag and iclose t;
+
+
+
+
+---- Screen 17 ----
+\ posture stuff                                     (rfg01oct85)
+
+head: ?obsequious t: a-posture c@ 1 = t;
+
+head: ?hostile t:    a-posture c@ 8 = t;
+
+head: ?fight t:     a-posture c@ 16 = t;
+
+\ a-posture is a global, handled by communications
+
+
+
+
+
+
+
+==== Page 4 | 11-05-85 -- COMBAT CMP -- Binary Systems | image COMBAT_CMP_p05 ====
+---- Screen 18 ----
+\ ?move-rnd-now                                     (rfg06oct85)
+v: toggler   toggler off
+
+head: ?move-rnd-now
+t:   rand% 30 <
+   if toggler -1 toggle then
+   toggler @ t;
+
+\ flips bit occaisionally
+
+
+
+
+
+
+
+---- Screen 19 ----
+\ refresh auxilliary screen                         (rfg06oct85)
+
+'  ovdbars c: #ov/damage
+' ov/status c: #ov/status
+' nop c: #nop
+
+case #aux>module
+ 1 is #ov/status  3 is #ov/damage  others #nop
+
+: refresh-aux  #aux @ #aux>module module ;
+
+
+
+
+
+
+---- Screen 20 ----
+\ missle record                                     (rfg12oct85)
+v= missle \ holds address of current missle record
+10 c= maxmis  22 c: missize
+1 c: #mplayer  0 c: #malien
+head: misf
+   t: create c, ( c: ? )
+        does> c@ missle @ + t; \ returns address in MARRAY
+
+0 misf currx 4 misf curry \ current location,
+8 misf destx 10 misf desty \ destination
+12 misf morig \ originator 1 =Player, 0=Alien
+13 misf mclass \ holds weapon class
+14 misf deltax 18 misf deltay \ increment for dda
+
+: @mclass mclass c@ 15 and ;
+
+---- Screen 21 ----
+\ missle array                                      (rfg23sep85)
+create marray maxmis 1+ missize * allot \ Missle array
+\ the right way would be with linked lists, ...
+\ must use save-overlay for this to work
+\ maybe put missle stuff in separate overlay, for tasker speed
+
+head: mclr
+t: marray maxmis missize * 0 fill t;  mclr
+
+: >m \ missle# ---! sets MISSLE
+  missize * marray + missle ! ;
+
+: mcoords currx @ curry @ ;
+: mdest destx @ desty @ ;
+
+
+---- Screen 22 ----
+\ (.missles)                                        (rfg22oct85)
+head: 2dot t: ." ." t;
+head: 4dot t: >2font ." ." >1font t;
+head: 8dot t: currx @ 2 mod if ." +" else ." *" then t;
+
+case scale>miss
+ 2 is 2dot 4 is 4dot 8 is 8dot others nop
+
+: (.missles)
+white !color maxmis 0 do i >m @mclass \
+     if  mcoords wld>scr scr>blt
+         swap 4 + swap pos.
+         xwld:xpix @ scale>miss
+     then loop ;
+
+
+---- Screen 23 ----
+\ missle DDA                                        (rfg11oct85)
+head: compd \ test delta, max --- newdelta ( signed double )
+t:  >r 0 swap 1 r> m*/ t;
+
+head: set-dda
+t:  destx @ currx @ - dup abs
+  desty @ curry @ - dup abs rot max  >r
+ r@  compd deltay d!
+ r>  compd deltax d!
+  32768 dup currx 2+ ! curry 2+ ! t;
+
+
+
+
+
+
+==== Page 5 | 11-05-85 -- COMBAT CMP -- Binary Systems | image COMBAT_CMP_p06 ====
+---- Screen 24 ----
+\ step-dda showspace
+
+head: step-dda
+t:  curry d@ deltay d@ d+ curry d!
+  currx d@ deltax d@ d+ currx d! t;
+
+: showspace
+ >mainview  dark (.missles)
+ .local-icons v>display >display ;
+\ should reposition near beginning of file, then substitute
+
+
+
+
+
+
+---- Screen 25 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 26 ----
+\ missle utilities- find, install                   (rfg11oct85)
+v: #missles \ can we create more missles? Max of 9
+#missles off
+
+v: #explode \ # of explosions this iteration
+   #explode off
+\ clear after servicing explosion
+
+head: mfind \ x,y --- addr ! 0,0=empty slot, or currentx
+t: missle @ >r              \ save during search
+maxmis  0
+ do i >m 2dup mcoords d=
+ if leave then loop 2drop  \ coordinates
+missle @ r> missle ! t; \ leaves addr in missle array
+
+
+---- Screen 27 ----
+\ missle utilities- find, install                   (rfg11oct85)
+head: minstall \ sourcex,y,destx,y,owner,class ---
+t: #missles @ maxmis < \ locked out at higher level by ?fire-now
+ if 0. mfind missle ! mclass c! morig c!
+    desty ! destx ! curry ! currx !
+    set-dda 1 #missles +!  ( INSTALL DDA PARMS HERE )
+ else 2drop 2drop 2drop
+ then t; \ sets MISSLE if space found
+\ might need success flag
+
+head: mdelete \  --- ! remove MISSLE from array, fails if not in
+   t: missle @ missize 0 fill
+ -1 #missles +! -1 #explode +! t;
+
+
+
+---- Screen 28 ----
+\ ?hit                                              (rfg22oct85)
+: ?hit \ --- flag ! true if hit goal, aliens can't hit self
+  mcoords                      \ missle location
+  ilocal @ ?icons-at dup       \ any icons at missle location
+  if 0 over >r swap            \ n,n,0,count
+     0 do swap point>icon      \ examine each icon ( extra work)
+          morig #malien =      \ ?alien missle
+          if @id 27 35 within  \ is icon our ship?
+            if drop 1 then     \ success!
+          else drop 1          \ our missle, can't hit us (oh?)
+            then
+        loop r> >flag and      \ merge with icons-at test
+   then ;
+\ doesn't check for class 0 missles,
+\ done in find-bomb and ?any-hits
+
+---- Screen 29 ----
+\ ?any-hits                                         (rfg22oct85)
+
+head: ?any-hits \ check display, see if any collisions
+t: maxmis 0 do i >m @mclass  \ if any missle in slot
+ if mcoords ?invis 0= \ off screen
+    if  mdelete 1 #explode +!  \ mdelete does -!
+    else ?hit
+     if 1 #explode +! then \ record for later processing
+    then
+ then loop t;
+\ alien missles always on target?
+
+
+
+
+
+==== Page 6 | 11-05-85 -- COMBAT CMP -- Binary Systems | image COMBAT_CMP_p07 ====
+---- Screen 30 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 31 ----
+\ ?move-.icon if it is visible                      (rfg22oct85)
+head: reorg \ force reorganization of iconlist
+t:  -5000 dup anchor 2! orglist t;
+
+head: ?move-.icon \ move only visible icons
+t:  xormode @ xormode off
+  ci ?icon=iaddr drop \ assume in list
+  point>icon
+  @xy !iy !ix \ copy from object to icon
+  reorg showspace xormode ! t;
+
+
+
+
+
+
+---- Screen 32 ----
+\ macros using delta-xy                             (rfg25sep85)
+
+head: (movet)  \ x,y x1,y1 --- ! move xy towards x1y1
+t: delta-xy  rot + inst-y ! + inst-x ! t;
+
+head: (movea) \ xy,x1y1 --- away
+t: delta-xy negate rot + inst-y ! negate + inst-x ! t;
+
+
+
+\ seem to be reversed ??
+
+
+
+
+
+---- Screen 33 ----
+\ find-bomb
+
+: find-bomb \ --- flag! true if one ready; sets MISSLE
+ #explode @ >r #explode off
+  maxmis 0 do i >m @mclass
+            if  ?hit
+             if leave then
+            then
+           loop r> #explode ! ; \ use only if certain 1 exists
+
+
+
+
+
+
+
+---- Screen 34 ----
+\ ?plasma, advance                                  (rfg22oct85)
+
+head: ?plasma  \ called if plasma bolt has to follow ship
+t:  @mclass 6 =
+   if ship-coords swap destx d! set-dda then t;
+\ resets line variables to track our ship
+
+: advance
+ maxmis 0 do i >m mclass c@
+      if ?plasma step-dda
+     then loop ;
+
+
+
+
+
+---- Screen 35 ----
+\ all-repair for test                               (rfg22oct85)
+head: heal-crew
+t: #assign-crew >c+s inst-y 2+
+   dup 18 + swap do
+   i 1.5@ >c+s 100 ^vit c! iclose
+   3 +loop navigator 1.5@ >c+s 190 ^nav c! iclose iclose t;
+
+head: restore-shield t: 2000 shield-cnt ! 2000 armor-cnt ! t;
+
+: repair-all
+ ship>c  restore-shield heal-crew
+ 100 dup %hull-pts c!  dup %engine-pts c!
+     dup %sensor-pts c! dup %comm-pts c!
+     dup %missle-pts c! dup %laser-pts c!
+         %shield-pts c! iclose ;
+
+==== Page 7 | 11-05-85 -- COMBAT CMP -- Binary Systems | image COMBAT_CMP_p08 ====
+---- Screen 36 ----
+\ attack simulation                                 (rfg22oct85)
+
+: do.missles
+ advance ?any-hits #explode @ ?dup
+   if 0 do find-bomb
+           mcoords @mclass ?dup 0=
+          if >alpha >0font
+             missle @ marray - missize / ." MISSLE# " . quit
+          then
+                           morig c@ 1
+           ' do-damage module mdelete showspace
+       loop then ;
+
+
+
+
+---- Screen 37 ----
+\ orient current vessel                             (rfg11oct85)
+
+head: ?patch \ dx,dy --- flag! true if need to flip orientation
+t:  2dup or ( neither value is 0 )
+  if / 0> else 2drop 0 then t;
+
+head: ves-orient \ oldx,y --- ! reorients icon
+t: @inst-species 25 = not \ debris check
+if  @xy @ 2swap delta-xy \ current location
+  2swap 2drop 2dup
+  key>orient rot rot
+  ?patch  if 4 + 8 mod then
+    dup  ves-heading c!
+        35 + !id
+then t; \ call before ?move-.icon
+
+---- Screen 38 ----
+\ display start                                     (rfg26sep85)
+
+head: orient>ship \ set orientation for attacking
+t:  ship-coords ves-orient
+  ves-heading c@ 4 + 8 mod dup ves-heading c!
+  35 + !id t;
+
+head: vismap \ sets up x,yvis
+t: xabs @ 18 - xvis !
+   yabs @ 30 - yvis ! t;
+\  xvis @ 14 +
+\  yvis @ 22 +
+\  xvis @ 22 +
+\  yvis @ 41 + !viswindow t;
+
+
+---- Screen 39 ----
+\ install-icons, reorient
+
+: install-icons  \ becomes no-op when finished testing
+  (encounter) 1.5@ >c+s iopen
+   ' +iconbox module cdrop iclose
+   *ship ?icon=iaddr
+    if drop
+    else *ship >c+s  ' icon-param module +icon  iclose
+    then ;
+
+head: reorient \ ship reflects current orientation
+t: iindex @ >r
+ *ship ?icon=iaddr drop point>icon
+ %heading c@ 27 + !id
+r> iindex ! showspace t;
+
+---- Screen 40 ----
+\ init-space-map                                    (rfg13oct85).
+
+: init-space-map
+ 0. xlldest ! ylldest !
+>1iconfont
+ 8 dup xwld:xpix ! ywld:ypix !
+ 1 dup xwld:xpix 2+ ! ywld:ypix 2+ !
+ vismap ;
+
+
+
+
+
+
+
+
+---- Screen 41 ----
+\ 4:1scale  2:1scale                                (rfg01oct85)
+head: 4:1scale
+t: vismap >2iconfont
+ 2 dup xlldest ! ylldest !
+ 4 dup xwld:xpix ! ywld:ypix !
+ 1 dup xwld:xpix 2+ ! ywld:ypix 2+ !
+ xvis @ 10 + yvis @ 15 + xvis @ 26 + yvis @ 43 + !viswindow t;
+
+head: 2:1scale
+t: vismap >3iconfont
+ 1 dup xlldest ! ylldest !
+ 2 dup xwld:xpix ! ywld:ypix !
+ 1 dup xwld:xpix 2+ ! ywld:ypix 2+ !
+ xvis @  yvis @ xvis @ 34 + yvis @ 58 + !viswindow t;
+
+
+==== Page 8 | 11-05-85 -- COMBAT CMP -- Binary Systems | image COMBAT_CMP_p09 ====
+---- Screen 42 ----
+\ 8map                                              (rfg01oct85)
+
+head: 8:1scale
+t: vismap >1iconfont
+ 0. xlldest ! ylldest !
+ 8 dup xwld:xpix ! ywld:ypix !
+ 1 dup xwld:xpix 2+ ! ywld:ypix 2+ !
+ xvis @ 14 + \ left edge
+ yvis @ 22 + \ bottom
+ xvis @ 22 + \ right edge
+ yvis @ 41 + !viswindow t; \ top
+
+
+
+
+
+---- Screen 43 ----
+\ dist-test  finds greatest distance                (rfg02oct85)
+v= farthest \ largest coordinate gap
+v= nearest  \ closest coordinate gap
+
+head: (close)
+t: xabs @ @ix - abs
+   yabs @ @iy - abs min \ largest of two coordinates
+   nearest @ min nearest ! t; \ lowest of stored value and coord
+
+head: (farth)
+t: xabs @ @ix - abs
+   yabs @ @iy - abs max \ largest of two coordinates
+   farthest @ max farthest ! t;
+
+
+
+---- Screen 44 ----
+\ dist-test  finds greatest distance                (rfg22oct85)
+
+head: near-far \ set variables for scale and probing
+t: farthest off 1000 nearest ! \ nothing this far away
+   ilocal @ 0 do
+   i point>icon @id 35 44 within \ is it a vessel?
+    if (close) (farth)
+    then loop t;
+
+
+
+
+
+
+
+
+---- Screen 45 ----
+\ determine which scale to use                      (rfg13oct85).
+\ head: getnf t: nearest @ farthest @ t;
+
+: set-scale
+ ( getnf ) near-far
+  farthest @ dup  5 <
+   if drop 8:1scale
+   else 5 8 within ( i guess)
+      if 4:1scale
+      else 2:1scale
+      then
+   then ( getnf d= not ) 1
+   if showspace then ; \ change display only if change in
+                        \ near/far setting
+
+
+---- Screen 46 ----
+\ space-disp                                        (rfg13oct85).
+: set-orientations
+  ilocal @ 0 do i point>icon @id 35 44 within
+   if @il @ih >c+s
+      ship-coords ves-orient iclose
+   then loop ;
+\ for every ship except ours, set orientation
+
+: space-disp \ sets up space display, assume console in place
+\  dclipset
+\  init-iconlist  init-space-map
+(  75 locradius !  install-icons ) reorg
+ ( set-orientations ) set-scale ;
+\  showspace ;
+
+
+---- Screen 47 ----
+\ fire-missle                                       (rfg17oct85)
+head: dispoff
+   t: 68 + swap 8 + swap t; \ ugh, not scale dependant
+
+: dooff wld>scr dispoff scr>blt ;
+
+: afire-missle \ from alien to player's ship
+   ves-coords ship-coords #malien
+   @inst-species 17 =
+    if 6
+    else ves-missle c@
+    then minstall  step-dda
+   3 ves-behave c! ?attack on
+   orient>ship !time  ;
+
+
+==== Page 9 | 11-05-85 -- COMBAT CMP -- Binary Systems | image COMBAT_CMP_p10 ====
+---- Screen 48 ----
+\ fire-laser and execute alien                      (rfg11oct85)
+: draw-laser \ x,y,x1,y1,color ---! draws in display
+  >display !color dooff 2swap dooff 1line ;
+
+: afire-laser
+ ves-laser c@
+ if ves-coords ship-coords red draw-laser
+   " LASER  CLASS " white !color .tty
+   ves-laser c@ .
+   #malien 0 ' do-damage module
+   refresh-aux 3 ves-behave c! ?attack on
+   orient>ship !time
+  then ;
+
+
+
+---- Screen 49 ----
+\ flee, approach                                    (rfg13oct85).
+: coordset ves-coords ship-coords ;
+
+: move-away
+ coordset (movea) 4 ves-behave c!
+  ves-coords  ves-orient ?move-.icon  ; \ fleee
+
+: move-towards  \ assumes vessel on c-stack
+  coordset (movet) 3 ves-behave c!
+   ves-coords ves-orient ?move-.icon ;
+
+
+
+
+
+
+---- Screen 50 ----
+\ >approaching  move-randomly
+
+head: dit \  --- dither
+t:   begin -1 2 rrnd ?dup until t;
+
+head: ?approaching
+   t: ves-behave c@ 3 = t;
+
+head: move-randomly
+t: inst-x @ dit + inst-x !
+   inst-y @ dit + inst-y !
+   ves-coords ves-orient ?move-.icon t;
+
+
+
+
+---- Screen 51 ----
+exit \ raise-shields, lower-shields
+
+: raise-shields ;
+
+: lower-shields ;
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 52 ----
+exit \ arm-weapons, disarm-weapons
+
+: arm-weapons ;
+
+: disarm-weapons ;
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 53 ----
+\ combat expert                                     (rfg27sep85)
+
+ 19 27 expert <combat>
+
+rule: ?attacking false
+      ?start-attacking-hostile true  ?hostile true
+      ?has-missles true  --> afire-missle
+
+rule: ?attacking false  ?fight true
+      ?has-missles true  --> afire-missle
+
+rule: ?attacking true  ?has-missles true
+      ?fire-miss-now true  --> afire-missle
+
+
+
+==== Page 10 | 11-05-85 -- COMBAT CMP -- Binary Systems | image COMBAT_CMP_p11 ====
+---- Screen 54 ----
+\ more rules                                        (rfg26sep85)
+
+rule: ?attacking false
+      ?start-attacking-hostile true  ?hostile true
+      ?has-missles false  ?has-lasers true
+      ?range-short true  --> afire-laser
+
+rule: ?attacking false  ?fight true
+      ?has-missles false  ?has-lasers true
+      ?range-short true  --> afire-laser
+
+
+
+
+
+
+---- Screen 55 ----
+\ yet more rules                                    (rfg26sep85)
+
+rule: ?attacking true  ?has-lasers true
+      ?fire-miss-now false
+      ?fire-laser-now true ?range-short true
+      --> afire-laser
+
+rule: ?hostile false  ?obsequious false
+      ?terminated true ?go-now true
+      ?move-rate>0 true  --> move-away
+
+rule: ?obsequious true  ?can-surrender  false
+      ?move-rate>0 true  --> move-away
+
+
+
+---- Screen 56 ----
+\ and yet more rules                                (rfg23sep85)
+
+rule: ?nothing-happening true
+      ?move-rate>0 true --> move-away
+
+rule: ?move-rate>0 true ?obsequious false
+      ?range-long true --> move-towards
+
+rule: ?move-rate>0 true ?obsequious false
+      ?range-medium true ?has-lasers true
+      ?has-missles false --> move-towards
+
+rule: ?move-rate>0 true  ?approaching false
+      ?move-rnd-now true  --> move-randomly
+
+
+---- Screen 57 ----
+\ simulation loop
+exit
+works like this, i think.
+every time through the loop, one of the alien vessels executes
+its behavior. Then, all the missle and laser objects are updated
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 58 ----
+\ simulate does it for each creature                (rfg01oct85)
+v= ^ves \ icon# of current vessel for behaving
+^ves off
+
+: this-vessel \ ( --- current creature) for task
+   ^ves @ point>icon @il @ih >c+s ;
+
+head: 1st-vessel t: ^ves off t;
+
+
+
+
+
+
+
+
+---- Screen 59 ----
+\ simula wraps the experts up                       (rfg12oct85)
+
+head: (combat)
+t:  ' <combat> distract <combat> drop t;
+
+: fix-ashield \ ( vessel --- vessel ) ! charge up shield
+  ves-shield-hits @ ves-shieldpts @ <
+  if 5 ves-shieldpts +! then ;
+
+: fix-pshield
+  shield-cnt @
+  %shield-cls @rclass  \ now depends on shield class
+  %shield-pts c@ 5 * * < \ and generating capability
+  if 10 shield-cnt +! then ;
+
+
+==== Page 11 | 11-05-85 -- COMBAT CMP -- Binary Systems | image COMBAT_CMP_p12 ====
+---- Screen 60 ----
+\ simulate does it for each creature                (rfg04nov85).
+
+: combat
+ilocal @ 1 > \ ?anybody to behave
+if this-vessel @id 35 43 within \ not debris
+   if (combat) fix-ashield
+   else @id 27 35 within \ our ship?
+        if fix-pshield then
+   then iclose               \ the displayed object
+ ^ves @ 1+ ilocal @ mod ^ves ! \ wrap to 0 if at end
+  do.missles near-far set-scale
+then ;
+
+
+
+
+---- Screen 61 ----
+\ probe offsets                                     (rfg02oct85)
+
+transient
+: d, here 4 allot d! ;
+resident
+
+create orient>octant \ offsets for probe
+1 0 d,  1 1 d,  0 1 d,  -1 1 d,
+-1 0 d,  -1 -1 d,  0 -1 d, 1 -1 d,
+
+
+
+
+
+
+
+---- Screen 62 ----
+\ compute xy of probe                               (rfg03oct85)
+
+: set-probe \ ( ship --- ship ) ! set xy of probe
+   farthest @ nearest @ + 2/ \ average distance
+   %heading c@ 4* orient>octant + d@
+   >r over * xabs @ +
+   r> rot  * yabs @ + probe d! ;
+exit
+: show-probe
+  probe d@ wld>scr swap 4 + swap 70 +
+ >display white !color 4 .circle ;
+
+
+
+
+
+---- Screen 63 ----
+\ check if player has mounted weapons               (rfg13oct85).
+
+: ?weap-armed
+  %status c@ 1 and ;
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 64 ----
+\ find-fuel                                         (rfg12oct85)
+
+: find-fuel \ ( --- endurium ) ! inside starship hold
+ *starship-hold >c+s iopen
+  11 10 ifind drop iopen \ assume elements box
+  26 06  ifind drop ; \ also ASSUME some endurium
+
+
+
+
+
+
+
+
+
+
+---- Screen 65 ----
+\ deplete energy for using armaments                (rfg12oct85)
+2v= #fuel \ hundreths of units of endurium
+null #fuel d!
+
+: read-fuel
+   find-fuel inst-qty @ 10 m* #fuel d!
+   cdrop cdrop iclose ;
+
+: dec-fuel \ amount --- ! to subtract from #fuel
+  #fuel d@ rot 0 d-
+  2dup null d< if 2drop 0. then
+  #fuel d! ;
+\ read from hold when combat activated
+\ TESTED
+
+
+==== Page 12 | 11-05-85 -- COMBAT CMP -- Binary Systems | image COMBAT_CMP_p13 ====
+---- Screen 66 ----
+\ ?empty-tank save-fuel                             (rfg12oct85)
+
+: ?empty-tank  \ --- flag ! true if no fuel left
+   #fuel d@ d0= ;
+
+: save-fuel \ restore to ship endurium stash
+  #fuel d@ 10  u/mod \ ASSUME no overflow lost!!
+  swap 5 > if 1+ then
+  find-fuel inst-qty !
+  iclose iclose iclose ;
+
+
+\ check for 0= while running, and restore when finished
+
+
+
+---- Screen 67 ----
+\ compute nav skill dithering                       (rfg12oct85)
+2v= dtemp \ dither temps
+
+: ndither \ navskill --- +/- 5 points
+  0 250 rot
+  - rrnd 50 /
+  0 2 rrnd if negate then ;
+
+: dither-target \ --- x,ydither for missle to go off
+  *assign-crew >c+s navigator 1.5@
+  >c+s ^nav c@ >r ( 0 to 250 )
+  target 2@ r@ ndither dup abs dtemp ! + swap
+            r> ndither dup abs dtemp 2+ ! + swap
+  cdrop iclose 2dup wld>scr probe d! ( show-probe)  ;
+\ why is wld>scr there :: MAYBE BUG??
+
+---- Screen 68 ----
+\ compute target coordinates, given probe           (rfg03oct85)
+
+: find-target
+  10000 tdist !
+  ilocal @ dup 1 >
+  if 0 do i point>icon @id  35 44 within \  a vessel
+         if probe d@ ves-coords dist
+            dup tdist @ <
+            if tdist ! ves-coords target d!
+            else drop
+            then then loop
+  else drop
+  then ;
+
+
+
+---- Screen 69 ----
+\ fire missle from our side                         (rfg12oct85)
+
+
+
+: pfire-missle
+  ( ignore ready-to-fire test and existence test)
+  ship-coords
+  dither-target
+  #mplayer
+  %missle-cls @rclass ( c@ 7 and ) minstall
+  step-dda  \ get away from ship
+  5 dec-fuel ;
+
+
+
+
+---- Screen 70 ----
+\ fire-laser and execute alien                      (rfg09oct85)
+
+
+: pfire-laser
+ ship-coords  dither-target 2dup target d!
+ lt-blue draw-laser
+  target d@ #mplayer 0 ' do-damage module
+  1 dec-fuel ;
+
+
+
+
+
+
+
+
+---- Screen 71 ----
+\ pchoose - laser or missle ( if got )              (rfg13oct85).
+: pfire \ some sort of armament
+  ?empty-tank not
+  if ?weap-armed
+     if set-probe  find-target
+       ship-coords target d@ dist 7 <
+       ?p-has-lasers  and
+         if pfire-laser
+         else ?p-has-missles \ + time out check ?
+           if pfire-missle
+           else white !color " WEAPON NOT AVAILABLE" .tty
+           then then
+      else white !color " WEAPONS NOT ARMED ".tty then
+  else red !color " OUT OF FUEL! " .tty
+  then ;
+
+==== Page 13 | 11-05-85 -- COMBAT CMP -- Binary Systems | image COMBAT_CMP_p14 ====
+---- Screen 72 ----
+\ combat-tasks                                      (rfg22oct85)
+: all-experts  'cex @ execute  combat ;
+
+: combat-tasks \ install vectors for tasker
+'  ?ship-repair  'vehicle-cycle !  '  Mrepair 'repair !
+' nop  '.vehicle-status !  \ vehicle update, every hour
+' nop  'death ! \ executes when there is a death
+' all-experts 'external-events ! \ lifeform simulation goes here
+' nop 'ending ! \ KLUDGE for testing endgame=no fuel
+' ?appoint  'crew-cycle  ! 0. lastappoint 2!
+' nop  '.vital-signs !  ' heal 'treatment ! ?heal on
+\ ' nop '.date !          \ date in auxwindow
+ time-passing on ;      \ activate these routines
+
+
+
+---- Screen 73 ----
+\ tv-untasks                                        (rfg22oct85)
+
+: combat-untasks \ remove vectors for tasker
+  ' ?ship-repair  'vehicle-cycle !  ' mrepair 'repair !
+  ' nop  '.vehicle-status !  \ vehicle update, every hour
+  ' obits  'death !
+  ' CEX+WAX 'external-events ! \ lifeform simulation went here
+  ' ?appoint 'crew-cycle  !
+  ' nop  '.vital-signs !  ' heal 'treatment !
+  ' nop '.date !
+   save-fuel ?attack off
+   iclose  ; \ the ship
+
+
+
+
+---- Screen 74 ----
+\ tv-key                                            (rfg30oct85)
+decimal
+: ?maneuver \  --- flag ! true if space bar hit
+   lkey @ 13  = ;
+
+: combat-key \ key --- !terrain vehicle console interaction
+  (xyscan) key>orient
+       %heading c! reorient
+     ?trig ?maneuver not and
+       if pfire then showspace
+    ?maneuver if  0= then ; \ leave tasker
+
+
+
+
+
+---- Screen 75 ----
+\ combat-init                                       (rfg22oct85)
+: combat-init
+  >mainview dark >display
+  ' (.missles) '.background !
+  1st-vessel
+  ' (role) module
+  combat-tasks !time
+  read-fuel *ship >c+s
+  armor-cnt @ 0=
+  space-disp >1font
+  if ' ov/damage module 3 else 1 then
+    #aux ! refresh-aux
+  showspace ;
+
+
+
+---- Screen 76 ----
+\ war                                               (rfg22oct85)
+
+: war
+ context-id# @ 4 =
+ if ' combat-untasks  ' combat-key  ' combat-init dotasks
+ else beep then ;
+
+
+: clear-combat
+    mclr #missles off #explode off ;
+
+
+
+
+
+
+---- Screen 77 ----
+( overlay suffix---------COMBAT---------------------(rfg28oct85)
+dispose close-overlay
+132 overlay combat-ov   combat-ov
+forth definitions
+: (war) combat-voc combat-ov war save-overlay ;
+
+: fixup combat-voc combat-ov  repair-all ;
+
+: (comb) combat-voc combat-ov *ship >c+s combat
+        iclose save-overlay ;
+
+: cscale combat-voc combat-ov  set-scale ;
+
+: cc combat-voc combat-ov clear-combat ;
+\ call when leaving encounter
+
+==== Page 14 | 11-05-85 -- COMBAT CMP -- Binary Systems | image COMBAT_CMP_p15 ====
+---- Screen 78 ----
+\ module callers for combat                         (rfg28oct85)
+
+ov-cancel
+: combat ' (comb) module ;
+
+: war ' (war) module ;
+
+: cb  ov-cancel combat-ov ;
+ '  combat 'wax !    ' war 'combat !
+
+: >w >lores dark ship-console war ;
+
+
+
+
+

@@ -1,0 +1,581 @@
+==== Page (none) | (no header) | image COMM_CMP_p01 ====
+ 0
+ 1 ( PCOMP - Constants
+ 2 ( PCOMP - Constants
+ 3 ( PCOMP - Constants
+ 4 ( PCOMP - Constants
+ 5 ( PCOMP - Constants
+ 6 ( PCOMP - Constants
+ 7 ( PCOMP - Constants
+ 8 ( PCOMP - Variables
+ 9 ( PCOMP - Variables
+10 ( PCOMP - Ifields
+11 ( PCOMP - Ifields
+12 ( PCOMP - Ifields
+13 ( PCOMP -  COPY-PCR
+14 ( PCOMP - P" SAVE-PHRASE
+15 ( PCOMP - SAVE-SYLB ORIG[ ]ORIG
+16 ( PCOMP - BEGIN-OPR-ASSEMBLY END-OPR-ASSEMBLY
+17 ( PCOMP - BEGIN-VST END-VST
+18 ( PCOMP - ORGINATOR: SUBJECT:
+19 ( PCOMP - BLTFILE:
+20 ( PCOMP - TEXT-COLOR: NEXT-NUMBER TALKITIVENESS% .
+21 ( PCOMP - SCOUT-SHIP: INITIAL-EDL: SURRENDER: ...
+22 ( PCOMP - B-EDL-THRESHOLD: C-EDL-THRESHOLD:...
+23 ( PCOMP - SPACE HOMEWORLD LEGAL-SPACIAL-CONTEXTS:
+24 ( PCOMP - OR(LP)
+25 ( PCOMP - LEGAL-POSTURES: OBSEQUIOUS FRIENDLY ...
+26 ( PCOMP - FREQUENCY-COUNT: FREQUENCY-LIMIT:
+27 ( PCOMP - BEDL> EDL> UNCONDITIONAL-ACTION: ...
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+                                                                 55
+                                                                 56
+                                                                 57
+                                                                 58
+                                                                 59
+                                                                 60
+                                                                 61
+                                                                 62
+                                                                 63
+==== Page 1 | 11-05-85 -- COMM    CMP -- Binary Systems | image COMM_CMP_p02 ====
+---- Screen 0 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+( PCOMP - Constants                                      3-8-85)
+1   C= TRUE
+0   C= FALSE
+52  C= OPR-CLASS
+48  C= PHRASE-CLASS
+51  C= SUBJ-CLASS
+50  C= PCR-CLASS
+
+
+
+
+
+
+
+
+
+---- Screen 2 ----
+( PCOMP - Constants                                      3-8-85)
+
+1      C= ELOWAN          \ ELOWAN ID
+2      C= GAZURTOID       \ GAZERTIOS ID
+3      C= MECHAN          \ MECHAN ID
+4      C= MYSTERION       \ MYSTERION ID
+5      C= NOMAD           \ NOMAD  ID
+6      C= SPEMIN          \ SPEMIN ID
+7      C= THRYNN          \ THRYNN ID
+8      C= VELOX           \ VELOX ID
+9      C= UHLEK           \ UHLEK ID
+10     C= VELOX-PROBE     \ VELOX PROBE ID
+11     C= MINSTREL        \ MINSTREL
+12     C= CAPTAIN         \ CAPTIAN ID
+13     C= SCIENCE-OFFICER \ SCIENCE-OFFICER ID
+
+---- Screen 3 ----
+( PCOMP - Constants                                      3-8-85)
+
+14     C= NAVIGATOR              \ NAVIGATOR ID
+15     C= ENGINEER               \ ENGINEER ID
+16     C= COMMUNICATIONS-OFFICER \ COMM.-OFF ID
+17     C= DOCTOR                 \ DOCTOR ID
+18     C= ENTERPRISE
+19     C= DERELICT
+
+ 127 C= TERM
+-127 C= NO-OP
+
+
+
+
+
+---- Screen 4 ----
+( PCOMP - Constants                                      3-8-85)
+
+1 C= SP           \ SPACIAL CONSTANTS FOR VERSION 1
+2 C= HW           ( HOME WORLD?)
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 5 ----
+( PCOMP - Constants                                      3-8-85)
+
+HEX
+1       C= OBSEQ          \ OBSEQUIOUS    POSTURE
+2       C= FRIEND         \ FRIENDLY      POSTURE
+4       C= NEUT.          \ DIPLOMATIC    POSTURE
+8       C= HOST.          \ HOSTILE       POSTURE
+
+DECIMAL
+
+
+
+
+
+
+
+==== Page 2 | 11-05-85 -- COMM    CMP -- Binary Systems | image COMM_CMP_p03 ====
+---- Screen 6 ----
+( PCOMP - Constants                                      3-8-85)
+
+0  C= UNSPECIFED               \ UNSPECIFIED   SUBJECT CODE
+1  C= HAILING                  \ HAILING       SUBJECT COD
+2  C= HAILING-RESPONSE
+3  C= GOODBYE                  \ GOODBYE       SUBJECT COD
+4  C= I-WON'T-ANSWER           \ I WON'T ANS   SUBJECT CODE
+5  C= I-DON'T-KNOW             \ I DON'T KNOW  SUBJECT CODE
+6  C= WHAT'S-YOUR-ANSWER       \ WHAT'S YOUR   SUBJECT CODE
+7  C= THEMSELVES               \ THEMSELVES    SUBJECT CODE
+8  C= OTHER-RACES              \ OTHER-RACES   SUBJECT CODE
+9  C= GENERAL-INFORMATION      \ GENERAL INFO  SUBJECT CODE
+
+
+
+
+---- Screen 7 ----
+( PCOMP - Constants                                      3-8-85)
+
+10 C= OLD-EMPIRE               \ OLD EMPIRE    SUBJECT CODE
+11 C= ANCIENT-ONES             \ ANCIENT ONES  SUBJECT COD
+12 C= DISTRESS                 \ DISTRESS      SUBJECT CODE
+13 C= STATEMENTS               \ STATEMENT     SUBJECT CODE
+14 C= QUESTIONS                \ QUESTIONS     SUBJECT CODE
+15 C= ENOUGH-TALKING           \ ENOUGH        SUBJECT CODE
+
+
+
+
+
+
+
+
+---- Screen 8 ----
+( PCOMP - Variables                                      3-8-85)
+
+V= 'SAVE-PHRASE               ( P" vector)
+
+2V= (ALLPHR)   ( container of all originator records)
+2V= (ORIG)     ( current originator iaddr)
+2V= (VST)      ( current vst container iaddr)
+2V= (SUBJ)     ( current subject iaddr)
+
+
+
+
+
+
+
+
+---- Screen 9 ----
+( PCOMP - Variables                                      3-8-85)
+
+V= (LP)        ( legal posture flags)
+V= (LSC)
+V= (LTC)
+V= (FC)
+V= (DEDLN)
+V= (DEDLY)
+V= (UA)
+
+
+
+
+
+
+
+---- Screen 10 ----
+( PCOMP - Ifields                                       3-15-85)
+
+PCR-CLASS IHEADLEN 0 + 1 IFIELD  LSC    \ LEGAL SPACIAL CONTEXT
+PCR-CLASS IHEADLEN 1 + 1 IFIELD  LP     \ LEGAL POSTURE
+PCR-CLASS IHEADLEN 2 + 1 IFIELD  FC     \ FREQUENCY COUNT
+PCR-CLASS IHEADLEN 3 + 1 IFIELD  UA     \ UNCONDITIONAL ACTION
+PCR-CLASS IHEADLEN 4 + 1 IFIELD  DEDLN  \ DELTA EDL ON NO
+PCR-CLASS IHEADLEN 5 + 1 IFIELD  DEDLY  \ DELTA EDL ON YES
+
+PHRASE-CLASS IHEADLEN 0 +  1 IFIELD PHR-CNT
+PHRASE-CLASS IHEADLEN 1+ 254 IFIELD PHRASE
+
+
+
+
+
+---- Screen 11 ----
+( PCOMP - Ifields                                        3-8-85)
+
+OPR-CLASS 0 IHEADLEN + 1 IFIELD  TC     \ TEXT COLOR
+OPR-CLASS 1 IHEADLEN + 1 IFIELD  T%     \ TALKITIVENESS %
+OPR-CLASS 2 IHEADLEN + 1 IFIELD  SURR   \ SURRENDER FLAG
+OPR-CLASS 3 IHEADLEN + 1 IFIELD UNKWNS  \ UNKNOWN SHIP POWER
+OPR-CLASS 4 IHEADLEN + 1 IFIELD  TP     \ TRANSPORT SHIP PWR FL
+OPR-CLASS 5 IHEADLEN + 1 IFIELD  SS     \ SCOUT SHIP POWER FIE
+OPR-CLASS 6 IHEADLEN + 1 IFIELD  WS     \ WARSHIP POWER FIELD
+OPR-CLASS 7 IHEADLEN + 1 IFIELD I-EDL   \ INITIAL EDL
+OPR-CLASS 8 IHEADLEN + 1 IFIELD  AET    \ A EDL THRESHOLD
+OPR-CLASS 9 IHEADLEN + 1 IFIELD  BET    \ B  "      "
+OPR-CLASS 10 IHEADLEN + 1 IFIELD  CET   \ C  "      "
+OPR-CLASS 11 IHEADLEN + 1 IFIELD  OPE   \ OBSEQ PLAYER POST EFFT
+
+
+==== Page 3 | 11-05-85 -- COMM    CMP -- Binary Systems | image COMM_CMP_p04 ====
+---- Screen 12 ----
+( PCOMP - Ifields                                       9-12-85)
+
+OPR-CLASS IHEADLEN 12 + 1 IFIELD  FPE     \ FRIENDLY PLAYER POST
+OPR-CLASS IHEADLEN 13 + 1 IFIELD  HPE     \ HOST. PLER POST. EFF
+OPR-CLASS IHEADLEN 14 + 1 IFIELD  MSW     \ MAX/SYL WORD
+OPR-CLASS IHEADLEN 15 + 3 IFIELD  VST-PTR \ POINT TO VSTS
+OPR-CLASS IHEADLEN 18 + 1 IFIELD  BLT-FIL \ POINT TO COMM PICTUR
+
+
+
+
+
+
+
+
+
+---- Screen 13 ----
+( PCOMP -  COPY-PCR                                      3-8-85)
+
+: COPY-PCR ( --- \ copy current phrase control variables)
+   ( to phrase control record)
+    (LP) @ LP C! (LSC) @ LSC C!
+    (FC) @ FC C! (DEDLN) @ DEDLN C!
+    (DEDLY) @ DEDLY C! (UA) @ UA C! ;
+
+
+
+
+
+
+
+
+
+---- Screen 14 ----
+( PCOMP - P" SAVE-PHRASE                                4/22/85)
+
+: P" ( <phrase> --- \ get phrase and store it)
+    ASCII " WORD COUNT  2DUP >UPPERCASE  ( addr count --)
+    >HUFF 'SAVE-PHRASE @ EXECUTE ;
+IMMEDIATE
+
+: SAVE-PHRASE ( addr count -- \ save phrase under current sub)
+   (SUBJ) 1.5@ >C SET-CURRENT
+   IOPEN PCR-CLASS 0 1 *CREATE
+   COPY-PCR
+   DUP 1+ VICREATE CI IINSERT
+   IOPEN DUP PHR-CNT C! PHRASE SWAP CMOVE
+   CDROP CDROP ICLOSE ;
+
+
+---- Screen 15 ----
+( PCOMP - SAVE-SYLB ORIG[ ]ORIG                          3-8-85)
+
+: SAVE-SYBL ( addr count -- \ save syllable in vst)
+  (VST) 1.5@ >C SET-CURRENT
+  DUP 1+ VICREATE CI IINSERT
+  IOPEN DUP PHR-CNT C! PHRASE SWAP CMOVE
+  CDROP ICLOSE ;
+
+: ORIG[ ( ( --i) , -- \ put current originator onto context stk)
+  (ORIG) 1.5@ >C SET-CURRENT ;
+
+: ]ORIG ( ( --i) , -- \ drop current originator )
+  ICLOSE ;
+
+
+
+---- Screen 16 ----
+( PCOMP - BEGIN-OPR-ASSEMBLY END-OPR-ASSEMBLY            3-8-85)
+
+: BEGIN-OPR-ASSEMBLY ( --- \ preface phrase text with this)
+    IROOT >C SET-CURRENT
+    IOPEN  7 0 IFIND DROP ( look for iapplication)
+    11 36 ICREATE 2DUP CI IINSERT (ALLPHR) 1.5!
+    ' SAVE-PHRASE 'SAVE-PHRASE ! ;
+
+: END-OPR-ASSEMBLY ( --- \ follows phrase text)
+  SAVE-BUFFERS ;
+
+\ BEGIN-OPR-ASSEMBLY MUST
+\ BE PLACED ON THE FIRST SCREEN OF
+\ THE ORIGINATOR RECORD DESCRIPTIONS
+
+
+---- Screen 17 ----
+( PCOMP - BEGIN-VST END-VST                             3-11-85)
+
+: BEGIN-VST ( --- \ start vocabulary syntax table)
+    11 48 ICREATE 2DUP (VST) 1.5!
+    (ORIG) 1.5@ IINSERT
+    ORIG[ (VST) 1.5@ VST-PTR 1.5! ]ORIG
+    ' SAVE-SYBL 'SAVE-PHRASE ! ;
+
+: END-VST ( --- \ return to general phrases)
+    ' SAVE-PHRASE 'SAVE-PHRASE ! ;
+
+
+
+
+
+
+==== Page 4 | 11-05-85 -- COMM    CMP -- Binary Systems | image COMM_CMP_p05 ====
+---- Screen 18 ----
+( PCOMP - ORGINATOR: SUBJECT:                            3-8-85)
+
+: ORIGINATOR: ( <name> -- \ create a new originator record)
+  OPR-CLASS
+  [COMPILE] ' EXECUTE   ( n -- \ get orginator number)
+  ICREATE 2DUP          ( i i --)
+  (ORIG) 1.5!           ( -- \ make current orginator)
+  (ALLPHR) 1.5@ IINSERT ;
+
+: SUBJECT: ( <name> -- \ create a new subject record)
+  SUBJ-CLASS
+  [COMPILE] ' EXECUTE   ( n -- \ get subject number)
+  ICREATE 2DUP          ( i i --)
+  (SUBJ) 1.5!           ( -- \ make current subject)
+  (ORIG) 1.5@ IINSERT ;
+
+---- Screen 19 ----
+( PCOMP - BLTFILE:                                      9-12-85)
+
+: NEXT-NUMBER ( -- \ parse a number from the input stream)
+   BL WORD NUMBER DROP ;
+
+: BLTFILE: ( -- \ point to blt file containing picture for)
+   ( communications)
+  NEXT-NUMBER ORIG[ BLT-FIL C! ]ORIG ;
+
+
+
+
+
+
+
+
+---- Screen 20 ----
+( PCOMP - TEXT-COLOR: NEXT-NUMBER TALKITIVENESS% ...     3-8-85)
+
+: TEXT-COLOR: ( --- )
+  [COMPILE] ' EXECUTE ORIG[ TC C! ]ORIG ;
+
+
+: TALKITIVENESS%: ( --- )
+    NEXT-NUMBER 0 MAX 100 MIN ORIG[ T% C! ]ORIG ;
+
+: WARSHIP: ( --- )
+    NEXT-NUMBER 0 MAX 255 MIN ORIG[ WS C! ]ORIG ;
+
+: TRANSPORT: ( --- )
+    NEXT-NUMBER 0 MAX 255 MIN ORIG[ TP C! ]ORIG ;
+
+
+---- Screen 21 ----
+( PCOMP - SCOUT-SHIP: INITIAL-EDL: SURRENDER: ...        3-8-85)
+
+: SCOUT-SHIP: ( --- )
+    NEXT-NUMBER 0 MAX 255 MIN ORIG[ SS C! ]ORIG ;
+
+: INITIAL-EDL: ( --- )
+   NEXT-NUMBER 0 MAX 100 MIN ORIG[ I-EDL C! ]ORIG ;
+
+: SURRENDER: ( --- )
+   [COMPILE] ' EXECUTE ORIG[ SURR C! ]ORIG ;
+
+: MAX-SYLABLES/WORD:  ( --- )
+    NEXT-NUMBER 0 MAX 10 MIN ORIG[ MSW C! ]ORIG ;
+
+: A-EDL-THRESHOLD:  ( --- )
+   NEXT-NUMBER ORIG[ AET C! ]ORIG ;
+---- Screen 22 ----
+( PCOMP - B-EDL-THRESHOLD: C-EDL-THRESHOLD:...           3-8-85)
+
+: B-EDL-THRESHOLD:  ( --- )
+   NEXT-NUMBER ORIG[ BET C! ]ORIG ;
+
+: C-EDL-THRESHOLD:  ( --- )
+   NEXT-NUMBER ORIG[ CET C! ]ORIG ;
+
+: OBSEQ-PLAYER-POSTURE-EFFECT: ( --- )
+   NEXT-NUMBER ORIG[ OPE C! ]ORIG ;
+
+: FREINDLY-PLAYER-POSTURE-EFFECT: ( --- )
+   NEXT-NUMBER ORIG[ FPE C! ]ORIG ;
+
+: HOSTILE-PLAYER-POSTURE-EFFECT: ( --- )
+   NEXT-NUMBER ORIG[ HPE C! ]ORIG ;
+---- Screen 23 ----
+( PCOMP - SPACE HOMEWORLD LEGAL-SPACIAL-CONTEXTS:       3-11-85)
+
+: SPACE ( -- \ set space context bit)
+  (LSC) @ SP OR (LSC) ! ;
+
+: HOMEWORLD ( -- \ set homeworld context bit)
+  (LSC) @ HW OR (LSC) ! ;
+
+: LEGAL-SPACIAL-CONTEXTS: ( -- \ reset legal spacial context)
+  (LSC) OFF ;
+
+
+
+
+
+
+==== Page 5 | 11-05-85 -- COMM    CMP -- Binary Systems | image COMM_CMP_p06 ====
+---- Screen 24 ----
+( PCOMP - OR(LP)                                         3-8-85)
+
+: OR(LP) ( mask -- \ or mask with (lp))
+  (LP) @ OR (LP) ! ;
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 25 ----
+( PCOMP - LEGAL-POSTURES: OBSEQUIOUS FRIENDLY ...       3-11-85)
+
+: LEGAL-POSTURES: ( -- \ reset legal posture byte)
+  (LP) OFF ;
+
+: OBSEQUIOUS ( -- \ set obseq bit in lp byte)
+  OBSEQ OR(LP) ;
+
+: FRIENDLY ( -- \ set friendly bit in lp byte)
+  FRIEND OR(LP) ;
+
+: NEUTRAL ( -- \ set diplomatic bit in lp byte)
+  NEUT. OR(LP) ;
+
+: HOSTILE ( -- \ set hostile bit in lp byte)
+  HOST. OR(LP) ;
+---- Screen 26 ----
+( PCOMP - FREQUENCY-COUNT: FREQUENCY-LIMIT:             3-11-85)
+
+: FREQUENCY-COUNT: ( -- \ store fc in fc)
+  NEXT-NUMBER 0 MAX 255 MIN (FC) ! ;
+
+: UNCONDITIONAL-ACTION: ( -- \ store ua pointer)
+  [COMPILE] ' EXECUTE (UA) ! ;
+
+
+
+
+
+
+
+
+
+---- Screen 27 ----
+( PCOMP - BEDL> EDL> UNCONDITIONAL-ACTION: ...           3-8-85)
+
+: EDL>  ( <#> -- n ) NEXT-NUMBER ;
+
+\ modified unconditional action compilers to allow +-
+\ base-edl, +- edl, terminate, & nop; the # compiled is
+\ interpreted by the comm pkg. 3-7-85 awk
+
+
+
+: DELTA-EDL-ON-NO: ( -- \ set dedln)
+  NEXT-NUMBER -100 MAX 100 MIN (DEDLN) ! ;
+: DELTA-EDL-ON-YES: ( -- \ set dedly)
+    NEXT-NUMBER -100 MAX 100 MIN (DEDLY) ! ;
+
+
+---- Screen 28 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 29 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,510 @@
+==== Page (none) | (none) | image FIELDS06_CMP_p01 ====
+ 0 \ directions adjective set
+ 1 \ adjectives for wild card set
+ 2 \ ADJECTIVES FOR SHAPE DESCRIPTION
+ 3 \  niche.set and niche mask
+ 4 \ icon definer and set
+ 5
+ 6
+ 7 \ tints and lumens
+ 8
+ 9 exit \ sounds
+10 \ appendages set
+11 \ continue appendages set
+12 \ textures
+13 \ textures
+14 \ structural entity
+15 \ structural entity
+16 \ structural entity continued
+17 \
+18 exit \ timbres
+19 \ exteriors
+20 \ mineral phyla set
+21 \ continue minerals
+22 \ patch: words that are plural/singular only
+23 \ exteriors
+24 \ move.behave
+25 \ compiling the color 'set'
+26 \ compiling the mixed colors
+
+==== Page 1 | 11-05-85 -- FIELDS06CMP -- Binary Systems | image FIELDS06_CMP_p02 ====
+---- Screen 0 ----
+\ directions adjective set                            rfg04aug84
+
+begin-adjectives
+0 type# !
+ p" north" p" north east" p" east"
+ p" south east" p" south"
+ p" south west" p" west" p" north west"
+p" arctic" p" temperate"
+p" tropical" p" searing"
+p" furnace" p" subfreezing"
+
+
+
+
+
+
+---- Screen 1 ----
+\ adjectives for wild card set                        rfg04aug84
+0 type# !
+p" bitchin'" p" mondo" p" groovy" p" grody"
+p" nauseating" p" outrageous" p" totally radical"
+p" awesome" p" edifying" p" uplifting"
+p" bodacious" p" funkadelic" p" gorgeous"
+p" seductive" p" beautiful" p" incredible"
+p" righteous" p" insanely great" p" grotesque"
+
+
+
+
+
+
+
+
+---- Screen 2 ----
+\ ADJECTIVES FOR SHAPE DESCRIPTION                RFG0 RFG020884
+ decimal 0 type# !
+p" amoeboid"  p" tree-like"  p" balloon-like"
+p" antelope-like" p" bird-like" p" dinosaur-like"
+p" humanoid" p" insectoid" p" plant-like"
+p" bear-like" p" reptilian" p" rodent-like"
+p" slug-like" p" snail-like" p" snake-like" p" spider-like"
+p" turtle-like" p" rock-like" p" fungoid"
+p" starfish-like" p" ewok-like" p" anemone-like"
+
+
+
+
+
+
+
+---- Screen 3 ----
+\  niche.set and niche mask
+ decimal
+9 type# !
+
+p" carpet lifeform"  p" producer"
+p" herbivore"
+p" herbiverous producer"
+p" carnivore"   p" carniverous producer"
+p" omnivore"  p" omniverous producer"
+
+
+
+
+
+
+
+---- Screen 4 ----
+\ icon definer and set                                rfg??may84
+decimal
+EXIT
+: CLAIM 0 DO 0 C, LOOP ;
+
+create icon.a 8 claim  create icon.b 8 claim
+create icon.c 8 claim  create icon.d 8 claim
+create icon.e 8 claim  create icon.f 8 claim
+create icon.h 8 claim  create icon.i 8 claim
+create icon.j 8 claim  create icon.k 8 claim
+create icon.l 8 claim  create icon.m 8 claim
+create icon.n 8 claim  create icon.o 8 claim
+create icon.p 8 claim  create icon.q 8 claim
+create icon.g 8 claim
+
+
+---- Screen 5 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==== Page 2 | 11-05-85 -- FIELDS06CMP -- Binary Systems | image FIELDS06_CMP_p03 ====
+---- Screen 6 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 7 ----
+\ tints and lumens
+0 type# !
+
+p" dark" p" greyish" p" light"
+
+p" blinding" p" bright" p" glowing"
+p" luminescent" p" translucent" p" shimmering"
+
+
+
+
+
+
+
+
+
+---- Screen 8 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 9 ----
+exit \ sounds
+
+0 type# !
+p" faint" p" audible" p" loud"
+p" thunderous" p" deafening"
+
+p" low-pitched" p" high-pitched"
+
+
+
+
+
+
+
+
+
+---- Screen 10 ----
+\ appendages set                                      rfg20may84
+1 type# !
+p" beak" p" tusk" p" horn"
+p" wing"  p" float sac"
+p" protrusion" p" ear"
+p" projection" p" tata" p" hooter"
+p" fendibular extremulator"
+p" poison sac" p" acid sac"
+p" mandible"
+p" feeler"
+p" compound eye" p" eye spot"
+p" eye stalk" p" eye" p" leg" p" mouth"
+p" pincer" p" pseudopod"
+p" tentacle" p" stinger"
+
+
+---- Screen 11 ----
+\ continue appendages set                             rfg20may84
+p" arm"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==== Page 3 | 11-05-85 -- FIELDS06CMP -- Binary Systems | image FIELDS06_CMP_p04 ====
+---- Screen 12 ----
+\ textures                                            rfg??may84
+0 type# !
+p" thatched" p" rusted" p" flowing"
+p" wirey" p" tangled" p" curly" p" matted"
+p" knurled" p" waxy" p" downy" p" filmy"
+p" dull" p" boney" p" chitenous" p" leafy"
+p" mucousy" p" shivering" p" metallic"
+p" serrated" p" bristly" p" fuzzy"
+p" hairy" p" warty" p" rubbery" p" horny"
+p" plastic-like" p" hard" p" fleshy"
+p" leathery" p" dry" p" spongy"
+p" fibrous" p" oily" p" thorny" p" gnarly"
+p" craggy" p" dusty" p" striated"
+p" pocked" p" sandy" p" coarse"
+p" bumpy" p" veined"
+
+---- Screen 13 ----
+\ textures                                            rfg29may84
+p" damp" p" crusty" p" broken" p" slick"
+p" jagged" p" glassy" p" dripping"
+p" cracked" p" shiney" p" crystalline"
+p" rocky" p" fine-grained" p" gravelly"
+p" wet" p" powdery" p" wind-swept"
+p" rough" p" smooth" p" blooping"
+p" steaming" p" viscous" p" sticky"
+p" gooey" p" gummy" p" soft"
+
+
+
+
+
+
+
+---- Screen 14 ----
+\ structural entity                                   rfg09jul84
+0 type# !
+p" pyramid-shaped" p" diamond-shaped" p" heart-shaped"
+p" bowl-shaped" p" dish-shaped"
+p" disk-shaped" p" saucer-shaped" p" needle-shaped"
+p" spear-shaped" p" rod-shaped" p" sphere-shaped"
+p" dome-shaped" p" tear-shaped" p" fan-shaped"
+p" irregularly-shaped" p" slash-like"
+p" hole-like" p" talon-like" p" thorn-like"
+p" blade-like" p" fin-like" p" leaf-like"
+p" fang-like" p" whip-like" p" stem-like"
+p" stalk-like" p" root-like" p" branched"
+p" rectangular" p" cylindrical"
+p" detailed" p" square" p" hexagonal"
+p" cavernous" p" gaping"
+
+---- Screen 15 ----
+\ structural entity                                   rfg09jul84
+p" circular" p" triangular"
+p" deep set" p" pupil-less"
+p" finely sculpted" p" scalloped"
+p" cuboid" p" round"
+p" octagonal" p" oval"
+p" protruding" p" splayed"
+p" cupped" p" armoured"
+p" saber" p" retractible"
+p" spiral-shaped" p" spiked" p" blunt"
+p" conical" p" hooked"
+
+
+
+
+
+---- Screen 16 ----
+\ structural entity continued                         rfg09jul84
+p" razor sharp" p" sharp" p" flexible"
+p" pronged" p" pointed" p" globular"
+p" bulging" p" bulbous" p" bat"
+p" butterfly" p" vestigial" p" floppy"
+p" webbed" p" intricate" p" sweeping"
+p" curved" p" feathery" p" rigid"
+p" gelatinous" p" prehensile"
+p" gnarled" p" spiney"
+p" membranous" p" multi-jointed" p" jointed"
+p" muscular" p" powerful looking" p" stubby"
+p" long"  p" short" p" sinewy"
+
+
+
+
+---- Screen 17 ----
+\                                                     rfg23may84
+decimal
+p" there" p" is" p" are"
+p" they" p" it" p" have" p" has"
+p" s" p" an" p" a" p" some"
+p" creature" p" lifeform"
+p"  "  p" around" p" about"
+p" and" p" animal" p" their" p" its"
+p" many" p" being" p" ," p" represented by"
+p" could be" p" or" p" in the"
+p" one of the"
+p" approximately" p" roughly" p" tall"
+p" cm." p" m." p" ."
+p" many" p" level" p" aggression"
+p" with"
+
+==== Page 4 | 11-05-85 -- FIELDS06CMP -- Binary Systems | image FIELDS06_CMP_p05 ====
+---- Screen 18 ----
+exit \ timbres                                             rfg29
+0 type# !
+p" explosive" p" booming" p" funky"
+p" pounding" p" rumbling" p" resonating"
+p" ringing" p" sizzling" p" mechanical"
+p" flapping" p" whispering" p" chattering"
+p" crashing" p" crackling" p" snapping"
+p" clicking" p" crunching" p" popping"
+p" tapping" p" whooshing" p" buzzing"
+p" cooing" p" murmuring" p" growling"
+p" thumping" p" drumming" p" grinding"
+p" purring" p" thrumming" p" roaring"
+p" cackling" p" chirping" p" screeching"
+p" squealing" p" whining" p" whistling"
+p" piercing" p" screaming" p" musical"
+p" humming" p" hissing"
+---- Screen 19 ----
+\ exteriors                                           rfg17may84
+p" exoskeleton"
+p" feathered surface"
+p" surface" p" patterned surface"
+
+0 type# !
+p" amorphous" p" irregular"
+p" spherical" p" radial" p" bilateral"
+
+
+
+
+
+
+
+
+---- Screen 20 ----
+\ mineral phyla set                                   rfg17apr84
+exit
+12 type# !
+p" hydrogen" p" helium" p" carbon"
+p" nitrogen" p" oxygen" p" neon"
+p" sodium" p" magnesium" p" aluminum"
+p" silicon" p" sulfur" p" chlorine"
+p" calcium" p" titanium" p" chromium"
+p" iron" p" cobalt" p" nickel"
+p" copper" p" zinc" p" krypton"
+p" molybdenum" p" silver" p" tin"
+p" antimony" p" tungsten" p" platinum"
+p" gold" p" mercury" p" lead"
+p" endurium" p" promethium" p" plutonium"
+
+
+---- Screen 21 ----
+\ continue minerals
+exit
+p" ammonia" p" carbon dioxide" p" armalcolite"
+p" carbon monoxide" p" ethane" p" ethanol"
+p" hydrogen cyanide" p" hydrogen sulfide"
+p" methane" p" methanol"
+p" ozone" p" water"
+
+\ propose reordering in terms of life supportability
+
+
+
+
+
+
+
+---- Screen 22 ----
+\ patch: words that are plural/singular only
+4 type# !
+p" scales" p" thorns" p" teeth" p" whiskers"
+p" plumes" p" claws" p" quills" p" flowers"
+p" fruits" p" berries" p" bulbs" p" leaves"
+p" vines" p" branches" p" feet" p" cilia"
+
+3 type# ! p" snout" p" bazwango"
+p" tail" p" shell" p" crest" p" mane"
+p" stem" p" stalk" p" bark"  p" head"
+
+5 type# ! p" skin" p" armor" p" fur" p" hair"
+
+
+
+
+---- Screen 23 ----
+\ exteriors
+11 type# !
+p" flattened" p" flat"
+p" wide"  p" thick"
+p" squat"  p" elongated"
+p" narrow" p" slender"  p" graceful"
+p" thin"  p" spindly"
+p" willowy"  p" delicate"
+
+
+
+
+
+
+
+
+==== Page 5 | 11-05-85 -- FIELDS06CMP -- Binary Systems | image FIELDS06_CMP_p06 ====
+---- Screen 24 ----
+\ move.behave
+2 type# ! \ meaning: these are verbs
+
+p" oozing"  p" creeping"
+p" slithering"  p" crawling"
+p" rolling"  p" moving"
+p" walking"  p" hopping"
+p" jumping"  p" leaping"
+p" flying"  p" floating"
+p" airborne" p" mobile"
+p" sessile" p" wandering" p" eating"
+p" eating" p" stunned" p" attacking"
+
+
+
+
+---- Screen 25 ----
+\ compiling the color 'set'
+7 type# !
+
+p" red"       p" reddish orange"
+p" orange"   p" yellowish orange"
+p" yellow"   p" lemon yellow"
+p" yellowish green"
+p" green"   p" blue-green"
+p" blue"    p" very blue"
+p" violet"  p" purple"
+
+
+
+
+
+
+---- Screen 26 ----
+\ compiling the mixed colors
+8 type# !
+
+p" marroon"          p" rust-colored"
+p" pink"             p" brown"
+p" beige"            p" copper-colored"
+p" brownish green"    p" lime green"
+p" turquoise"        p" lavendar"
+p" multi-colored"    p" white"
+p" grey"             p" black"
+
+
+
+
+
+
+---- Screen 27 ----
+\ sizes
+10 type# !
+p" tiny"  p" small"
+p" big"   p" large"
+p" very large"  p" huge"
+p" massive"
+p" humongous"  p" gargantuan"
+
+0 type# ! ' save-adjaddr 'storage-option !
+defaultstart
+
+
+FORGET PLSTART
+
+
+

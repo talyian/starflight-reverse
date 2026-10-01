@@ -1,0 +1,1518 @@
+==== Page (none) | (no header) | image COMM-OV_CMP_p01 ====
+0
+1
+2
+3
+4
+5 ( --------------Communications Overlay Prefix-----
+6
+7 ( Huffman Decode Vectors
+8 ( Communications Expert: Variables
+9 ( Communications Expert: Variables
+10 ( Communications Expert: Variables
+11 ( Communications Expert: Constants
+12 ( Communications Expert: Fields
+13 ( Communications Expert: Support
+14 ( Communications Expert: Support
+15 ( Communications Expert: Support
+16 ( Communications Expert: Support
+17 ( Communications Expert: Support
+18 ( Communications: phrase search words
+19 ( Communications: phrase search words
+20 ( Communications: Buttons & Player actions
+21 ( Communications Alien comm scrambler
+22 ( Communications Alien comm scrambler
+23 ( Communications Alien comm scrambler
+24 ( Communications Alien comm scrambler
+25 ( Communications phrase connected actions
+26 ( Communications Output mechanics
+27 ( Communications Output mechanics
+28 ( Communications Output mechanics
+29 ( Communications Output mechanics
+30 ( Communications Output mechanics
+31 ( Communications Output mechanics
+32 ( Communications Output mechanics
+33 ( Communications Output mechanics
+34 ( Communications Output mechanics
+35 ( Communications expert: actions EDL
+36 ( Communications expert: actions EDL
+37 ( Communications expert: actions TALKATIVENESS
+38 ( Communications expert: actions AUXILIARY
+39 ( Communications expert: actions AUXILIARY
+40 ( Communications expert: actions COMMUNICATIONS
+41 ( Communications expert: actions COMMUNICATIONS
+42 ( Communications expert: actions COMMUNICATIONS
+43 ( Communications expert: conditions
+44 ( Communications expert: conditions
+45 ( Communications expert: conditions
+46 ( Communications expert: conditions
+47 ( Communications expert: conditions
+48 ( Communications expert: conditions
+49 ( Communications expert: rules EDL
+50 ( Communications expert: rules TALKATIVENESS
+51 ( Communications expert: rules TALKATIVENESS
+52 ( Communications expert: rules TALKATIVENESS
+53 ( Communications expert: rules AUXILLARY
+54 ( Communications expert: rules AUXILLARY
+55 ( Communications expert: rules COMMUNICATIONS
+55 ( Communications expert: rules COMMUNICATIONS
+56 ( Communications expert: rules COMMUNICATIONS
+57 ( Communications expert: rules COMMUNICATIONS
+58 ( Communications: Buttons & Player actions
+59 ( Communications: Buttons & Player actions
+60 ( Communications: Buttons & Player actions
+61 ( Communications: Buttons & Player actions
+62 ( Communications: Buttons & Player actions
+63 ( Communications: Buttons & Player actions
+64 ( Communications: Buttons & Player actions
+65 ( Communications: Buttons & Player actions
+66 ( Communications: Buttons & Player actions
+67 ( Communications: Buttons & Player actions
+68 ( Communications: Buttons & Player actions
+69 ( Communications: Buttons & Player actions
+70 ( Communications: Initialization routines
+71 ( Communications: Initialization routines
+72 ( Communications: Initialization routines
+73 ( Communications: Initialization routines
+74
+75 ( -------------Comunications Overlay Suffix-----
+76 ( Suffix Continued
+77
+78
+79
+80
+
+==== Page 1 | 11-05-85 -- COMM-OV CMP -- Binary Systems | image COMM-OV_CMP_p02 ====
+
+---- Screen 0 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 2 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 3 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 4 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 5 ----
+( --------------Communications Overlay Prefix-----------------)
+
+
+V= 'XCOMM
+
+VOCABULARY COMM-VOC IMMEDIATE
+
+93 OPEN-OVERLAY
+COMM-VOC  DEFINITIONS
+
+3900 TRANS-ALLOT
+
+NEWT-DP
+
+
+
+
+==== Page 2 | 11-05-85 -- COMM-OV CMP -- Binary Systems | image COMM-OV_CMP_p03 ====
+
+---- Screen 6 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 7 ----
+( Huffman Decode Vectors                           AWK 10/31/85)
+
+( exit )
+
+V: HUFFSPACE 254 ALLOT
+
+HEAD: 0HUFFSPACE ( -- ) T: LSCAN OFF T;
+' 0HUFFSPACE ' 'DVECTOR-INIT !
+
+HEAD: B>HUFFSPACE ( b -- )
+T: LSCAN DUP C@ + 1+ C! 1 LSCAN +! T;
+' B>HUFFSPACE ' 'DVECTOR !
+
+
+
+
+
+---- Screen 8 ----
+( Communications Expert: Variables                AWK 6/25/85 )
+2V: (ORIGINATOR)     \ iaddr of originator when finding phrase
+2V: (PHRASE)         \ iaddr of last phrcontrl record output
+V: HAILER            \ who hailed 1= player 2= alien 0= no one
+0 C: ?P-RESPOND      \ did the player respond
+V: P-POSTURE         \ player's current posture
+V: P-POSTURES        \ bit field of all P-POSTUREs this encnt
+V: P-SUBJECT         \ player's current subject
+V: P-QUES            \ player's current subject
+V: #P-PHRASES        \ # player's phrases not incl. hail
+\ V: A-POSTURE         \ alien's posture
+V: A-SUBJECT         \ alien's current subject
+V: #A-PHRASES        \ # alien's phrases not incl. hail
+V: POSTURE           \ posture used for finding phrase
+V: LAST-LEN          \ length of last phrase sent or rec'd
+
+
+---- Screen 9 ----
+( Communications Expert: Variables                AWK 2/21/85 )
+V: SUBJECT           \ subject used for finding phrase
+V: #A-HAILS          \ # alien's attempts at hailing
+V: #A-PHRASES-LIMIT \ # phrases alien may say before tired
+                       \ of talking
+V: LEAST-USED        \ use count of least-used phrase in subj.
+2V: TIRED-TIME       \ clock time after which alien is tired
+                       \ of waiting
+2V: OK-TALK-TIME     \ clock time after which alien may talk;
+                       \ time enough for player to read phrase
+0 C: ?FIRED-WEAPONS \ did the player fire his weapons
+\ V: TERMINATED         \ terminated communications flag
+0 C: ?WAITING-FOR-ANSWER \ T= alien is waiting for answer
+V: SPACIAL-CONTEXT   \ 1= space 2= homeworld
+0 C: ?A-TALKING      \ T= alien is current talker
+
+
+---- Screen 10 ----
+( Communications Expert: Variables                AWK 2/21/85 )
+0 C: ?FOREIGN-LANGUAGE \ T= has alien syllabary
+0 C: ?A-SHIELDS-UP    \ T=up F=down
+0 C: ?A-WEAPONS-ARMED \ T=armed F=not armed
+V: P-STRENGTH         \ player ship strength
+V: A-STRENGTH         \ alien ship strength (cumulative)
+V: %TALK              \ talkativeness of aliens
+0 C: ?HAS-SURRENDERED \ T= alien has surrendered
+V: ALIEN-RACE         \ originator id#
+0 C: ?CALLED          \ T= alien called for reinforcements
+0 C: ?SCANNED         \ T= alien scanned player's ship
+V: #A-SHIPS           \ number of alien ships in this encounter
+V: A-CAPT 14 ALLOT    \ alien captain's name
+V: A-SHIP 14 ALLOT    \ alien's ship name
+V: P-CAPT 14 ALLOT    \ player's captain's name
+V: P-SHIP 14 ALLOT    \ player's ship name
+
+---- Screen 11 ----
+( Communications Expert: Constants                AWK 2/21/85 )
+2V: A-QUES            \ iaddr of alien's question (if asked)
+V: CTCOLOR            \ color of text printed during comm.
+V: COMM-OFF-SKILL     \ communications officer's comm skill
+V: COMM-RACE          \ communications officer's race
+0 C: ?NEW-QUESTION
+V: (LOCK-OUT)         \ locked out subject bit field
+\ V: P-RACES            \ has HUMAN/ELOWAN/THRYNN/VELOX in crew
+V: CTCNT              \ # of text lines in console text window
+ 1 C: OBSEQUIOUS  2 C: FRIENDLY  4 C: NEUTRAL  8 C: HOSTILE
+16 C: FIGHT
+ 1 C: ELOWAN  2 C: GAZURTOID  3 C: MECHAN  6 C: SPEMIN
+ 7 C: THRYNN  8 C: VELOX      9 C: UHLEK
+
+ 7 C: THEMSELVES  8 C: OTHER-RACES  9 C: GEN'L-INFO
+11 C: ANCIENTS   10 C: OLD-EMPIRE
+
+==== Page 3 | 11-05-85 -- COMM-OV CMP -- Binary Systems | image COMM-OV_CMP_p04 ====
+
+---- Screen 12 ----
+( Communications Expert: Fields                   AWK 9/16/85 )
+48 11 255 IFIELD: PHRASE$
+
+50 11 1 IFIELD: LSC   50 12 1 IFIELD: LP
+50 13 1 IFIELD: FC    50 14 1 IFIELD: UA
+50 15 1 IFIELD: DEDLN 50 16 1 IFIELD: DEDLY
+
+52 11 1 IFIELD: TC    52 12 1 IFIELD: T%    52 13 1 IFIELD: CSF
+52 18 1 IFIELD: BASE-EDL                    52 29 1 IFIELD: CPIC
+52 19 1 IFIELD: AET   52 20 1 IFIELD: BET   52 21 1 IFIELD: CET
+52 22 1 IFIELD: OPE   52 23 1 IFIELD: FPE   52 24 1 IFIELD: HPE
+52 25 1 IFIELD: MSW   52 26 3 IFIELD: VST-PTR
+
+20 69 4 IFIELD: %STATUS  20 23  2 IFIELD: %COMM
+17 17 3 IFIELD: CAPTAIN  17 29  3 IFIELD: COMM-OFF
+16 29 1 IFIELD: ^CMC     16 11 15 IFIELD: ^NAME
+
+---- Screen 13 ----
+( Communications Expert: Support                  AWK 2/21/85 )
+: ORIGINATOR>C ( -- )
+ (ORIGINATOR) 1.5@ >C+S TC C@ CTCOLOR ! ;
+: A>ORIGINATOR ( -- )
+ (AORIGINATOR) 1.5@ (ORIGINATOR) 1.5! A-POSTURE @ POSTURE !
+ A-SUBJECT @ SUBJECT ! 1 ' ?A-TALKING ! ;
+HEAD: P>ORIGINATOR ( -- )
+T: *COMM-OFF (ORIGINATOR) 1.5! P-POSTURE @ POSTURE !
+ P-SUBJECT @ SUBJECT ! ' ?A-TALKING OFF T;
+HEAD: PHRASE>C ( -- )  T: (PHRASE) 1.5@ >C+S T;
+HEAD: DELTA-NO ( -- n )
+T: A-QUES 1.5@ >C+S DEDLN +-@ ICLOSE T;
+HEAD: DELTA-YES ( -- n )
+T: A-QUES 1.5@ >C+S DEDLY +-@ ICLOSE T;
+HEAD: !A-SUBJECT T: A-SUBJECT ! T;
+
+
+---- Screen 14 ----
+( Communications Expert: Support                  AWK 7/23/85 )
+
+CASE POSTURE>AFIELD
+  2 IS FPE  8 IS HPE
+OTHERS OPE
+
+HEAD: POSTURE-EFFECT ( -- addr )
+T: (AORIGINATOR) 1.5@ >C+S
+ P-POSTURE @ POSTURE>AFIELD +-@ ICLOSE T;
+
+HEAD: (>BUTTON) ( -- )
+T: XYSCAN DROP ?DUP IF NEW-BUTTON THEN T;
+HEAD: >BUTTON ( -- ) T: BEGIN (>BUTTON) ?TRIG UNTIL T;
+HEAD: CAPT: ( -- )    T: P>ORIGINATOR WHITE CTCOLOR ! T;
+
+
+
+---- Screen 15 ----
+( Communications Expert: Support                  AWK 3/06/85 )
+
+10 20 2C: OP#   10 15 2C: FP#   5 10 2C: NP#   4 7 2C: HP#
+
+CASE (#PHRASES)
+  OBSEQUIOUS IS OP#  FRIENDLY IS FP#
+  NEUTRAL    IS NP#  HOSTILE  IS HP#
+OTHERS NULL
+
+HEAD: GET-PHRASE-LIMIT ( -- )
+T: A-POSTURE @ (#PHRASES) RRND #A-PHRASES-LIMIT ! T;
+
+CASE N>POSTURE
+  0 IS FRIENDLY  1 IS NEUTRAL  2 IS HOSTILE  3 IS FIGHT
+OTHERS OBSEQUIOUS
+
+
+---- Screen 16 ----
+( Communications Expert: Support                  AWK 3/06/85 )
+
+HEAD: EDL>POSTURE ( -- )
+T: (AORIGINATOR) 1.5@ >C+S
+ EDL @ DUP AET C@ < NOT
+      OVER BET C@ < NOT +
+      SWAP CET C@ < NOT + DUP ICLOSE
+ P-STRENGTH @ A-STRENGTH @ -
+ 2DUP 5 > SWAP 3 = AND ROT 2 = ROT 15 > AND OR 2* +
+ N>POSTURE A-POSTURE ! GET-PHRASE-LIMIT T;
+
+: +!EDL ( n -- )
+ EDL @ + 0 MAX 100 MIN EDL ! EDL>POSTURE P-SUBJECT OFF
+ ALIEN-RACE @ 3 = A-POSTURE @ 2 = AND    \ FRIENDLY Mechans?
+ IF (AORIGINATOR) 1.5@ >C+S              \ if so their BASE-EDL
+ 1 BASE-EDL C! ICLOSE THEN ;             \ is now FRIENDLY too.
+
+---- Screen 17 ----
+( Communications Expert: Support                  AWK 7/18/85 )
+
+HEAD: SET-OK-TIME ( -- )
+T: TIME D@ LAST-LEN @ 45 *    \ 45 ms/char base reading rate
+   DUP 2/ ?A-TALKING *       \ 22 ms/char for alien words
+   COMM-OFF-SKILL @ 250 */ +  \ % pro rata for xlation
+ 0 D+ OK-TALK-TIME D! T;
+
+HEAD: SET-TIRED-TIME ( -- )
+T: TIME D@ 12000. D+ TIRED-TIME D! T;
+
+HEAD: ?LOCKED-OUT ( n -- f )
+T: >R I 10 12 WITHIN
+ IF 0 101 RRND 40 < I BIT * (LOCK-OUT) @ OR (LOCK-OUT) ! THEN
+ R> BIT (LOCK-OUT) @ AND 0= 0= T;
+
+
+==== Page 4 | 11-05-85 -- COMM-OV CMP -- Binary Systems | image COMM-OV_CMP_p05 ====
+
+---- Screen 18 ----
+( Communications: phrase search words             AWK 2/25/85 )
+
+HEAD: FIND-PHRASE ( -- f )
+T: 0 256 LEAST-USED !
+ BEGIN FC C@ LEAST-USED @ < LP C@ POSTURE C@ AND 0> AND
+   LSC C@ SPACIAL-CONTEXT @ AND 0> AND
+   IF CI (PHRASE) 1.5! FC C@ LEAST-USED ! DROP 1 THEN
+   INEXT ?FIRST
+ UNTIL T;
+
+HEAD: ?SPACE<>SUBJ ( -- f )
+T: SUBJECT @ DUP 1 = OVER 2 = OR SWAP 5 = OR NOT T;
+
+
+
+
+
+---- Screen 19 ----
+( Communications: phrase search words             AWK 2/25/85 )
+HEAD: FIND-SUBJECT ( -- )
+T: SUBJECT @ 51 OVER IFIND 0= SWAP ?LOCKED-OUT OR
+ ?A-TALKING SPACIAL-CONTEXT @ 2 = AND
+ IF ?SPACE<>SUBJ OR THEN
+ IF IFIRST 51 5 IFIND DROP 5 SUBJECT ! THEN  T;
+
+HEAD: PHRASE-SEARCH ( -- )
+T: 0. (PHRASE) 1.5!
+ ORIGINATOR>C ?CHILD
+ IF IOPEN FIND-SUBJECT ?CHILD
+   IF IOPEN FIND-PHRASE 0=
+     IF ICLOSE 5 SUBJECT ! FIND-SUBJECT IOPEN
+     FIND-PHRASE DROP THEN CDROP
+   THEN CDROP
+ THEN ICLOSE T;
+
+---- Screen 20 ----
+( Communications: Buttons & Player actions        AWK 2/26/85 )
+
+HEAD: COMM$[ ( -- )
+T: 58 FILE# ! 5 RECORD# ! T;
+HEAD: ]COMM$ ( addr cnt -- )
+T: 1BTN SWAP CMOVE SET-CURRENT T;
+
+HEAD: >RESPOND$ ( -- ) T: COMM$[ " RESPOND" ]COMM$ T;
+HEAD: >HAIL$ ( -- )    T: COMM$[ " HAIL   " ]COMM$ T;
+
+
+
+
+
+
+
+
+---- Screen 21 ----
+( Communications Alien comm scrambler             AWK 10/31/85 )
+
+HEAD: PAD+WORD ( addr cnt -- )
+T: SWAP PAD PAD C@ + 1+ ROT DUP PAD C@ + PAD C! CMOVE T;
+
+HEAD: HASH-WORD ( addr cnt -- n )
+T: 0 ROT ROT OVER + SWAP DO I C@ + 1 /LOOP T;
+
+V: A-SYLLABLES 222 ALLOT
+
+HEAD: MOVE-SYLLABLES ( -- )
+T: A-SYLLABLES 224 BL FILL
+ ORIGINATOR>C VST-PTR 1.5@ >C+S IOPEN
+ 32 0 DO PHRASE$ 1+ COUNT HUFF> LSCAN
+   A-SYLLABLES I 7 * + OVER C@ 1+ CMOVE INEXT
+ LOOP CDROP CDROP ICLOSE T;
+
+---- Screen 22 ----
+( Communications Alien comm scrambler             AWK 5/29/85 )
+
+HEAD: A-SYLL ( n -- addr cnt )
+T: 7 * A-SYLLABLES + COUNT T;
+
+HEAD: A-WORD ( n n' -- addr cnt )
+T: PAD 64 BL FILL 0 PAD C!
+ ORIGINATOR>C MSW C@ >R ICLOSE
+ DUP R> MOD 2+ 1 DO
+   2DUP HASH-WORD I * 32 MOD A-SYLL PAD+WORD
+ LOOP
+ 2DROP PAD COUNT T;
+
+\ creates n for A-SYLL from addr & cnt of original word;
+\ bases number of syllables on cnt of original word & MSW
+
+
+---- Screen 23 ----
+( Communications Alien comm scrambler             AWK 3/07/85 )
+  EXIT
+
+3 C: 3
+
+CASE ORIG#>CREW#
+  VELOX IS 1  THRYNN IS 2  ELOWAN IS 3
+OTHERS 0
+
+HEAD: ?RACE=ALIEN ( n -- f )
+T: ALIEN-RACE @ ORIG#>CREW# 1+ BIT AND 0= 0= T;
+
+HEAD: COMM-FACTOR ( -- n )
+T: COMM-OFF-SKILL @
+ COMM-RACE @ BIT ?RACE=ALIEN 25 * +
+ P-RACES @ ?RACE=ALIEN 25 * + T;
+
+==== Page 5 | 11-05-85 -- COMM-OV CMP -- Binary Systems | image COMM-OV_CMP_p06 ====
+
+---- Screen 24 ----
+( Communications Alien comm scrambler             AWK 11/16/85 )
+
+HEAD: ?SCRAMBLE ( addr cnt n n' -- f )
+T: ?FOREIGN-LANGUAGE ?A-TALKING AND
+ 2OVER * ABS 250 MOD ( COMM-FACTOR ) COMM-OFF-SKILL @ > AND T;
+
+HEAD: TERMINATE ( -- )
+T: TERMINATED ON %TALK OFF ' CEX+WAX 'EXTERNAL-EVENTS ! T;
+
+HEAD: A>TERMINATE ( n -- ) T: DROP TERMINATE T;
+
+
+
+
+
+
+
+---- Screen 25 ----
+( Communications phrase connected actions         AWK 3/15/85 )
+
+CASE ACTION-CASE ( n' n -- )
+  0 IS +!EDL 1 IS A>TERMINATE
+OTHERS DROP
+
+HEAD: >ACTION ( n -- )
+T: (ORIGINATOR) 1.5@ (AORIGINATOR) 1.5@ D=
+ IF DUP 127 = OVER -127 = 2* + ACTION-CASE ELSE DROP THEN T;
+
+HEAD: DO-UA ( -- )  T: PHRASE>C UA +-@ ICLOSE >ACTION T;
+
+
+
+
+
+
+---- Screen 26 ----
+( Communications Output mechanics                 AWK 3/21/85 )
+HEAD: -LEADING ( addr cnt -- addr' cnt' )
+T: 2DUP 0 DO DUP C@ BL =
+   IF 1+ ELSE LEAVE THEN
+ LOOP >R SWAP I - + R> SWAP T;
+
+HEAD: PARSE ( addr cnt -- addr cnt cnt' )
+T: -LEADING
+ 2DUP 1+ OVER + SWAP 0 ROT ROT DO
+   I C@ BL = I 1+ I' = OR
+   IF DROP I 3 PICK - LEAVE THEN
+ LOOP
+ DUP 4 PICK + 1+ ROT 3 PICK - 1- 2SWAP T;
+
+HEAD: +1CHAR ( addr cnt -- addr+1 cnt-1 ) T: 1- SWAP 1+ SWAP T;
+
+
+---- Screen 27 ----
+( Communications Output mechanics                 AWK 11/04/85 )
+HEAD: ?WORD-FIT ( cnt -- f )  T: CTX @ + 38 < T;
+
+HEAD: CTSCROLL ( -- )
+T: 1 CTCNT +! CTCNT @ 6 >
+ IF 1500. TIME D@ D+
+   BEGIN TIME D@ 2OVER D> ?TERMINAL OR UNTIL 2DROP CTCNT OFF
+ THEN 7 0 DO 3 49 161 3 3 50 LCOPYBLK LOOP T;
+
+HEAD: WORD>CT ( addr cnt -- )
+T: ?DUP
+ IF DUP ?WORD-FIT 0=
+   IF CTSCROLL 0 6 CTPOS. THEN
+   OVER C@ ASCII . = CTX @ 0= OR NOT
+   IF SPACE THEN DUP CTX +! TYPE
+ ELSE DROP THEN T;
+
+---- Screen 28 ----
+( Communications Output mechanics                 AWK 7/18/85 )
+
+HEAD: ANAME ( -- addr cnt ) T: A-CAPT 1+ DUP 1- C@ T;
+HEAD: ASHIP ( -- addr cnt ) T: A-SHIP 1+ DUP 1- C@ T;
+HEAD: CNAME ( -- addr cnt ) T: P-CAPT 1+ DUP 1- C@ T;
+HEAD: SNAME ( -- addr cnt )
+T: " ISS" WORD>CT P-SHIP 1+ DUP 1- C@ T;
+
+
+
+
+
+
+
+
+
+
+---- Screen 29 ----
+( Communications Output mechanics                 AWK 2/26/85 )
+
+HEAD: >ENDOPTION ( addr cnt -- addr' cnt' )
+T: BEGIN OVER C@ ASCII ) = NOT OVER 0> AND
+ WHILE +1CHAR
+ REPEAT +1CHAR T;
+
+HEAD: OPTION$ ( addr1 cnt1 addr2 cnt2 -- a1' c1' a2' c2' 0 )
+T: +1CHAR P-QUES @ 9 =
+ IF 2DROP >ENDOPTION NULL THEN 0 T;
+
+
+
+
+
+
+
+==== Page 6 | 11-05-85 -- COMM-OV CMP -- Binary Systems | image COMM-OV_CMP_p07 ====
+
+---- Screen 30 ----
+( Communications Output mechanics                 AWK 2/26/85 )
+
+HEAD: YOU$ ( -- )  T: " YOUR" WORD>CT " RACE" T;
+HEAD: OTHER$ ( -- )  T: " OTHER" WORD>CT " RACES" T;
+HEAD: OEMP$ ( -- )
+T: " THE" WORD>CT "  OLD" WORD>CT " EMPIRE" T;
+HEAD: ANC$ ( -- )  T: " THE" WORD>CT " ANCIENTS" T;
+HEAD: NO$ ( -- )  T: +1CHAR 0 T;
+
+
+
+
+
+
+
+
+
+---- Screen 31 ----
+( Communications Output mechanics                 AWK 2/26/85 )
+
+CASE (?SUBJ)
+  THEMSELVES IS YOU$  OTHER-RACES IS OTHER$
+  OLD-EMPIRE IS OEMP$ ANCIENTS IS ANC$
+OTHERS NO$
+
+HEAD: ?SUBJ ( -- ) T: P-QUES @ (?SUBJ) T;
+
+CASE SPECIAL-CASE
+  ASCII * IS CNAME  ASCII & IS SNAME  ASCII % IS ANAME
+  ASCII / IS ?SUBJ  ASCII ( IS OPTION$
+  ASCII ) IS NO$    ASCII + IS ASHIP  ascii # is no$
+OTHERS 0
+
+
+
+---- Screen 32 ----
+( Communications Output mechanics                 AWK 3/06/85 )
+
+: SPECIAL ( addr cnt -- addr' cnt' )
+ OVER C@ SPECIAL-CASE ?DUP
+ IF WORD>CT +1CHAR THEN ;
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 33 ----
+( Communications Output mechanics                 AWK 11/02/85 )
+
+: (PHRASE>CT) ( addr cnt -- )
+ DUP LAST-LEN ! CTINIT 0 6 CTPOS. CTCOLOR @ !COLOR
+ CTCNT OFF CTSCROLL CTCNT OFF
+ BEGIN PARSE SPECIAL ?SCRAMBLE
+   IF A-WORD THEN WORD>CT 1 CTX +! DUP 0<
+ UNTIL
+ 2DROP CTSCROLL ;
+
+HEAD: PHRASE>CT ( -- )
+T: (PHRASE) 1.5@ OR
+ IF DO-UA CTCOLOR @ !COLOR PHRASE>C FC C@ 1+ FC C! IOPEN
+   PHRASE$ 1+ COUNT HUFF> LSCAN COUNT (PHRASE>CT)
+   CDROP ICLOSE
+ THEN T;
+
+---- Screen 34 ----
+( Communications Output mechanics                 AWK 10/21/85 )
+ASCII . C: XTRAIL
+HEAD: -XTRAILING ( addr cnt b -- addr' cnt' )
+T: ' XTRAIL ! ' XTRAIL CFA ' -TRAILING 14 + !
+ -TRAILING
+ ' BL CFA ' -TRAILING 14 + ! T;
+\ perform a -TRAILING where b is the delimiter instead of BL
+
+HEAD: ?VINITIAL ( addr -- f )
+T: C@ DUP ASCII A = OVER ASCII E = OR OVER ASCII I = OR
+ OVER ASCII O = OR SWAP ASCII U = OR T;
+
+HEAD: !A-SUBJECT+
+T: !A-SUBJECT A>ORIGINATOR PHRASE-SEARCH PHRASE>CT 'KEY DROP T;
+
+
+
+---- Screen 35 ----
+( Communications expert: actions EDL              AWK 2/20/85 )
+
+HEAD: +5>EDL ( -- ) T: 5 +!EDL T;
+HEAD: -5>EDL ( -- )   T: -5 +!EDL T;
+HEAD: +10>EDL ( -- )  T: 10 +!EDL T;
+HEAD: -10>EDL ( -- )  T: -10 +!EDL T;
+HEAD: +4/9>EDL ( -- )
+ T: #A-HAILS @ DUP 2 4 WITHIN SWAP DUP * * +!EDL T;
+HEAD: 100>EDL ( -- ) T: 100 +!EDL T;
+
+HEAD: YES>EDL ( -- )  T: DELTA-YES +!EDL T;
+HEAD: NO>EDL ( -- )  T: DELTA-NO +!EDL T;
+
+
+
+
+
+==== Page 7 | 11-05-85 -- COMM-OV CMP -- Binary Systems | image COMM-OV_CMP_p08 ====
+
+---- Screen 36 ----
+( Communications expert: actions EDL              AWK 2/20/85 )
+
+HEAD: NEW-POSTURE>EDL ( -- )
+T: POSTURE-EFFECT +!EDL
+ P-POSTURES P-POSTURE @ OVER @ OR SWAP ! T;
+
+HEAD: RESPOND>EDL ( -- )
+T: POSTURE-EFFECT +!EDL 0 ' ?P-RESPOND ! T;
+
+HEAD: STATEMENT>EDL ( -- )
+T: POSTURE-EFFECT #P-PHRASES C@ / +!EDL T;
+
+HEAD: QUESTION>EDL ( -- )
+T: ?NEW-QUESTION
+ IF POSTURE-EFFECT #P-PHRASES C@ / 2/ +!EDL
+ 0 ' ?NEW-QUESTION ! THEN T;
+
+---- Screen 37 ----
+( Communications expert: actions TALKATIVENESS    AWK 2/21/85 )
+
+HEAD: @T% ( -- n ) T: A>ORIGINATOR ORIGINATOR>C T% C@ ICLOSE T;
+HEAD: *!%TALK ( n1 n2 -- ) T: @T% SWAP */ 100 MIN %TALK ! T;
+HEAD: !%TALK ( n -- ) T: %TALK ! T;
+
+HEAD: 1.5*T% ( -- )  T: 3 2 *!%TALK T;
+HEAD: 2*T% ( -- ) T: 2 1 *!%TALK T;
+HEAD: 2.5*T% ( -- )  T: 5 2 *!%TALK T;
+HEAD: 1*T% ( -- ) T: 1 1 *!%TALK T;
+HEAD: 0.5*T% ( -- )  T: 1 2 *!%TALK T;
+
+HEAD: 70>T% ( -- ) T: 70 !%TALK T;
+HEAD: 100>T% ( -- ) T: 100 !%TALK T;
+HEAD: 0>T% ( -- ) T: 0 !%TALK T;
+
+
+---- Screen 38 ----
+( Communications expert: actions AUXILIARY        AWK 2/21/85 )
+HEAD: RAISE-SHIELDS ( -- )
+T: 1 ' ?A-SHIELDS-UP ! CAPT:
+ " CAPTAIN, THEY'VE RAISED THEIR SHIELDS." (PHRASE>CT) T;
+
+HEAD: LOWER-SHIELDS ( -- )
+T: ' ?A-SHIELDS-UP OFF CAPT:
+ " CAPTAIN, THEY'VE LOWERED THEIR SHIELDS." (PHRASE>CT) T;
+
+HEAD: ARM-WEAPONS ( -- )
+T: 1 ' ?A-WEAPONS-ARMED ! CAPT:
+ " CAPTAIN, THEY'VE ARMED THEIR WEAPONS." (PHRASE>CT) T;
+
+HEAD: DISARM-WEAPONS ( -- )
+T: ' ?A-WEAPONS-ARMED OFF CAPT:
+ " CAPTAIN, THEY'VE DIS-ARMED THEIR WEAPONS." (PHRASE>CT) T;
+
+---- Screen 39 ----
+( Communications expert: actions AUXILIARY        AWK 2/21/85 )
+
+HEAD: CALL-FOR-SHIPS ( -- )
+T: 1 ' ?CALLED ! CAPT:
+ " CAPTAIN, I'M PICKING UP A TRANSMISSION, BUT IT'S NOT DIRECTED
+ TOWARD US." (PHRASE>CT) T;
+
+HEAD: SHIPS-ARRIVE ( -- )
+T: ' ?CALLED OFF CAPT:
+ " CAPTAIN, MORE ALIEN SHIPS HAVE WARPED IN." (PHRASE>CT) T;
+
+HEAD: SCAN-PLAYER ( -- )
+T: 1 ' ?SCANNED ! CAPT:
+ " CAPTAIN WE'RE BEING SCANNED." (PHRASE>CT) T;
+
+
+
+---- Screen 40 ----
+( Communications expert: actions COMMUNICATIONS   AWK 7/24/85 )
+V: ?COMM-BTNS ?COMM-BTNS OFF
+
+HEAD: HAIL ( -- )
+T: 1 !A-SUBJECT+
+ 1 #A-HAILS +! SET-TIRED-TIME SET-OK-TIME 2 HAILER !
+ >RESPOND$ ?COMM-BTNS @
+ IF 5 0 .ABTN THEN +4/9>EDL T;
+
+HEAD: RESPOND ( -- )
+T: 2 !A-SUBJECT+
+ 1 #A-PHRASES +! SET-OK-TIME T;
+
+HEAD: ANSWER ( -- )
+T: P-QUES @ !A-SUBJECT+
+ 1 #A-PHRASES +! SET-OK-TIME P-QUES OFF T;
+
+---- Screen 41 ----
+( Communications expert: actions COMMUNICATIONS   AWK 7/18/85 )
+
+HEAD: STATEMENT ( -- )
+T: 13 !A-SUBJECT+ 1 #A-PHRASES +! SET-OK-TIME T;
+
+HEAD: QUESTION ( -- )
+T: 14 !A-SUBJECT+
+ (PHRASE) 1.5@ A-QUES 1.5!
+ 1 #A-PHRASES +! SET-TIRED-TIME SET-OK-TIME
+ 1 ' ?WAITING-FOR-ANSWER ! 10 .BTN-TEXT INIT-BUTTON
+ 1 #A-HAILS ! 'KEY DROP T;
+
+
+
+
+
+
+==== Page 8 | 11-05-85 -- COMM-OV CMP -- Binary Systems | image COMM-OV_CMP_p09 ====
+
+---- Screen 42 ----
+( Communications expert: actions COMMUNICATIONS   AWK 2/22/85 )
+
+HEAD: TIRED-OF-WAITING ( -- )
+T: 6 !A-SUBJECT+ SET-TIRED-TIME SET-OK-TIME 1 #A-HAILS +! T;
+
+HEAD: TIRED-OF-TALKING ( -- )
+T: 15 !A-SUBJECT+ TERMINATE T;
+
+
+
+
+
+
+
+
+
+
+---- Screen 43 ----
+( Communications expert: conditions               AWK 2/21/85 )
+
+HEAD: ?RACE ( -- f )
+T: ALIEN-RACE @ >R
+ I ELOWAN =   I GAZURTOID = OR   I MECHAN = OR
+ I SPEMIN = OR   I THRYNN = OR   I VELOX = OR  R> UHLEK = OR T;
+
+HEAD: ?OBSEQUIOUS ( -- f )  T: A-POSTURE C@  1 = T;
+HEAD: ?FRIENDLY ( -- f )    T: A-POSTURE C@  2 = T;
+HEAD: ?NEUTRAL ( -- f )     T: A-POSTURE C@  4 = T;
+HEAD: ?HOSTILE ( -- f )     T: A-POSTURE C@  8 = T;
+HEAD: ?FIGHT ( -- f )       T: A-POSTURE C@ 16 = T;
+
+HEAD: ?TALKATIVENESS ( -- f )  T: %TALK @ 0= 0= T;
+HEAD: ?TIRED-OF-TALKING ( -- f )
+T: #A-PHRASES @ #A-PHRASES-LIMIT @ < NOT T;
+
+---- Screen 44 ----
+( Communications expert: conditions               AWK 2/21/85 )
+
+HEAD: ?CALL ( -- f )  T: 0 100 RRND 0= T;
+HEAD: ?SCAN ( -- f )  T: 0 100 RRND 0= T;
+HEAD: ?ARRIVE ( -- f ) T: 0 100 RRND 0= T;
+
+HEAD: ?WANT-TO-TALK ( -- f )
+T: 0 100 RRND %TALK @ <      \ chance of talking
+ 0 20 RRND 0= AND T;         \ 1 out of 20 loops
+
+
+HEAD: ?REPEAT ( -- f ) T: #A-HAILS @ 3 < T;
+
+
+
+
+
+---- Screen 45 ----
+( Communications expert: conditions               AWK 2/21/85 )
+
+HEAD: @%STATUS ( -- n )
+T: *SHIP >C+S %STATUS @ ICLOSE T;
+HEAD: !%STATUS ( n -- )
+T: *SHIP >C+S %STATUS ! ICLOSE T;
+
+HEAD: ?SHIELDS-UP ( -- f )  T: @%STATUS C@ 8 AND 0= 0= T;
+
+HEAD: ?SHIELD-FLAG ( -- f )
+T: @%STATUS DUP 16 AND 0= 0= SWAP -17 AND !%STATUS T;
+
+HEAD: ?WEAPONS-ARMED ( -- f )  T: @%STATUS C@ 1 AND T;
+
+HEAD: ?WEAPON-FLAG ( -- f )
+T: @%STATUS DUP 32 AND 0= 0= SWAP -33 AND !%STATUS T;
+
+---- Screen 46 ----
+( Communications expert: conditions               AWK 2/21/85 )
+
+HEAD: ?P-HAILED ( -- f )  T: HAILER @ 1 = T;
+HEAD: ?A-HAILED ( -- f )  T: HAILER @ 2 = T;
+: ?TIRED-OF-WAITING ( -- f ) TIRED-TIME D@ TIME D@ D< ;
+HEAD: ?OK-TO-TALK ( -- f ) T: OK-TALK-TIME D@ TIME D@ D< T;
+
+HEAD: ?P-STATEMENT ( -- f )  T: P-SUBJECT C@ 13 = T;
+HEAD: ?WAS-QUESTIONED ( -- f )  T: P-QUES @ 0= 0= T;
+
+HEAD: ?NEW-POSTURE ( -- f )
+T: P-POSTURE @ P-POSTURES @ AND 0= T;
+
+
+
+
+
+---- Screen 47 ----
+( Communications expert: conditions               AWK 2/21/85 )
+
+HEAD: ?<3SHIPS ( -- f ) T: #A-SHIPS @ 3 < T;
+
+HEAD: ?IN-COMM ( -- f )
+T: #P-PHRASES C@ 0> #A-PHRASES C@ 0> OR TERMINATED @ 0= AND T;
+
+HEAD: ?TERMINATED ( -- f )
+T: TERMINATED @ A-POSTURE @ 16 = OR T;
+
+
+
+
+
+
+
+
+==== Page 9 | 11-05-85 -- COMM-OV CMP -- Binary Systems | image COMM-OV_CMP_p10 ====
+
+---- Screen 48 ----
+( Communications expert: conditions               AWK 2/21/85 )
+
+HEAD: ?MAKE-STATEMENT ( -- f )
+T: 0 2 RRND 0= 13 + !A-SUBJECT A>ORIGINATOR PHRASE-SEARCH
+ SUBJECT @ 14 = LEAST-USED @ 0= AND NOT T;
+
+HEAD: ?CAN-SURRENDER ( -- f )
+T: (AORIGINATOR) 1.5@ >C+S CSF C@ ICLOSE T;
+
+HEAD: ?SURRENDER ( -- f )
+T: ?IN-COMM ?CAN-SURRENDER AND ?OBSEQUIOUS AND T;
+
+
+
+
+
+
+---- Screen 49 ----
+( Communications expert: rules EDL                AWK 2/21/85 )
+
+12 12 EXPERT <EDL>
+
+RULE: ?SHIELD-FLAG TRUE ?SHIELDS-UP TRUE --> +5>EDL
+RULE: ?SHIELD-FLAG TRUE ?SHIELDS-UP FALSE --> -5>EDL
+RULE: ?WEAPON-FLAG TRUE ?WEAPONS-ARMED TRUE --> +10>EDL
+RULE: ?WEAPON-FLAG TRUE ?WEAPONS-ARMED FALSE --> -10>EDL
+RULE: ?P-HAILED TRUE ?NEW-POSTURE TRUE --> NEW-POSTURE>EDL
+RULE: ?P-STATEMENT TRUE --> STATEMENT>EDL
+RULE: ?WAS-QUESTIONED TRUE ?NEW-QUESTION TRUE --> QUESTION>EDL
+RULE: ?P-RESPOND TRUE --> RESPOND>EDL
+RULE: ?FIRED-WEAPONS TRUE --> 100>EDL
+CR ." EDL #conds=" COND-CNT ?
+
+
+
+---- Screen 50 ----
+( Communications expert: rules TALKATIVENESS      AWK 2/21/85 )
+12 20 EXPERT <TALK>
+
+RULE: ?IN-COMM FALSE ?TERMINATED FALSE ?FRIENDLY TRUE
+      ?P-HAILED FALSE --> 1.5*T%
+RULE: ?IN-COMM FALSE ?TERMINATED FALSE ?FRIENDLY TRUE
+      ?P-HAILED TRUE --> 2*T%
+RULE: ?IN-COMM FALSE ?TERMINATED FALSE ?NEUTRAL TRUE
+      ?P-HAILED FALSE --> 1*T%
+RULE: ?IN-COMM FALSE ?TERMINATED FALSE ?NEUTRAL TRUE
+      ?P-HAILED TRUE --> 1.5*T%
+RULE: ?IN-COMM FALSE ?TERMINATED FALSE ?HOSTILE TRUE
+      ?P-HAILED FALSE --> 0.5*T%
+RULE: ?IN-COMM FALSE ?TERMINATED FALSE ?HOSTILE TRUE
+      ?P-HAILED TRUE --> 1*T%
+RULE: ?IN-COMM FALSE ?TERMINATED FALSE ?FIGHT TRUE --> 0>T%
+
+---- Screen 51 ----
+( Communications expert: rules TALKATIVENESS      AWK 2/21/85 )
+
+RULE: ?IN-COMM FALSE ?TERMINATED FALSE ?OBSEQUIOUS TRUE
+      ?P-HAILED FALSE --> 2*T%
+RULE: ?IN-COMM FALSE ?TERMINATED FALSE ?OBSEQUIOUS TRUE
+      ?P-HAILED TRUE --> 2.5*T%
+RULE: ?IN-COMM TRUE ?CAN-SURRENDER TRUE ?TIRED-OF-TALKING FALSE
+      --> 70>T%
+RULE: ?IN-COMM TRUE ?OBSEQUIOUS FALSE ?TIRED-OF-TALKING FALSE
+      --> 70>T%
+RULE: ?IN-COMM TRUE ?CAN-SURRENDER TRUE ?OBSEQUIOUS TRUE
+      ?TIRED-OF-TALKING FALSE --> 0>T%
+RULE: ?IN-COMM TRUE ?TIRED-OF-TALKING TRUE --> 0>T%
+
+
+
+
+---- Screen 52 ----
+( Communications expert: rules TALKATIVENESS      AWK 2/21/85 )
+
+RULE: ?IN-COMM FALSE ?TERMINATED TRUE ?OBSEQUIOUS FALSE
+      --> 0>T%
+RULE: ?IN-COMM FALSE ?TERMINATED TRUE ?CAN-SURRENDER FALSE
+      --> 0>T%
+RULE: ?IN-COMM FALSE ?TERMINATED TRUE ?HAS-SURRENDERED TRUE
+      --> 0>T%
+RULE: ?IN-COMM FALSE ?TERMINATED TRUE ?OBSEQUIOUS TRUE
+      ?CAN-SURRENDER TRUE ?HAS-SURRENDERED FALSE --> 100>T%
+
+." TALK #conds=" COND-CNT ?
+
+
+
+
+
+---- Screen 53 ----
+( Communications expert: rules AUXILLARY          AWK 2/21/85 )
+16 11 EXPERT <AUX>
+
+RULE: ?IN-COMM FALSE ?A-SHIELDS-UP FALSE ?FRIENDLY FALSE
+      ?SURRENDER FALSE --> RAISE-SHIELDS
+RULE: ?IN-COMM FALSE ?A-SHIELDS-UP TRUE ?FRIENDLY TRUE
+       --> LOWER-SHIELDS
+RULE: ?A-SHIELDS-UP TRUE ?SURRENDER TRUE --> LOWER-SHIELDS
+RULE: ?A-WEAPONS-ARMED TRUE ?FRIENDLY FALSE ?NEUTRAL FALSE
+      --> ARM-WEAPONS
+RULE: ?A-WEAPONS-ARMED TRUE ?HOSTILE FALSE ?OBSEQUIOUS FALSE
+      ?FIGHT FALSE --> DISARM-WEAPONS
+
+
+
+
+
+==== Page 10 | 11-05-85 -- COMM-OV CMP -- Binary Systems | image COMM-OV_CMP_p11 ====
+
+---- Screen 54 ----
+( Communications expert: rules AUXILLARY          AWK 2/21/85 )
+
+RULE: ?A-WEAPONS-ARMED TRUE ?SURRENDER TRUE --> DISARM-WEAPONS
+RULE: ?CALL TRUE ?CALLED FALSE ?RACE TRUE ?<3SHIPS TRUE
+      ?FRIENDLY FALSE ?NEUTRAL FALSE ?SURRENDER FALSE
+      --> CALL-FOR-SHIPS
+RULE: ?CALLED TRUE ?ARRIVE TRUE --> SHIPS-ARRIVE
+RULE: ?RACE TRUE ?SCAN TRUE ?SCANNED FALSE --> SCAN-PLAYER
+
+." AUX #conds=" COND-CNT ?
+
+
+
+
+
+
+
+---- Screen 55 ----
+( Communications expert: rules COMMUNICATIONS     AWK 2/22/85 )
+
+13 12 EXPERT <COMM>
+
+RULE: ?IN-COMM FALSE ?P-HAILED FALSE ?WANT-TO-TALK TRUE
+      ?OK-TO-TALK TRUE ?A-HAILED FALSE --> HAIL
+
+RULE: ?IN-COMM FALSE ?A-HAILED TRUE ?WANT-TO-TALK TRUE
+      ?OK-TO-TALK TRUE ?TIRED-OF-WAITING TRUE ?REPEAT TRUE
+      --> HAIL
+
+RULE: ?IN-COMM FALSE ?P-HAILED TRUE ?WANT-TO-TALK TRUE
+      ?OK-TO-TALK TRUE --> RESPOND
+
+
+
+
+---- Screen 56 ----
+( Communications expert: rules COMMUNICATIONS     AWK 2/22/85 )
+
+RULE: ?IN-COMM TRUE ?WANT-TO-TALK TRUE ?WAS-QUESTIONED FALSE
+      ?OK-TO-TALK TRUE ?MAKE-STATEMENT TRUE
+      ?WAITING-FOR-ANSWER FALSE ?TIRED-OF-TALKING FALSE
+      --> STATEMENT
+
+RULE: ?IN-COMM TRUE ?WANT-TO-TALK TRUE ?WAS-QUESTIONED FALSE
+      ?OK-TO-TALK TRUE ?MAKE-STATEMENT FALSE
+      ?WAITING-FOR-ANSWER FALSE ?TIRED-OF-TALKING FALSE
+      --> QUESTION
+
+RULE: ?IN-COMM TRUE ?WAITING-FOR-ANSWER TRUE ?OK-TO-TALK TRUE
+      ?TIRED-OF-WAITING TRUE ?REPEAT TRUE --> TIRED-OF-WAITING
+
+
+
+---- Screen 57 ----
+( Communications expert: rules COMMUNICATIONS     AWK 2/22/85 )
+
+RULE: ?IN-COMM TRUE ?WAS-QUESTIONED TRUE ?OK-TO-TALK TRUE
+      ?TIRED-OF-TALKING FALSE --> ANSWER
+
+RULE: ?IN-COMM TRUE ?TIRED-OF-TALKING TRUE ?OK-TO-TALK TRUE
+      ?WAITING-FOR-ANSWER FALSE --> TIRED-OF-TALKING
+
+RULE: ?IN-COMM TRUE ?TALKATIVENESS FALSE
+      ?TIRED-OF-TALKING FALSE --> TERMINATE
+
+." COMM #conds=" COND-CNT ? CR
+
+
+
+
+
+---- Screen 58 ----
+( Communications: Buttons & Player actions        AWK 2/26/85 )
+
+HEAD: P-PHRASE ( -- )
+T: P>ORIGINATOR PHRASE-SEARCH PHRASE>CT
+ P-SUBJECT @ 1 = NOT #P-PHRASES +! SET-OK-TIME T;
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 59 ----
+( Communications: Buttons & Player actions        AWK 2/26/85 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==== Page 11 | 11-05-85 -- COMM-OV CMP -- Binary Systems | image COMM-OV_CMP_p12 ====
+
+---- Screen 60 ----
+( Communications: Buttons & Player actions        AWK 2/26/85 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 61 ----
+( Communications: Buttons & Player actions        AWK 2/26/85 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 62 ----
+( Communications: Buttons & Player actions        AWK 2/26/85 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 63 ----
+( Communications: Buttons & Player actions        AWK 2/26/85 )
+
+HEAD: >P-POSTURE ( -- )
+T: 8 .BTN-TEXT INIT-BUTTON >BUTTON
+ 3 THIS-BUTTON @ - DUP 3 = + BIT P-POSTURE !
+ 5 ?IN-COMM 4 * + .BTN-TEXT INIT-BUTTON T;
+
+CASE (>QUESTION)
+  0 IS THEMSELVES  1 IS OTHER-RACES
+  2 IS OLD-EMPIRE  3 IS ANCIENTS
+OTHERS GEN'L-INFO
+
+HEAD: >QUESTION ( -- )
+T: 11 .BTN-TEXT INIT-BUTTON >BUTTON 1 ' ?NEW-QUESTION !
+ THIS-BUTTON @ (>QUESTION) P-QUES ! 14 P-SUBJECT ! P-PHRASE
+ 9 .BTN-TEXT INIT-BUTTON T;
+
+---- Screen 64 ----
+( Communications: Buttons & Player actions        AWK 7/23/85 )
+HEAD: >STATEMENT ( -- )  T: 13 P-SUBJECT ! P-PHRASE T;
+
+CASE (COMM-MENU)
+  0 IS >STATEMENT   1 IS >QUESTION   2 IS >P-POSTURE
+OTHERS TERMINATE
+
+HEAD: >YES ( -- ) T: YES>EDL " YES." (PHRASE>CT) T;
+HEAD: >NO ( -- ) T: NO>EDL " NO." (PHRASE>CT) T;
+HEAD: >IMPATIENT ( -- ) T: A-POSTURE @ 2* +!EDL T;
+HEAD: >TERMINATE ( -- )
+T: >IMPATIENT TERMINATE T;
+
+CASE YES/NO-CASE
+  0 IS >YES 1 IS >NO 2 IS >TERMINATE
+OTHERS >IMPATIENT
+
+---- Screen 65 ----
+( Communications: Buttons & Player actions        AWK 10/10/85 )
+HEAD: >HAIL ( -- )
+T: >P-POSTURE 1 P-SUBJECT ! P-PHRASE 1 HAILER ! 5 .BTN-TEXT T;
+
+HEAD: >RESPOND ( -- )
+T: >P-POSTURE
+ 2 P-SUBJECT ! P-PHRASE ' ?P-RESPOND ON #A-HAILS OFF T;
+
+: EDL+AUX ( -- )
+  ' <AUX> DISTRACT <AUX> DROP
+  ' <EDL> DISTRACT <EDL> DROP ;
+
+: COMM-EXPERTS ( -- )
+ EDL+AUX
+  ' <TALK> DISTRACT <TALK> DROP
+  ' <COMM> DISTRACT <COMM> DROP ;
+
+==== Page 12 | 11-05-85 -- COMM-OV CMP -- Binary Systems | image COMM-OV_CMP_p13 ====
+
+---- Screen 66 ----
+( Communications: Buttons & Player actions        AWK 10/15/85 )
+
+HEAD: .COMM-PIC ( -- )
+T: >MAINVIEW DARK >DISPLAY V>DISPLAY
+   (AORIGINATOR) 1.5@ >C+S CPIC C@ ?DUP
+   IF 4 191 POS. HBUF-SEG @ SWAP FILE<
+      HBUF-SEG @ ' .HYBRID MODULE
+   THEN ICLOSE T;
+
+
+
+
+
+
+
+
+
+---- Screen 67 ----
+( Communications: Buttons & Player actions        AWK 9/16/85 )
+
+HEAD: COMM-LOOP2 ( -- )
+\ comm loop after someone has RESPONDed
+T: .COMM-PIC 9 .BTN-TEXT INIT-BUTTON 'XCOMM @ MODULE
+ BEGIN COMM-EXPERTS (>BUTTON) ?TRIG
+   ?WAITING-FOR-ANSWER ?TIRED-OF-WAITING AND ?REPEAT NOT AND OR
+   IF THIS-BUTTON @ ?WAITING-FOR-ANSWER
+     IF ' ?WAITING-FOR-ANSWER OFF ?REPEAT NOT 3 * +
+       CAPT: YES/NO-CASE #A-HAILS OFF
+       9 .BTN-TEXT INIT-BUTTON ELSE (COMM-MENU)
+     THEN
+   THEN ?TERMINATED
+ UNTIL
+ #A-PHRASES OFF #P-PHRASES OFF HAILER OFF >HAIL$
+ 5 .BTN-TEXT INIT-BUTTON FTRIG OFF T;
+
+---- Screen 68 ----
+( Communications: Buttons & Player actions        AWK 9/04/85 )
+
+HEAD: COMMUNICATE ( -- )
+T: *SHIP >C+S 2 %COMM 1+ C@ ICLOSE ' ov?.EQUIP-OK MODULE
+   IF HAILER @ 2 = NOT
+     IF >HAIL ELSE >RESPOND THEN
+   THEN T;
+
+V: (STOP-COMM)
+HEAD: STOP-COMM T: (STOP-COMM) ON T;
+
+CASE (COMM-BTN)
+  0 IS COMMUNICATE
+  1 IS NOP ( SOS Drone )
+  2 IS NOP ( messages )
+OTHERS STOP-COMM
+
+---- Screen 69 ----
+( Communications: Buttons & Player actions        AWK 10/22/85 )
+: COMM-LOOP1 ( -- )
+\ comm loop while conversation is one-sided ie before a RESPOND
+ 5 .BTN-TEXT INIT-BUTTON (STOP-COMM) OFF ?COMM-BTNS ON
+ BEGIN (AORIGINATOR) 1.5@ OR
+   IF COMM-EXPERTS THEN (>BUTTON) ?TRIG
+   IF THIS-BUTTON @ (COMM-BTN) THEN
+   #P-PHRASES @ #A-PHRASES @ OR (AORIGINATOR) 1.5@ D0= NOT AND
+   IF COMM-LOOP2
+     >MAINVIEW DARK >DISPLAY V>DISPLAY
+     WHITE !COLOR " COMMUNICATIONS HAVE BEEN TERMINATED" .TTY
+   THEN (STOP-COMM) @
+ UNTIL 0 .BTN-TEXT ?COMM-BTNS OFF
+ CLR-BUTTONS BLUE 4 .HIGHLIGHT 4 THIS-BUTTON ! ;
+
+ ?COMM-BTNS OFF
+
+---- Screen 70 ----
+( Communications: Initialization routines         AWK 10/09/85 )
+
+HEAD: INIT-ACOMM ( i -- )
+T: (AORIGINATOR) 1.5!
+ TIME D@ OK-TALK-TIME D! TERMINATED OFF
+ ' ?A-WEAPONS-ARMED OFF ' ?A-SHIELDS-UP OFF 14 !A-SUBJECT
+ A-STRENGTH OFF #A-PHRASES OFF #A-HAILS OFF A>ORIGINATOR
+ ORIGINATOR>C T% C@ %TALK ! BASE-EDL C@ EDL ! EDL>POSTURE
+ @INST-SPECIES DUP ALIEN-RACE ! ?CHILD
+ IF I 1 = I 2 = OR I 4 = OR
+   ~ 6 9 WITHIN OR DUP            \ alien race = 1/2/4/6/7/8
+   IF MOVE-SYLLABLES THEN ' ?FOREIGN-LANGUAGE !
+   (ENCOUNTER) 1.5@ 2DUP
+   15 AND A-WORD 15 MIN OVER 1- C! 1- A-SHIP $!
+   SWAP 15 AND A-WORD 15 MIN OVER 1- C! 1- A-CAPT $!
+ ELSE TERMINATED ON THEN ICLOSE T;
+[handwritten: "DUP" struck through and circled ">R" written after it (near line 8)]
+[handwritten: "IF" circled at start of line, and "= I 2" region struck through; printed text partly obscured (near line 9)]
+[handwritten: circled "R" written over the first token of the line, obscuring it (probably printed "I") (near line 10)]
+[handwritten: slash mark at start of line (near line 7)]
+
+---- Screen 71 ----
+( Communications: Initialization routines         AWK 10/09/85 )
+
+HEAD: INIT-GCOMM ( -- )
+T: P-STRENGTH OFF (LOCK-OUT) OFF ' ?NEW-QUESTION OFF
+ ' ?SCANNED OFF ' ?CALLED OFF ' ?P-RESPOND OFF
+ P-POSTURES OFF ' ?FIRED-WEAPONS OFF ' ?WAITING-FOR-ANSWER OFF
+ HAILER OFF #P-PHRASES OFF
+ P-SUBJECT OFF P-QUES OFF
+ ' ?HAS-SURRENDERED OFF P-RACES OFF COMM-RACE OFF
+ *ASSIGN-CREW >C+S CAPTAIN 1.5@ >C+S
+ ^NAME P-CAPT $! ICLOSE COMM-OFF 1.5@ >C+S
+ ^CMC C@ COMM-OFF-SKILL ! @INST-SPECIES COMM-RACE ! ICLOSE
+ 0 CAPTAIN 18 + CAPTAIN DO I 1.5@ >C+S
+   @INST-SPECIES 1+ BIT OR ICLOSE
+ 3 +LOOP ICLOSE P-RACES !
+ *SHIP >C+S %NAME P-SHIP $! ICLOSE T;
+
+==== Page 13 | 11-05-85 -- COMM-OV CMP -- Binary Systems | image COMM-OV_CMP_p14 ====
+
+---- Screen 72 ----
+( Communications: Initialization routines         AWK 8/13/85 )
+
+HEAD: INIT-MCOMM ( -- )
+T: ALIEN-RACE @ DUP 1+ BIT
+   P-RACES @ AND 0> 25 * SWAP \ +50 for same race on crew
+   COMM-RACE @ = 25 * +       \ +50 more for same race comm off
+   ALIEN-RACE @ 6 =           \ Is alien a Spemin?
+   4 ' ov?ARTIFACT MODULE AND \ and is Whining Orb on board?
+   250 * +                    \ if so, +250
+   COMM-OFF-SKILL @ + 250 MIN COMM-OFF-SKILL ! T;
+
+
+
+
+
+
+
+---- Screen 73 ----
+( Communications: Initialization routines         AWK 8/13/85 )
+
+: INIT-COMM ( i spacial-ctxt -- )
+ SPACIAL-CONTEXT !
+ ' 0HUFFSPACE ' 'DVECTOR-INIT !
+ ' B>HUFFSPACE ' 'DVECTOR !
+ INIT-ACOMM INIT-GCOMM INIT-MCOMM
+ >DISPLAY ;         \ .COMM-STATS >0FONT ;
+
+
+
+
+
+
+
+
+
+---- Screen 74 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 75 ----
+( --------------Communications Overlay Suffix-----------------)
+
+DISPOSE
+CLOSE-OVERLAY  SAVE-BUFFERS
+93 OVERLAY COMM-OV
+COMM-OV
+FORTH DEFINITIONS
+
+
+
+
+
+
+
+
+
+
+---- Screen 76 ----
+( Suffix Continued                                             )
+: ovINIT-COMM ( originator-iaddr spacial-ctxt -- )
+ COMM-OV COMM-VOC INIT-COMM SAVE-OVERLAY ;
+: U-COMM ( -- )  COMM-OV COMM-VOC COMM-LOOP1 SAVE-OVERLAY ;
+: COMM-EXPERTS ( -- )
+ COMM-OV COMM-VOC COMM-EXPERTS SAVE-OVERLAY ;
+: ?TOW COMM-OV COMM-VOC ?TIRED-OF-WAITING ;
+: A>O COMM-OV COMM-VOC A>ORIGINATOR SAVE-OVERLAY ;
+: O>C COMM-OV COMM-VOC ORIGINATOR>C SAVE-OVERLAY ;
+: ov+!EDL COMM-OV COMM-VOC +!EDL SAVE-OVERLAY ;
+: P>CT COMM-OV COMM-VOC (PHRASE>CT) SAVE-OVERLAY ;
+: ovEDL+AUX COMM-OV COMM-VOC EDL+AUX SAVE-OVERLAY ;
+: mCOMM-EXPERTS ' COMM-EXPERTS MODULE ;
+: mEDL+AUX ' ovEDL+AUX MODULE ;
+    ' mCOMM-EXPERTS 'CEX+ ! ' mEDL+AUX 'CEX !
+OV-CANCEL
+
+---- Screen 77 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

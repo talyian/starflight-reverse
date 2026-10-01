@@ -1,0 +1,310 @@
+==== Page (none) | (none) | image HEAL-OV_CMP_p01 ====
+ 0 ( OVERLAY PREFIX: HEAL-OV OVERLAY ----------------
+ 1
+ 2 \ load screen for healer
+ 3 \ start of roster stuff
+ 4 \ more roster: rdelete, role-call
+ 5 \ ?all-well, ?all-dead
+ 6 \ medical officer's skill level>time
+ 7 \ heal each crewmember
+ 8 \ general window words; positioning
+ 9 \ .vits prints vitality ratings in Vitality window
+10
+11 \ index to field case
+12 \ highpt  + sweepstk
+13 \ replacing deceased member with best fit
+14 \ general case replacement
+15 ( OVERLAY SUFFIX: HEAL-OV OVERLAY ----------------
+
+==== Page 1 | 11-05-85 -- HEAL-OV CMP -- Binary Systems | image HEAL-OV_CMP_p02 ====
+---- Screen 0 ----
+( OVERLAY PREFIX: HEAL-OV OVERLAY ----------------rfg29jun85)
+ov-cancel 8 width !
+v= healtime \ how long to delay before treating
+2v= lastappoint \ time of the last appointment
+create roster 18 allot  \  6 iaddr's
+
+ROSTER 18 0 FILL
+
+vocabulary healer immediate
+118 open-overlay
+healer definitions
+800 TRANS-ALLOT
+newt-dp
+
+
+
+---- Screen 1 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 2 ----
+\ load screen for healer                          rfg03may85
+
+17 17 3 ifield: captain
+17 20 3 ifield: sci-off
+17 32 3 ifield: doctor
+16 11 15 ifield: ^name
+16 26 1 ifield: ^sci
+16 27 1 ifield: ^nav
+16 28 1 ifield: ^eng
+16 29 1 ifield: ^cmc
+16 30 1 ifield: ^med
+16 31 1 ifield: ^vit
+16 32 2 ifield: ^sta
+16 19 1 afield: ^dur
+
+
+---- Screen 3 ----
+\ start of roster stuff                           rfg14may85)
+head: raddr \ index --- addr | within roster
+t:     3* roster + t;
+
+head: rclear \ clear roster array
+t:  roster 18 0 fill t;
+
+head: rinstall \ iaddr --- |install into array if not there
+t:  6 0 do i raddr           \ cell address
+         1.5@ 2over d=     \ already there?
+          if  leave
+          else i raddr 1.5@ or 0=         \ empty slot
+           if 2dup i raddr 1.5! leave then
+          then
+      loop 2drop t;        \  no extra stack value, even if err
+
+---- Screen 4 ----
+\ more roster: rdelete, role-call                 rfg29jun85)
+
+: role-call
+  rclear
+ *assign-crew >c set-current
+         inst-sib 17 +      \ first address
+  6 0 do i 3* over + 1.5@ >c set-current
+        ^vit c@ if ci  rinstall then iclose
+         loop drop iclose ;
+
+
+
+
+
+
+
+---- Screen 5 ----
+\ ?all-well, ?all-dead                            rfg29jun85)
+
+: ?all-smthng \ 0 or 100 --- | check if all same condition
+ >r 1 roster
+  6 0 do i 3* over + 1.5@ 2dup or
+    if  >c set-current  ^vit c@ iclose j =
+    else 2drop 1 ( if blank slot, don't consider)
+    then rot and swap loop
+   r> 2drop  ;
+
+: ?all-well 100 ?all-smthng dup 0= ?heal ! ;
+
+: ?all-dead 0 ?all-smthng ;
+
+
+
+==== Page 2 | 11-05-85 -- HEAL-OV CMP -- Binary Systems | image HEAL-OV_CMP_p03 ====
+---- Screen 6 ----
+\ medical officer's skill level>time              rfg14may85)
+\ decided to include dr's vitality also, + skill
+
+head: medskill  \ --- healtime |
+t:   *assign-crew >c set-current
+   doctor 1.5@ >c set-current \ get med officer
+   360 ^med c@ ^vit c@ + - 100 * \ from 1000 to 35900 jiffs
+   cdrop iclose t;
+
+
+
+
+
+
+
+
+---- Screen 7 ----
+\ heal each crewmember                            rfg29jun85)
+head: (heal)
+t:    role-call \ refresh- other processes may change crewlist
+  ?all-well not
+   if 6 0 do i raddr 1.5@ 2dup or        \ anybody in this slot
+           if >c set-current
+              ^vit c@ ?dup             \ don't do if dead
+               if ^sta c@ 3 >          \ under treatment
+                  if 2+ else 1+ then
+                 100 min ^vit c!
+               then iclose            \ crewmember
+            else 2drop
+            then
+           loop
+    then medskill healtime ! t; \ new healing rate
+
+---- Screen 8 ----
+\ general window words; positioning               rfg14may85)
+
+head: vitwindow
+t:   131 83 09 18 window t;
+
+head: wpos \ x,y ---
+t:  swap 4 * \ width of characters
+  wleft @ 2+ + \ horizontal offset
+  wtop @ 1-  \ vertical offset
+  rot 7 * - \ width of characters
+  pos. t; \  position it
+
+
+
+
+
+---- Screen 9 ----
+\ .vits prints vitality ratings in Vitality windowrfg27may85)
+: .vits
+xormode @ >r xormode off color @ >r
+  white !color vitwindow 0 1 wpos
+   6 0 do gcr wchars @ black poly-erase-text
+           i raddr  1.5@ 2dup
+           >c set-current or
+             if ^name $.
+              14 ^name c@ - ?dup
+               if 0 do ." ." loop then
+              4 black poly-erase-text
+              ^vit c@ 3 .r ." %"
+             then iclose
+        loop r> !color r> xormode ! ;
+
+
+---- Screen 10 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 11 ----
+\ index to field case                             rfg07may85
+
+case >skill
+ 1 is ^sci  2 is ^nav   3 is ^eng
+ 4 is ^cmc  5 is ^med others abort
+
+
+
+
+
+
+
+
+
+
+
+==== Page 3 | 11-05-85 -- HEAL-OV CMP -- Binary Systems | image HEAL-OV_CMP_p04 ====
+---- Screen 12 ----
+\ highpt  + sweepstk                              rfg06jun85)
+
+v: highpt \ highest value stored
+v: winner 1 allot \ iaddr of one with highest rating
+
+head: sweepstk \ field index --- | set highpt and winner
+t:    0 highpt !  \ before first pass
+  *assign-crew >c set-current captain 1.5@ winner 1.5!
+              inst-sib 17 +
+  6 0 do i 3* over + 1.5@ >c set-current \ which crewmember
+         over >skill c@ dup highpt @ > \ get field, then value
+         if ci winner 1.5! highpt ! \ new winner
+         else drop \ skill
+         then iclose                     \ crewmember
+      loop 2drop iclose t; \ *assign
+
+---- Screen 13 ----
+\ replacing deceased member with best fit         rfg14may85)
+
+head: obitcapt \ special case for captain->science officer
+t:   *assign-crew >c set-current
+    captain 1.5@ >c set-current
+     ^vit c@ 0=
+     if ci' >c set-current sci-off 1.5@
+        captain 1.5! iclose
+     then cdrop iclose t;
+
+head: clrmemb t: ^sci 6 0 fill t;
+
+
+
+
+
+---- Screen 14 ----
+\ general case replacement                        rfg14may85)
+head: (obits)
+t:  *assign-crew >c+s captain
+  6 1 do  i 3* over + 1.5@ >c+s \ each crewmember
+          ^vit c@ 0=                 \ is deceased
+          if clrmemb iclose  i sweepstk winner 1.5@
+            i 3* 4 pick + 1.5!
+          else iclose then                \ crewmember
+      loop drop iclose t;  \ *assign
+
+: obits (obits) obitcapt ;
+
+: heal obits (heal) ;
+
+
+
+---- Screen 15 ----
+( OVERLAY SUFFIX: HEAL-OV OVERLAY ----------------rfg12jul85)
+
+t-dp 4 + @ t-dp @ - ."  TransBytes= " . cr
+trace @ trace off  dispose trace !
+close-overlay
+118 overlay heal-ov heal-ov
+
+forth definitions
+: (obits) heal-ov healer obits ;
+: (.vits) heal-ov healer .vits ;
+: (heal) heal-ov healer heal ;
+: (role) heal-ov healer role-call ;
+: obits ' (obits) module ;
+: heal ' (heal) module ;  \ module callers used on ship
+save-buffers ov-cancel 31 width !
+
+---- Screen 16 ----
+\ ?appoint test                                   rfg29jun85)
+
+
+: ?appoint   \ --- true if time to heal; sets counter
+  time 2@ lastappoint 2@ healtime @ 0 d+ d>
+   ?heal @ and
+   if time 2@  lastappoint 2! 1
+   else 0
+   then ;
+
+\ stuff into crew cycle elapsed test for tasker
+
+
+
+
+

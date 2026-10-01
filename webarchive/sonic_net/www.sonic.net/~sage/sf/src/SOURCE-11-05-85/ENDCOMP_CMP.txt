@@ -1,0 +1,52 @@
+==== Page 1 | 11-05-85 -- ENDCOMP CMP -- Binary Systems | image ENDCOMP_CMP_p01 ====
+---- Screen 0 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+( ENDCOMP - system intiailization                      8-27-85)
+
+ #SHIP >C+S     ( position ship at starport)
+ 1000 INST-X !  792 INST-Y !  FLUSH ICLOSE
+ 1000 XABS !  792 YABS !
+
+?REPAIR OFF     ( turn off request for repair)
+FTRIG OFF       ( clr trigger-pressed flag)
+STAR-HR OFF     ( set star-hr to midnight)
+0. LAST-UPDATE D!
+STARDATE OFF    ( set date to day 1)
+PORTDATE OFF
+10000. REAL-MS/STAR-HR D!
+3 MONITOR !     ( **** testing only **** )
+STORM OFF 100 %EFF !
+CR ." TYPE: NODRIVES DOS CLRFCB SYSGEN STARFLIT.COM BYE"
+---- Screen 2 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

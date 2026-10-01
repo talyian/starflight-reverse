@@ -1,0 +1,419 @@
+==== Page (none) | (no header) | image IT-OV_CMP_p01 ====
+ 0 ( IT-OV - OVERLAY PREVIX
+ 1 ( IT-OV - IFIELDS, AFIELDS
+ 2 ( IT-OV - CLRPAD PAD+INDENT box constants
+ 3
+ 4 ( IT-OV - IDENT-BOX$ IDENT-SHIP$ IDENT-LIFE$
+ 5 ( IT-OV - IDENT-VESSEL$ U>$
+ 6 ( IT-OV - VAL,VOL>PAD
+ 7 ( IT-OV - IDENT-ELEMENT$ DATE$>ADR
+ 8 ( IT-OV - IDENT-MESSAGE$ IDENT-ARTIFACTS$
+ 9 ( IT-OV - IDENT-SPECIMEN$ IDENT-BIO-DATA$
+10 ( IT-OV - IDENT-ITEM$
+11 ( IT-OV - ITEM>PAD
+12 ( IT-OV - TEXT>PAD
+13 ( IT-OV - >SCROLL-LIST
+14 ( IT-OV - BOX>LIST GET-BOXES
+15 ( IT-OV - MAKE-SCROLL-BOX DELETE-SCROLL-BOX
+16 ( IT-OV - CLASS>BOX-SPEC
+17 ( IT-OV - MAKE-CLASS-BOX BOX>TOCS
+18 ( IT-OV - >BOX
+19 ( IT-OV - ?ELEMENT (BOX>)
+20 ( IT-OV - BOX>
+21 ( IT-OV - OVERLAY SUFFIX -------------------------
+
+==== Page 1 | 11-05-85 -- IT-OV  CMP -- Binary Systems | image IT-OV_CMP_p02 ====
+---- Screen 0 ----
+( IT-OV - OVERLAY PREVIX                                10-1-85)
+
+VOCABULARY IT-VOC IMMEDIATE
+
+131 OPEN-OVERLAY
+
+IT-VOC DEFINITIONS
+
+1600 TRANS-ALLOT
+
+NEWT-DP
+
+
+
+
+
+---- Screen 1 ----
+( IT-OV - IFIELDS, AFIELDS                              10-1-85)
+EXIT
+  0 17  2 IFIELD: INST-VAL    68   4 3 AFIELD: SHAPE
+  0 19  2 IFIELD: INST-DATE   68 146 3 AFIELD: RESEMBLES
+ 11 0  16 AFIELD: BOX-NAME
+ 20 52 15 IFIELD: %NAME
+ 27 0  16 AFIELD: ORIG-NAME
+ 40 0  16 AFIELD: SPEC-NAME
+ 43 0  16 AFIELD: BD-NAME
+ 26 0  16 AFIELD: ELEM-NAME
+ 26 16  2 AFIELD: ELEM-VAL
+ 28 0  24 AFIELD: ART-NAME    28 29 1 AFIELD: ART-ANLYZ
+ 28 27  2 AFIELD: ART-VAL
+ 28 25  2 AFIELD: ART-VOL
+ 48 11  1 IFIELD: PHR-CNT
+ 48 12 254 IFIELD: PHRASE
+---- Screen 2 ----
+( IT-OV - CLRPAD PAD+INDENT box constants               10-1-85)
+28 29 1 AFIELD: ART-ANLYZ
+
+10 C: B.ELEM 15 C: B.ART  14 C: B.SPEC
+17 C: B.MSG  11 C: B.LIFE 38 C: B.BIO
+16 C: B.RUINS
+
+
+
+HEAD: CLRPAD  ( -- \ blank line buffer)
+T: PAD 1+ 38 BL FILL T;
+
+HEAD: PAD+INDENT ( -- u \ pad+depth indent)
+T:  SRDEPTH 0 MAX 2* PAD + 1+ T;
+
+
+---- Screen 3 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 4 ----
+( IT-OV - IDENT-BOX$ IDENT-SHIP$ IDENT-LIFE$               10-1-85)
+HEAD: IDENT-BOX$ ( -- \ build box string)
+T:  ( identifier at PAD)
+  CLRPAD  ( clear line leaders) BOX-NAME PAD+INDENT 16 CMOVE T;
+\ HEAD: IDENT-SHIP$ ( -- \ build ship string)
+\ T:  ( identifier at PAD)
+\  " ISS " PAD+INDENT SWAP CMOVE %NAME PAD+INDENT 4 + 15 CMOVE
+\ T;
+\ HEAD: IDENT-RUIN$
+\ T: @INST-SPECIES 2 MOD IF " RECENT" ELSE " ANCIENT"
+\   THEN PAD+INDENT SWAP CMOVE T;
+
+HEAD: IDENT-LIFE$ T: RESEMBLES 1.5@ 2DUP OR 0=
+  IF 2DROP SHAPE 1.5@ THEN >C+S PHRASE PHR-CNT C@
+  PAD+INDENT SWAP CMOVE ICLOSE T;
+
+---- Screen 5 ----
+( IT-OV - IDENT-VESSEL$ U>$                                10-1-85)
+EXIT
+\ HEAD: IDENT-VESSEL$ ( -- \ build vessel)
+\ T:  ( identifier at PAD - *** REVISE ***)
+\  CLRPAD
+\  " ALIEN VESSEL" PAD+INDENT SWAP
+\  CMOVE T;
+
+: U>$ ( u -- adr u \ convert single)
+  ( length number to string)
+  0 <# #S #> ;
+
+
+
+
+
+==== Page 2 | 11-05-85 -- IT-OV  CMP -- Binary Systems | image IT-OV_CMP_p03 ====
+---- Screen 6 ----
+( IT-OV - VAL,VOL>PAD                                   10-1-85)
+
+HEAD: VAL,VOL>PAD ( val vol -- \ convert)
+T:  ( to strings and move to pad using)
+  ( identifier format)
+  10 /MOD SWAP       ( 10ths & 1s )
+  U>$  DROP          ( 10ths addr -- )
+  C@   PAD 32 + C! ( fraction)
+  ASCII . PAD 31 + C!  ( decimal point)
+  U>$                ( 1s addr u -- )
+  PAD 31 + OVER - SWAP CMOVE
+  %VAL @ U* 100 U/MOD SWAP DROP ( value adjustment)
+  U>$           ( adr u -- )
+  PAD 38 + OVER 1- - SWAP CMOVE T;
+
+
+---- Screen 7 ----
+( IT-OV - IDENT-ELEMENT$ DATE$>ADR                      10-1-85)
+
+HEAD: IDENT-ELEMENT$ ( -- \build element)
+T:  ( identifier at PAD)
+  ELEM-NAME PAD+INDENT 16 CMOVE
+  INST-QTY @ ELEM-VAL @ 10 * ( vol val)
+  SWAP  VAL,VOL>PAD T;
+
+: DATE$>ADR ( date adr -- \ build a )
+  ( date string at adr w/o count byte)
+  " 00-00-" 3 PICK SWAP CMOVE
+  SWAP 300 /MOD 4620 + ( adr rem yr --)
+  U>$ 4 PICK 6 + SWAP CMOVE
+  30 /MOD 1+ U>$  ( adr day-1 adr u --)
+  4 PICK 4 + OVER 1- - SWAP CMOVE
+  1+ U>$ ROT 1+ OVER 1- - SWAP CMOVE ;
+---- Screen 8 ----
+( IT-OV - IDENT-MESSAGE$ IDENT-ARTIFACTS$              10/22/85)
+
+HEAD: IDENT-MESSAGE$ ( -- \ build message)
+T:  ( identifier string at PAD)
+  CLRPAD         ( clear line leaders)
+  INST-DATE @ PAD+INDENT DATE$>ADR
+  ORIG-NAME PAD+INDENT 11 + 16 CMOVE T;
+
+HEAD: UKN-ART T: PAD 36 + 3 ASCII ? FILL T;
+
+HEAD: IDENT-ARTIFACT$ ( -- \ build relic)
+T:  ( identifier at PAD)
+  ART-NAME PAD+INDENT 24 CMOVE
+  ART-ANLYZ C@ ???IT @ OR 0=
+  ART-VAL @ OVER NOT * ART-VOL @ VAL,VOL>PAD
+  IF UKN-ART THEN T;
+---- Screen 9 ----
+( IT-OV - IDENT-SPECIMEN$ IDENT-BIO-DATA$                  10-1-85)
+
+HEAD: IDENT-SPECIMEN$ ( -- \build specimen)
+T:  ( identifier at PAD)
+  SPEC-NAME PAD+INDENT 16 CMOVE
+  INST-VAL @ INST-QTY @ VAL,VOL>PAD T;
+
+HEAD: IDENT-BIO-DATA$ ( --\build biodata)
+T:  ( identifier at PAD)
+  BD-NAME PAD+INDENT 16 CMOVE
+  INST-VAL @ INST-QTY @ VAL,VOL>PAD T;
+
+
+
+
+
+---- Screen 10 ----
+( IT-OV - IDENT-ITEM$                                      10-1-85)
+
+CASE IDENT-ITEM$ ( class -- )
+  11 IS IDENT-BOX$
+\  20 IS IDENT-SHIP$
+\  25 IS IDENT-VESSEL$
+  26 IS IDENT-ELEMENT$
+  27 IS IDENT-MESSAGE$
+  28 IS IDENT-ARTIFACT$
+  40 IS IDENT-SPECIMEN$
+\  41 IS IDENT-RUIN$
+  68 IS IDENT-LIFE$
+  43 IS IDENT-BIO-DATA$
+OTHERS UNRAVEL
+
+
+---- Screen 11 ----
+( IT-OV - ITEM>PAD                                         10-1-85)
+
+HEAD: ITEM>PAD ( --u\ build the identifier )
+T: ( for the current instance in the )
+  ( format {name} {vol} {val}, indent)
+  ( and adjust value by %val. at PAD.)
+  CLRPAD          ( blank fill buffer)
+  PAD+INDENT PAD 30 + OVER - ASCII .
+  FILL            ( line leaders)
+  38 PAD C!       ( string count)
+  @INST-CLASS
+  IDENT-ITEM$ T;
+
+
+
+
+==== Page 3 | 11-05-85 -- IT-OV  CMP -- Binary Systems | image IT-OV_CMP_p04 ====
+---- Screen 12 ----
+( IT-OV - TEXT>PAD                                      10-1-85)
+EXIT
+( Text Instances for Window & Scroll                      AWK )
+
+
+FILE: SCROLL-TEXT 11  3 IFIELD TEXT-CONT
+FILE: SCROLL-TEXT 14  3 IFIELD TEXT-INST
+FILE: SCROLL-TEXT 17 38 IFIELD TEXT-TEXT
+
+: TEXT>PAD ( -- )
+ TEXT-TEXT PAD 1+ 38 CMOVE 38 PAD C! ;
+
+
+
+
+
+---- Screen 13 ----
+( IT-OV - >SCROLL-LIST                                  10-1-85)
+( Instance Text to Scroll Box >SCROLL-LIST                AWK )
+
+HEAD: >SCROLL-LIST ( iaddr iaddr' $nopack  { -- } )
+T: (SCROLL-BOX) 1.5@ >C+S IOPEN
+ FILE: SCROLL-TEXT LITERAL 0 1 *CREATE
+ TEXT-TEXT 38 CMOVE
+ TEXT-INST 1.5! TEXT-CONT 1.5!
+ ICLOSE 1 SCROLL-LEN +! ICLOSE T;
+
+\ appends a SCROLL-TEXT instance to the contents of the box
+\ whose iaddress is in (SCROLL-BOX).
+
+
+
+
+---- Screen 14 ----
+( IT-OV - BOX>LIST GET-BOXES                            10-1-85)
+( Instance Text to Scroll Box                             AWK )
+: BOX>LIST ( { iaddr' iaddr  -- iaddr' iaddr } )
+ SUBROOT CI
+ BEGIN CI' CI ITEM>PAD PAD 1+ >SCROLL-LIST
+    NEXT-NODE 2DUP CI D=
+ UNTIL 2DROP ;
+
+\ appends the box iaddr and its contents to the contents of
+\ the box whose iaddress is in (SCROLL-BOX).
+
+: GET-BOXES ( iaddr -- )
+ >C+S IOPEN
+ BEGIN BOX>LIST INEXT ?FIRST UNTIL CDROP ICLOSE ;
+
+\ does BOX>LIST for all instances in super-box iaddr.
+---- Screen 15 ----
+( IT-OV - MAKE-SCROLL-BOX DELETE-SCROLL-BOX                10-1-85)
+( Text Instances for Window & Scroll                         AWK )
+
+: MAKE-SCROLL-BOX ( { -- } )
+ FRAGMENT >C+S IOPEN
+ 11 56 1 *CREATE CI (SCROLL-BOX) 1.5!
+ CI' (SCROLL-CONT) 1.5! SCROLL-LEN OFF CDROP ICLOSE ;
+
+\ creates a box to hold SCROLL-TEXT; box is in FRAGMENT;
+\ (SCROLL-CONT) holds box's iaddr; CAUTION:
+\ kills last iaddr in (SCROLL-CONT) (see DELETE-SCROLL-BOX).
+: DELETE-SCROLL-BOX ( { -- } )
+ (SCROLL-CONT) 1.5@ >C (SCROLL-BOX) 1.5@ >C+
+ SET-CURRENT IDELETE CDROP ICLOSE ;
+
+\ deletes SCROLL-TEXT box whose iaddr is in (SCROLL-CONT);
+---- Screen 16 ----
+( IT-OV - CLASS>BOX-SPEC                                   10-1-85)
+
+CASE CLASS>BOX-SPEC
+  26 IS B.ELEM  ( elements )
+  28 IS B.ART   ( artifacts )
+  40 IS B.SPEC  ( specimens )
+  41 IS B.RUINS ( ruins)
+  43 IS B.BIO   ( bio-data)
+  27 IS B.MSG   ( messages )
+  68 IS B.LIFE  ( lifeforms )
+OTHERS UNRAVEL
+\ translate an instance class to its box species.
+
+
+
+
+---- Screen 17 ----
+( IT-OV - MAKE-CLASS-BOX BOX>TOCS                          10-1-85)
+
+HEAD: MAKE-CLASS-BOX ( class { n n' -- n n' } )
+T: CLASS>BOX-SPEC 11 SWAP 1 *CREATE T;
+
+\ creates proper species box for instance n' class.
+
+: BOX>TOCS ( class { n -- n' } )
+ CLASS>BOX-SPEC 11 SWAP IFIND DROP ;
+
+
+\ put proper species box for instance n' class on top of
+\ context stack.
+
+
+
+==== Page 4 | 11-05-85 -- IT-OV  CMP -- Binary Systems | image IT-OV_CMP_p05 ====
+---- Screen 18 ----
+( IT-OV - >BOX                                          10-1-85)
+: >BOX ( iaddr { n -- n } )
+ 2DUP >C+S @INST-CLASS >R ICLOSE
+ IOPEN 11 I CLASS>BOX-SPEC IFIND 0=
+ IF I MAKE-CLASS-BOX THEN R> BOX>TOCS
+ 2DUP >C+S @INST-SPECIES @INST-CLASS ICLOSE
+ DUP 26 =
+ IF OVER IOPEN IFIND ICLOSE
+   IF IOPEN
+     BEGIN DUP INEXT @INST-SPECIES = UNTIL DROP
+     >C+S INST-QTY @ ICLOSE INST-QTY +! ICLOSE
+   ELSE DROP CI IINSERT THEN
+ ELSE 2DROP CI IINSERT THEN ICLOSE ;
+
+\ put iaddr (and a matching box if necessary) into super-box n.
+
+---- Screen 19 ----
+( IT-OV - ?ELEMENT (BOX>)                               10-1-85)
+
+
+: ?ELEMENT ( { n -- n } f )   @INST-CLASS 26 = ;
+
+: (BOX>) ( { n" n' n -- n" n' n''' } iaddr )
+ ?ELEMENT INST-QTY @ ELEM-AMT @ > AND
+ IF ELEM-AMT @ NEGATE INST-QTY +! 26 @INST-SPECIES ICREATE
+   >C+S ELEM-AMT @ INST-QTY ! C>
+ ELSE IEXTRACT THEN ;
+
+\ take instance on TOCS from its box and place it on the
+\ parameter stack.
+
+
+
+---- Screen 20 ----
+( IT-OV - BOX>                                          10-1-85)
+
+: BOX> ( { n" n' n -- n"/n'/n } f iaddr )
+ (BOX>) CI OR 0=
+ IF ICLOSE IDELETE CI OR 0=
+   IF ICLOSE THEN 1
+ ELSE 0 THEN ROT ROT ;
+
+\ perform (BOX>) and then if box is empty, delete it and set
+\ flag to TRUE; if no boxes in super-box, CLOSE super-box.
+
+
+
+
+
+
+---- Screen 21 ----
+( IT-OV - OVERLAY SUFFIX ---------------------------- 10-1-85)
+DISPOSE
+CLOSE-OVERLAY
+131 OVERLAY IT-OV
+IT-OV
+NEWT-DP
+FORTH DEFINITIONS
+HEAD: IT1 T: IT-OV IT-VOC DATE$>ADR OV-CANCEL T;
+HEAD: IT2 T: IT-OV IT-VOC BOX>LIST OV-CANCEL T;
+HEAD: IT3 T: IT-OV IT-VOC GET-BOXES OV-CANCEL T;
+HEAD: IT4 T: IT-OV IT-VOC MAKE-SCROLL-BOX OV-CANCEL T;
+HEAD: IT5 T: IT-OV IT-VOC DELETE-SCROLL-BOX OV-CANCEL T;
+HEAD: IT6 T: IT-OV IT-VOC BOX>TOCS OV-CANCEL T;
+HEAD: IT7 T: IT-OV IT-VOC >BOX OV-CANCEL T;
+HEAD: IT8 T: IT-OV IT-VOC BOX> OV-CANCEL T;
+HEAD: IT9 T: IT-OV IT-VOC (BOX>) OV-CANCEL T;
+---- Screen 22 ----
+( IT-OV - OVERLAY SUFFIX ---------------------------- 10-1-85)
+HEAD: ITA T: IT-OV IT-VOC CLASS>BOX-SPEC OV-CANCEL T;
+OV-CANCEL
+7 WIDTH !
+: DATE$>ADR ' IT1 MODULE ;
+: BOX>LIST  ' IT2 MODULE ;
+: GET-BOXES ' IT3 MODULE ;
+: MAKE-SCROLL-BOX   ' IT4 MODULE ;
+: DELETE-SCROLL-BOX ' IT5 MODULE ;
+: BOX>TOCS  ' IT6 MODULE ;
+: >BOX      ' IT7 MODULE ;
+: BOX>      ' IT8 MODULE ;
+: (BOX>)    ' IT9 MODULE ;
+: CLASS>BOX-SPEC ' ITA MODULE ;
+DISPOSE
+31 WIDTH !

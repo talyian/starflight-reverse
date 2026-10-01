@@ -1,0 +1,291 @@
+==== Page (none) | (no header) | image FIELDS03_CMP_p01 ====
+ 0 decimal ( fields03.cmp )
+ 1
+ 2 \ attribute fields for planets
+ 3 \ definition of stars files
+ 4 \ regions objects, get hooked to planets
+ 5 \ attribute file for regions
+ 6 decimal
+ 7
+ 8 \ orders fields
+ 9 \ continue orders
+10 \ species fields
+11 \ continue species fields
+12 \ continue species fields
+13 \ finish species description
+14 \ addition to phrase compiler: order
+==== Page 1 | 7-15-85 FILE: FIELDS03.CMP -- BINARY SYSTEMS | image FIELDS03_CMP_p02 ====
+---- Screen 0 ----
+decimal ( fields03.cmp )
+
+40704 constant plstart
+5 constant pl#rec
+40714 constant plend
+26 constant plrlen  \ size of attribute file
+13 constant plslen
+33 constant planets
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+
+planets   iheadlen        1   ifield   life
+planets   iheadlen 1  +   1   ifield   difficulty
+planets   iheadlen 2  +   1   ifield   roughness
+planets   iheadlen 3  +   2   ifield   lseed
+planets   iheadlen 5  +   2   ifield   tseed
+planets   iheadlen 7  +   2   ifield   aruin
+planets   iheadlen 9  +   2   ifield   rruin
+planets   iheadlen 11 +   2   ifield   plhi
+\ latter two hold record #'s of first and last
+\ creature attribute files
+
+
+
+
+
+---- Screen 2 ----
+\ attribute fields for planets
+
+planets 0  1 afield slot    \ this is the determining attrib
+planets 1  3 afield mineral1 \  record# in minerals file
+planets 4  3 afield mineral2
+planets 7  3 afield mineral3
+planets 10 1 afield coldest \ holds record# in region file
+planets 11 1 afield warmest \ ditto
+planets 12 1 afield gravity
+planets 13 2 afield atmo.corrosive
+planets 15 2 afield hydro.level
+planets 17 2 afield atmo.activity
+planets 19 1 afield atmo.density
+planets 20 3 afield narrowest
+planets 23 3 afield flattest
+
+---- Screen 3 ----
+\ definition of stars files
+decimal
+40704 constant ststart
+7 constant st#rec
+40714 constant stend
+3  constant strlen
+0  constant stslen
+15 constant stars
+
+
+
+
+
+
+
+
+---- Screen 4 ----
+\ regions objects, get hooked to planets
+decimal
+40576 constant regstart
+6 constant reg#rec
+40588 constant regend
+28  constant regrlen
+2 constant regslen
+16 constant regions
+
+
+regions iheadlen 2 ifield crowding
+
+
+
+
+
+---- Screen 5 ----
+\ attribute file for regions
+regions 0 1 afield low-temp
+regions 1 1 afield hi-temp
+regions 2 2 afield %life
+regions 4 3 afield name \ token value
+regions 7 8 afield niches
+regions 15 1 afield carpets regions 15 1 afield #plants
+regions 16 1 afield producers regions 16 1 afield #animals
+regions 17 1 afield herbivores regions 17 1 afield tplants
+regions 18 1 afield carnivores regions 18 1 afield tanimals
+regions 19 8 afield ncount
+regions 27 1 afield #species
+
+
+
+
+==== Page 2 | 7-15-85 FILE: FIELDS03.CMP -- BINARY SYSTEMS | image FIELDS03_CMP_p03 ====
+---- Screen 6 ----
+decimal
+38784 constant crstart
+200 constant cr#rec
+40575 constant crend
+152 constant crrlen
+0 constant crslen
+68 constant creatures
+
+
+
+
+
+
+
+
+
+---- Screen 7 ----
+
+creatures   0  2   afield   cllo \ lo record# for this class
+creatures   2  2   afield   clhi  \ hi record#
+creatures   4  3   afield   shape    \ token
+creatures   7  3   afield   exterior \ token
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 8 ----
+\ orders fields
+creatures 10  1 afield region \ record# in REGIONS file
+creatures 11  1 afield size.index
+creatures 12  1 afield niche
+creatures 13  3 afield reddest
+creatures 16  3 afield bluest
+creatures 19  3 afield texture
+creatures 22  3 afield w.append
+creatures 25  1 afield w#
+creatures 26  3 afield d.append
+creatures 29  1 afield d#
+creatures 30  3 afield a.append
+creatures 33  1 afield a#
+creatures 34  3 afield g.append
+creatures 37  1 afield g#
+
+---- Screen 9 ----
+\ continue orders
+creatures   38 3 afield g.mobility
+creatures   41 3 afield a.mobility
+creatures   44 2 afield orlo \ lo record# for an order
+creatures   46 2 afield orhi \ hi record#
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 10 ----
+\ species fields
+creatures 48 1 afield slowest
+creatures 49 1 afield fastest
+creatures 50 1 afield color#
+creatures 51 1 afield stun.effect
+creatures 52 1 afield hit.points
+creatures 53 1 afield t.level \ temperment
+creatures 54 1 afield i.level \ intelligence
+creatures 55 1 afield a.level \ aggression
+creatures 56 2 afield height
+creatures 58 2 afield volume
+creatures 60 2 afield proportion
+
+
+
+
+---- Screen 11 ----
+\ continue species fields
+creatures 63  3 afield d.hue
+creatures 66  3 afield d.tint
+creatures 69  3 afield d.lumens
+creatures 72  3 afield d.struc
+creatures 75  3 afield d.propor
+creatures 78  3 afield d.size
+
+creatures 81  3 afield w.hue
+creatures 84  3 afield w.tint
+creatures 87  3 afield w.lumens
+creatures 90  3 afield w.struc
+creatures 93  3 afield w.propor
+creatures 96  3 afield w.size
+
+
+==== Page 3 | 7-15-85 FILE: FIELDS03.CMP -- BINARY SYSTEMS | image FIELDS03_CMP_p04 ====
+---- Screen 12 ----
+\ continue species fields
+creatures 99  3 afield a.hue
+creatures 102 3 afield a.tint
+creatures 105 3 afield a.lumens
+creatures 108 3 afield a.struc
+creatures 111 3 afield a.propor
+creatures 114 3 afield a.size
+
+creatures 117 3 afield g.hue
+creatures 120 3 afield g.tint
+creatures 123 3 afield g.lumens
+creatures 126 3 afield g.struc
+creatures 129 3 afield g.propor
+creatures 132 3 afield g.size
+
+
+---- Screen 13 ----
+\ finish species description
+creatures 135  3 afield s.hue \ surface hue
+creatures 138  3 afield s.tint
+creatures 141  3 afield s.lumens
+creatures 144  2 afield icon
+creatures 146  3 afield resembles
+creatures 149  3 afield size
+
+
+
+
+
+
+
+
+
+---- Screen 14 ----
+\ addition to phrase compiler: order
+
+69 constant ord: \ file# for order# instances
+0 constant ordstart
+0 constant ordend
+
+
+ord: iheadlen 1 ifield order#
+
+
+
+
+
+
+
+
+---- Screen 15 ----
+\ addition to phrase compiler: order
+
+
+: order: ( DOESN'T CREATE ORDER INSTANCE)
+  DROP CDROP ICLOSE ;
+\ ord: 0 icreate  ci iinsert
+\ iopen order# c! iclose iclose iclose ;
+
+: ord record# @ >r file# @ >r
+      >c set-current \ given iaddr
+      iopen order# c@ iclose iclose
+      r> file# ! r> record# ! ;
+
+
+
+

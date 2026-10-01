@@ -1,0 +1,18 @@
+==== Page 1 | 11-05-85 -- HUFFTRNSCMP -- Binary Systems | image HUFFTRNS_CMP_p01 ====
+---- Screen 0 ----
+( Branch-table data transfer routines                          )
+
+BTADDR @ BTCNT @        \ get address & length of branch-table
+FORGET HUFFCNT          \ forget compiler code
+HERE BTADDR !           \ save new branch-table address
+DUP ALLOT               \ allot space
+BTADDR @ SWAP CMOVE     \ move data -- voila!
+
+\ This stuff moves the huffman decode table, etc. from the
+\ encoder to the decoder and throws the encoder away.
+
+
+
+
+
+

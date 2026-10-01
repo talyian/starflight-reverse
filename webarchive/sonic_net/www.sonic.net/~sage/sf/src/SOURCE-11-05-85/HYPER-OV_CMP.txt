@@ -1,0 +1,1348 @@
+==== Page (none) | (no header) | image HYPER-OV_CMP_p01 ====
+ 0 ( SHPMOV - ------- OVERLAY PREFIX ----------------
+ 1 ( SHPMOV - VAR>C SHP>C PLN>C ORB>C SYS>C ENC>C
+ 2 ( SHPMOV - CONSTANTS
+ 3 ( SHPMOV - VARIABLES
+ 4 ( SHPMOV - INSTANCE FIELDS
+ 5 ( SHPMOV - @XYSHP !XYSHP !%HEADING @%HEADING ?XIDS
+ 6 ( SHPMOV - ?* ?-* ?PLANET ?ENCOUNTER ?SHIP ?ORBIT
+ 7 ( CONTEXT MODULE: PLANET
+ 8 ( Context Module: Planet
+ 9 ( CONTEXT MODULE: PLANET
+10 ( Encounter Context  ifields
+11 ( Encounter Context  GET-VESSEL  MAKE-VESSELS
+12 ( Encounter Context  KILL-VESSELS
+13 ( Context Module: Aux Graphics P-SURF>COLOR
+14 ( Encounter Context .A-VESS .AUXENC
+15 ( ENCOUNTER CONTEXT  ENCSETUP ENCCLEANUP
+16 ( Encounter Context  ENC-DISP
+17 ( Starport  Context
+18 ( >CONTEXT - MAKE-STAR KILL-STAR
+19 ( >CONTEXT -  GET-ORBIT#
+20 ( >CONTEXT - >ORBIT
+21 ( >CONTEXT - ORBIT>
+22 ( >CONTEXT - >ORBITS ORBITS> SYSXY
+23 ( >CONTEXT - SETRNDXY SETSYSXY
+24 ( >CONTEXT - SETRNDXY SETSYSXY
+25 ( Context Module: Aux Graphics S-CLASS>COLOR
+26 ( CONTEXT MODULE: AUX GRAPHICS .SUN .PLANET
+27 ( CONTEXT MODULE: AUX GRAPHICS .ENC .AUXSYS
+28 ( >CONTEXT - SYSSETUP  SYS-DISP  SYSCLEANUP
+29 ( >CONTEXT -
+30 ( SHPMOV - >[CONTEXT] CTX>C ![CONTEXT]
+31 ( SHPMOV - XID-PLAN XID-ORB/*SEC ...   ***misc***
+32 ( SHPMOV - CONTEXT-CASES RADIUS-CASES  ***misc***
+33 ( SHPMOV - IVARCASES #CPARMS !CPARMS   ***misc***
+34 ( SHPMOV - .COORDINATES  -ENDURIUM
+35 ( Space Dust SDUST  >DUST
+36 ( Space Dust            ?DUST [.DUST]
+37 ( SHPMOV - .DUST         .MVS
+38 ( SHPMOV - ?CHANGEXY  .FLUX-ICON
+39 ( SHPMOV - >NEWHEADXY
+40 ( SHPMOV - #SLOPE #RELXY
+41 ( SHPMOV - #QUAD
+42 ( SHPMOV - #HEADING
+43 ( SHPMOV - HEADDXDY #HEADDXDY #NESTXY
+44 ( SHPMOV - #VECTXY MVCLIPSET #DIST
+45 ( SHPMOV - #NEWHEADXY  #SPEED  #BOUNDXY
+46 ( SHPMOV - NEST-EFFECTS
+47 ( SHPMOV - UNNEST-EFFECTS support
+48 ( SHPMOV - NEST-EFFECTS
+49 ( SHPMOV - UNNEST-FINIS-MESS
+50 ( SHPMOV - UNNEST-START-MESS
+51 ( SHPMOV - NEST-FINIS-MESS
+52 ( SHPMOV - NEST-FINIS-MESS
+53 ( SHPMOV - SEC-DISP DISP-SETUP
+54 ( SHPMOV - NEST-SETUP   NEST-SHIPXY
+55 ( SHPMOV - NEST
+55 ( SHPMOV - NEST
+56 ( SHPMOV - RAMVESSEL >ENCOUNTER DOCK ?BOX-NEST
+57 ( SHPMOV - >FLUX-NODE
+58 ( SHPMOV - COLLIDE
+59 ( SHPMOV - ?COLLISION
+60 ( SHPMOV - ?DOUBLE-NEST
+61 ( SHPMOV - ?STARPORT
+62 ( SHPMOV - UNNEST-CLEANUP
+63 ( SHPMOV - UNNEST-SHIPXY
+64 ( SHPMOV - ?UNNEST  ?DOUBLE-UNNEST
+65 ( SHPMOV - UNNEST
+66 ( SHPMOV - #BOUNDXY  AUXLATE   AUX-GETTERS
+67 ( SHPMOV - FLY
+68 ( SHPMOV - SET-DESTINATION
+69 ( SHPMOV - SETUP-MOV
+70 ( SHPMOV - CLEANUP-MOV
+71 ( SHPMOV - COME-HITHER
+72 ( SHPMOV INITIALIZERS
+73 ( SHPMOV ---------- OVERLAY SUFFIX ---------------
+==== Page 1 | 11-05-85 -- HYPER-OVCMP -- Binary Systems | image HYPER-OV_CMP_p02 ====
+---- Screen 0 ----
+( SHPMOV - ------- OVERLAY PREFIX ---------------------10/23/85)
+31 width !
+2V= NAV-TIME
+
+VOCABULARY SHPMOV-VOC  IMMEDIATE
+
+106 OPEN-OVERLAY
+SHPMOV-VOC DEFINITIONS
+
+2600 TRANS-ALLOT
+NEWT-DP
+
+
+HEAD: SET-'EXTERNAL T: ' !'EXT MODULE T;
+
+
+---- Screen 1 ----
+( SHPMOV - VAR>C SHP>C PLN>C ORB>C SYS>C ENC>C          3-22-85)
+
+
+HEAD: VAR>C ( addr -- , ( -- i )) T: 1.5@ >C+S T;
+HEAD: SHP>C ( ( -- i ) \ move ship to context stack)
+T:        (SHIP) VAR>C T;
+HEAD: PLN>C ( ( -- i ) \ move current planet to context stack)
+T:        (PLANET) VAR>C T;
+HEAD: ORB>C ( ( -- i ) \ move current orbit to context stack)
+T:        (ORBIT) VAR>C T;
+HEAD: SYS>C ( ( -- i ) \ move current system to context stack)
+T:        (SYSTEM) VAR>C T;
+HEAD: ENC>C ( ( -- i ) \ move current encounter to ctxt stack )
+T:        (ENCOUNTER) VAR>C T;
+
+
+---- Screen 2 ----
+( SHPMOV - CONSTANTS                                    9/26/85)
+
+  3 C: RCOLLIDE    ( collision radius)
+  0 C: PRTRADIUS   ( radius of starport)
+ 75 C: DEFRADIUS   \ radius of sec map context - formerly 500
+  0 C: ORBRADIUS   ( radius of orbit context)
+ 75 C: ENCRADIUS   ( radius of encounter context)
+400 C: SYSRADIUS   ( radius of system context)
+ 64 C: VISLENGTH   ( length of world window incl neb radii )
+ 62 C: VISWIDTH    ( width of world window     "   "   "   )
+  9 C: BVISOFF ( y world xlation to center origin mainview)
+  8 C: LVISOFF ( x world xlation to center origin mainview)
+  6 C= MAXSPEED ( maximum distance increment for ship movement)
+
+
+
+---- Screen 3 ----
+( SHPMOV - VARIABLES                                   10/17/85)
+
+V: (RADIUS)    ( radius of current context)
+V: [CONTEXT]   ( context stack pointer to current context)
+V: XTRNS  V: YTRNS  ( world x,y coords of nested context)
+V: 2NEST 2NEST OFF ( double nested context flag )
+V: SKIP2NEST SKIP2NEST OFF ( force skip over of double nest )
+2V: (COLLIDE)  ( colliding object iaddr) V: XCRS V: YCRS
+V: NAV-SKILL   ( navigator's skill )
+V: 'AUX-CLEAN
+V: ?HAS-RING-DEVICE ( 100% identify flux )
+2V: 10*END          ( 10*endurium amt )
+
+
+
+
+---- Screen 4 ----
+( SHPMOV - INSTANCE FIELDS                              6/26/85)
+
+20 73 1 IFIELD: %HEADING ( ship heading )
+45 11 2 IFIELD: DEST-X   ( flux destination x coordinate )
+45 17 2 IFIELD: DEST-Y   ( flux destination y coordinate )
+61 11 1 IFIELD: ?HOME-PLANET  ( spacial context field )
+61 27 1 IFIELD: ?ENCOUNTER-ON ( encounter enable field)
+23 17 1 IFIELD: ORBIT-MASK    ( system orbit mask )
+
+32  1 1 AFIELD: P-SURF
+32  4 1 AFIELD: P-LSEED
+32  7 2 AFIELD: P-TSEED
+
+
+
+
+---- Screen 5 ----
+( SHPMOV - @XYSHP !XYSHP !%HEADING @%HEADING ?XIDSEC.. 3-22-85)
+
+HEAD: @XYSHP ( -- x y \ get x and y loc of ship from object)
+T:  SHP>C INST-X @ INST-Y @ ICLOSE T;
+head: !XYSHP ( x y -- \ set x and y loc of ship in object)
+t:  SHP>C INST-Y ! INST-X ! ICLOSE t;
+
+head: !%HEADING ( heading -- \ save ship heading <0-8>)
+t:    SHP>C %HEADING C! ICLOSE t;
+HEAD: @%HEADING ( -- heading \ get ship heading)
+T:    SHP>C %HEADING C@ ICLOSE T;
+HEAD: ?XIDSEC ( -- t \ is the context sector map)
+T:    CONTEXT-ID# @ 3 = T;
+HEAD: ?XIDENC ( -- t \ is the context encounter)
+T:    CONTEXT-ID# @ 4 = T;
+
+==== Page 2 | 11-05-85 -- HYPER-OVCMP -- Binary Systems | image HYPER-OV_CMP_p03 ====
+---- Screen 6 ----
+( SHPMOV - ?* ?-* ?PLANET ?ENCOUNTER ?SHIP ?ORBIT ... 10/15/85)
+
+HEAD: ?* ( -- t \ is the current object a star?)
+T:          @INST-CLASS 24 = T;
+HEAD: ?-* T: ?* NOT T;
+HEAD: ?PLANET ( -- t \ is the current object a planet?)
+T:          @INST-CLASS 32 = T;
+HEAD: ?ENCOUNTER ( -- t \ is the current object an encounter?)
+T:          @INST-CLASS 61 = T;
+HEAD: ?SHIP ( -- t \ is the current object the starship?)
+T:          @INST-CLASS 20 = T;
+HEAD: ?*ORPLAN ( -- t \ star or planet?)
+T:        ?* ?PLANET OR T;
+HEAD: ?HYPER ( -- f \ is the context hyperspace? )
+T:        CONTEXT-ID# @ 3 = T;
+
+---- Screen 7 ----
+( CONTEXT MODULE: PLANET                           AWK 10/22/85)
+
+HEAD: SURF>CLRMAP ( -- N )
+T: PLN>C P-SURF C@
+ 4 OVER = IF 5 ELSE   1 OVER = IF 4 ELSE   3 OVER = IF 3 ELSE\
+ P-LSEED C@ IF 1 ELSE 2 THEN THEN THEN THEN SWAP DROP ICLOSE T;
+
+HEAD: ORBSETUP ( -- )
+T: (COLLIDE) VAR>C CI (ORBIT) 1.5!
+ IOPEN 32 0 IFIND DROP CI (PLANET) 1.5! CDROP ICLOSE T;
+
+HEAD: ORBCLEANUP ( -- )
+T: ?PORT OFF SKIP2NEST OFF
+  ORB>C INST-X @ XTRNS ! INST-Y @ YTRNS ! ICLOSE
+  NULL (PLANET) 1.5! NULL (ORBIT) 1.5! 2NEST OFF
+  SET-'EXTERNAL ! 'AUX-CLEAN @ EXECUTE T;
+[handwritten: "DEPART MODULE" with arrows pointing at INST-Y and (ORBIT) (near lines 11-14)]
+---- Screen 8 ----
+( Context Module: Planet                               10-07-85)
+
+HEAD: ORBITSETUP ( -- )
+T: 6 ' NS-MESS MODULE
+  PLN>C IOPEN 12 0 IFIND NOT ICLOSE
+  IF SURF>CLRMAP
+    @INST-SPECIES 0 18 WITHIN
+    IF CI DROP ELSE P-TSEED @ THEN  ( #clrmap gseed --)
+    DUP GLOBALSEED !
+    ' SET-PLANET MODULE
+    ' INIT-ORBIT MODULE
+    ' MROTATE 'EXTERNAL-EVENTS ! PLHI OFF
+  THEN
+  ICLOSE 6 ' NF-MESS MODULE T;
+
+
+---- Screen 9 ----
+( CONTEXT MODULE: PLANET                          AWK 10/22/85 )
+
+HEAD: ORB-DISP ( -- )
+T: NULL !XYSHP XABS OFF YABS OFF INIT-ICONLIST
+ ORB>C IOPEN +ICONBOX CDROP ICLOSE
+ -5000 DUP ANCHOR D! ORBRADIUS LOCRADIUS !
+ XABS OFF YABS OFF T;
+
+HEAD: .AUXSHIP ( -- )
+T: CONTEXT-ID# @ 2 =
+   IF WHITE !COLOR (RADIUS) @ >R
+     XABS @ 36  I */ -35 MAX 32 MIN 120 +
+     YABS @ 36 R> */ -35 MAX 32 MIN 161 + LXPLOT
+   THEN T;
+
+
+---- Screen 10 ----
+( Encounter Context  ifields                       AWK 7/16/85 )
+
+25 11 1 IFIELD: VES-HEADING
+61 21 1 IFIELD: #AT-A-TIME
+61 22 1 IFIELD: ?VES-CLASS0  61 23 1 IFIELD: ?VES-CLASS1
+61 24 1 IFIELD: ?VES-CLASS2  61 25 1 IFIELD: ?VES-CLASS3
+61 19 1 IFIELD: MAX#SHIPS    61 20 1 IFIELD: #SHIPS-DESTROYED
+
+52 18 1 IFIELD: BASE-EDL
+
+17 23 3 IFIELD: NAV
+16 27 1 IFIELD: ^NAV
+
+
+
+
+---- Screen 11 ----
+( Encounter Context  GET-VESSEL  MAKE-VESSELS      AWK 7/11/85 )
+CASE GET-VESSEL
+  0 IS ?VES-CLASS3  1 IS ?VES-CLASS2  2 IS ?VES-CLASS1
+OTHERS ?VES-CLASS0
+
+HEAD: VCOORDS ( -- x y \ tighter radius for vessel coords if )
+          ( encounter is orbital. )
+T: ENCRADIUS (PLANET) 1.5@ OR
+ IF 5 / THEN DUP NEGATE SWAP 1+ 2DUP RRND >R RRND R> T;
+
+HEAD: MAKE-VESSELS ( ( n -- n ) )
+T: #AT-A-TIME C@ DUP 2- SWAP 1+ RRND 1 MAX 0 DO 25
+   BEGIN 0 4 RRND GET-VESSEL C@ ?DUP UNTIL
+   IOPEN 1 *CREATE VCOORDS INST-Y ! INST-X !
+    0 7 RRND VES-HEADING C! ICLOSE
+ LOOP T;
+==== Page 3 | 11-05-85 -- HYPER-OVCMP -- Binary Systems | image HYPER-OV_CMP_p04 ====
+---- Screen 12 ----
+( Encounter Context  KILL-VESSELS                  AWK 10/17/85)
+
+HEAD: KILL-VESSELS ( ( n -- n ) )
+T: ?CHILD
+ IF IOPEN
+   BEGIN @INST-CLASS 25 =
+     IF IDELETE 0 ELSE INEXT ?FIRST THEN ?NULL OR
+   UNTIL ICLOSE
+ THEN T;
+
+
+
+
+
+
+
+---- Screen 13 ----
+( Context Module: Aux Graphics P-SURF>COLOR       AWK 11/04/85 )
+
+CASE P-SURF>COLOR
+  1 IS VIOLET  2 IS BLUE  3 IS WHITE  4 IS ORANGE
+OTHERS BROWN
+
+HEAD: >CONS-DISP ( -- )
+T: CONTEXT-ID# @ 4 =
+   IF ' CSCALE MODULE
+   ELSE >1ICONFONT
+     8 48 YWLD:YPIX D! 8 32 XWLD:XPIX D!
+     XLLDEST OFF YLLDEST OFF
+   THEN T;
+
+
+
+---- Screen 14 ----
+( Encounter Context .A-VESS .AUXENC                AWK 10/17/85)
+EXIT
+HEAD: .A-VESS ( ( i -- i ) )
+T: INST-X @ 36 ENCRADIUS */ 120 +
+   INST-Y @ 36 ENCRADIUS */ 161 + LPLOT T;
+
+HEAD: .AUXENC ( ( i -- i ) )
+T: BLACK ERASE-AUXILLARY
+ (PLANET) 1.5@ 2DUP D0= NOT
+ IF >C+S P-SURF C@ ICLOSE P-SURF>COLOR !COLOR
+   119 161 3 FILLCIRC 120 161 3 FILLCIRC
+ ELSE 2DROP THEN
+ IFIRST LT-GREEN !COLOR
+ BEGIN @INST-CLASS 25 =
+   IF .A-VESS THEN INEXT ?FIRST
+ UNTIL 6 #AUX ! T;
+---- Screen 15 ----
+( ENCOUNTER CONTEXT  ENCSETUP ENCCLEANUP           AWK 11/04/85)
+
+HEAD: ENCSETUP ( -- )
+T: (COLLIDE) 1.5@ (ENCOUNTER) 1.5! (SYSTEM) 1.5@ D0=
+ IF ' NOP 'AUX-CLEAN ! THEN
+ ENC>C @INST-SPECIES ORGIADDR 1.5@ ?HOME-PLANET C@ 1+
+ ' OVINIT-COMM MODULE
+ MAKE-VESSELS ( .AUXENC ) ICLOSE T;
+
+HEAD: ENCCLEANUP ( -- )
+T: ENC>C INST-X @ XTRNS ! INST-Y @ YTRNS ! (AORIGINATOR) VAR>C
+ BASE-EDL C@ EDL @ 2DUP < 5 * >R > -5 * R> +  ( SET NEW BEDL IF)
+ 0 MAX 100 MIN BASE-EDL C! ICLOSE             ( DELTA EDL <> 0 )
+ KILL-VESSELS ICLOSE NULL (ENCOUNTER) 1.5!
+ ' NOP 'EXTERNAL-EVENTS ! 'AUX-CLEAN @ EXECUTE #AUX ON
+ NULL (AORIGINATOR) 1.5! >CONS-DISP T;
+---- Screen 16 ----
+( Encounter Context  ENC-DISP                     AWK 10/17/85 )
+
+HEAD: ENC-DISP ( -- )
+T: XABS OFF YABS OFF NULL !XYSHP INIT-ICONLIST
+ ENC>C IOPEN +ICONBOX CDROP ICLOSE
+ -5000 DUP ANCHOR D! ENCRADIUS LOCRADIUS ! ( .AUXSHIP ) T;
+
+
+
+
+
+
+
+
+
+
+---- Screen 17 ----
+( Starport  Context                                AWK 10/11/85)
+
+HEAD: PRTSETUP ( -- )
+T: TIME-PASSING OFF ?PORT ON T;
+
+HEAD: PRTCLEANUP ( -- )
+T: TIME-PASSING ON CFIGARRAYS
+   PLN>C INST-X @ XTRNS ! INST-Y @ YTRNS ! ICLOSE T;
+
+
+
+
+
+
+
+
+==== Page 4 | 11-05-85 -- HYPER-OVCMP -- Binary Systems | image HYPER-OV_CMP_p05 ====
+---- Screen 18 ----
+( >CONTEXT - MAKE-STAR KILL-STAR                        6/13/85)
+
+HEAD: MAKE-STAR ( -- \ build a star object inside the current )
+  ( system)
+T:  SYS>C
+  INST-QTY @             ( flare-date)
+  24 @INST-SPECIES IOPEN 1 *CREATE
+  INST-QTY !
+  INST-X OFF INST-Y OFF ( position star to origin)
+  ICLOSE ICLOSE T;
+
+HEAD: KILL-STAR ( -- \ delete the star object in the current )
+  ( system)
+T:  SYS>C IOPEN 24 0 IFIND IF IDELETE THEN ICLOSE ICLOSE T;
+
+
+---- Screen 19 ----
+( >CONTEXT -  GET-ORBIT#                                6/17/85)
+
+V: PREV-ORBIT V: ORBITS
+
+HEAD: GET-ORBIT# ( -- n )
+T: 9 PREV-ORBIT @ 1+ DO I BIT ORBITS @ AND
+   IF I PREV-ORBIT ! LEAVE THEN
+ LOOP PREV-ORBIT @ T;
+
+
+
+
+
+
+
+
+---- Screen 20 ----
+( >CONTEXT - >ORBIT                                     6/14/85)
+
+HEAD: (>ORBIT) ( ( i -- orb ) \ insert the current object into)
+  ( an orbit object. )
+T:  @INST-CLASS 32 =
+  IF GET-ORBIT# ELSE 0 THEN
+  11 4 ICREATE IEXTRACT 2OVER       ( box i box -- )
+  IINSERT                           ( box -- )
+  ?NULL IF CI' IINSERT IFIRST
+        ELSE CI <INSERT
+           ?FIRST IF IPREV MAKE1ST
+                  ELSE IPREV
+                  THEN
+        THEN INST-QTY ! T;            \ store orbit# or 0
+
+
+---- Screen 21 ----
+( >CONTEXT - ORBIT>                                      1/7/85)
+HEAD: ORBIT> ( ( sys orb -- sys i ) \ delete the orbit object )
+  ( and move it's content's to the system level. Pack )
+  ( orbital encounters. Maintains order of items within orbit.)
+T:  IOPEN
+  BEGIN
+    ?-NULL
+  WHILE
+    IEXTRACT CI' <INSERT
+    ICLOSE ?FIRST IF IPREV MAKE1ST INEXT THEN IOPEN
+  REPEAT
+  ICLOSE IDELETE T;
+
+HEAD: >ORBITS ( -- \ INSERT ORBIT OBJECTS INTO STARSYSTEM)
+T:  PREV-ORBIT OFF SYS>C ORBIT-MASK C@ ORBITS !
+  IOPEN  ' ?*ORPLAN ' (>ORBIT) EACH ICLOSE ICLOSE T;
+---- Screen 22 ----
+( >CONTEXT - >ORBITS ORBITS> SYSXY                     10/15/85)
+
+HEAD: ?-ORBIT ( ( n -- n ) f )
+T: @INST-CLASS 11 = @INST-SPECIES 4 = AND
+   IF ORBIT>  ELSE INEXT THEN T;
+
+HEAD: ORBITS> ( -- \ DELETE ORBIT OBJECTS)
+T: SYS>C IOPEN
+   BEGIN ?LAST NOT
+   WHILE ?-ORBIT
+   REPEAT ?-NULL
+   IF ?-ORBIT THEN CDROP ICLOSE T;
+
+HEAD: SYSXY ( -- X Y \ GET SYSTEM X & Y FOR CURRENT STAR SYSTEM)
+T:  SYS>C INST-X @ INST-Y @ ICLOSE T;
+
+---- Screen 23 ----
+( >CONTEXT - SETRNDXY SETSYSXY                         10/15/85)
+
+HEAD: SETRNDXY ( ( I --I) \ SET RANDOM X & Y LOCATION FOR )
+  ( CURRENT OBJECT)
+T:  SYSRADIUS 5 - DUP NEGATE SWAP 2DUP RRND INST-X !
+                                       RRND INST-Y ! T;
+
+HEAD: SETELLIPSEXY ( ( I -- I ) )
+T: INST-QTY @ 4 * 2+ >R I NEGATE
+                   I 1+ RRND DUP SYSRADIUS 36 */ INST-X !
+                   I R> * SWAP DUP * - 0 SQRT
+                   0 2 RRND 2* 1- * SYSRADIUS 36 */ INST-Y ! T;
+
+HEAD: OCOORDS ( ( I -- I ) )
+T: IOPEN ?PLANET ICLOSE
+ IF SETELLIPSEXY ELSE INST-X OFF INST-Y OFF THEN T;
+==== Page 5 | 11-05-85 -- HYPER-OVCMP -- Binary Systems | image HYPER-OV_CMP_p06 ====
+---- Screen 24 ----
+( >CONTEXT - SETRNDXY SETSYSXY                          6/14/85)
+
+CASE (>COORDS)
+  11 IS OCOORDS   61 IS SETRNDXY
+OTHERS NOP
+
+HEAD: SETPLNXY ( -- \ set x & y locations for planets )
+T: SYS>C ?CHILD
+ IF IOPEN
+   BEGIN @INST-CLASS (>COORDS) INEXT
+   ?FIRST UNTIL ICLOSE
+ THEN ICLOSE T;
+
+
+
+
+---- Screen 25 ----
+( Context Module: Aux Graphics S-CLASS>COLOR       AWK 7/22/85 )
+
+CASE S-CLASS>COLOR
+  ASCII M IS RED    ASCII K IS ORANGE  ASCII G IS YELLOW
+  ASCII F IS WHITE  ASCII A IS GREEN   ASCII B IS LT-BLUE
+OTHERS BLUE
+
+
+
+
+
+
+
+
+
+
+---- Screen 26 ----
+( CONTEXT MODULE: AUX GRAPHICS .SUN .PLANET       AWK 10/15/85 )
+HEAD: .SUN ( n -- )
+T: S-CLASS>COLOR !COLOR 120 161 2 FILLCIRC T;
+
+HEAD: .PLANET ( ( i -- i ) )
+T: BEGIN
+   @INST-CLASS 11 =                         ( is object a     )
+   IOPEN ?PLANET AND DUP                    ( planet box?     )
+   IF P-SURF C@ P-SURF>COLOR !COLOR THEN    ( get surf color  )
+   ICLOSE DUP NOT
+   IF INEXT ?FIRST OR                       ( go on to next   )
+     ELSE INST-X @ 36 SYSRADIUS */ 120 +    ( or center x,y   )
+          INST-Y @ 36 SYSRADIUS */ 161 +    ( on aux screen   )
+          1 1 1 FILLELLIP                   ( and plot planet )
+   INEXT THEN                          ( set up for next pass )
+ UNTIL T;
+---- Screen 27 ----
+( CONTEXT MODULE: AUX GRAPHICS .ENC .AUXSYS       AWK 10/15/85 )
+
+HEAD: .ENCS ( ( i i' -- i i" ) )
+T: LT-GREEN !COLOR
+ BEGIN ?ENCOUNTER
+   IF INST-X @ 36 SYSRADIUS */ 120 +
+      INST-Y @ 36 SYSRADIUS */ 161 + LPLOT
+ THEN INEXT ?FIRST UNTIL T;
+
+HEAD: .AUXSYS ( -- )
+T: >DISPLAY DCLIPSET BLACK ERASE-AUXILLARY
+ SYS>C @INST-SPECIES .SUN ORBIT-MASK C@ IOPEN
+ 9 1 DO I BIT OVER AND
+   IF GREY1 !COLOR 120 161 I 4 * 1+ 1 1 .ELLIPSE .PLANET THEN
+ LOOP DROP IFIRST .ENCS
+ CDROP ICLOSE 5 #AUX ! T;
+---- Screen 28 ----
+( >CONTEXT - SYSSETUP  SYS-DISP  SYSCLEANUP            10/17/85)
+
+HEAD: SYSSETUP ( -- )
+T: (COLLIDE) 1.5@ (SYSTEM) 1.5! ' .AUXSYS 'AUX-CLEAN !
+ MAKE-STAR >ORBITS SETPLNXY .AUXSYS T;
+
+HEAD: SYS-DISP ( -- )
+T: INIT-ICONLIST
+ (SYSTEM) VAR>C IOPEN +ICONBOX CDROP ICLOSE
+ -5000 DUP ANCHOR D! SYSRADIUS LOCRADIUS ! .AUXSHIP T;
+
+HEAD: SYSCLEANUP ( -- )
+T: SYS>C INST-X @ XTRNS ! INST-Y @ YTRNS ! ICLOSE
+ ORBITS> KILL-STAR NULL (SYSTEM) 1.5! #AUX ON T;
+
+
+---- Screen 29 ----
+( >CONTEXT -                                           11/04/85)
+
+HEAD: RNDCPT ( r -- x y )
+T: 0 OVER 3 2 */ 1+ RRND
+ SWAP DUP * OVER 2 3 */ DUP * - 0 SQRT 0 SWAP 1+ RRND
+ 0 2 RRND IF NEGATE THEN SWAP 0 2 RRND IF NEGATE THEN T;
+
+HEAD: ?CAN-NAVIGATE ( -- f )
+T: TIME D@ NAV-TIME D@ D> T;
+
+
+
+
+
+
+
+==== Page 6 | 11-05-85 -- HYPER-OVCMP -- Binary Systems | image HYPER-OV_CMP_p07 ====
+---- Screen 30 ----
+( SHPMOV - >[CONTEXT] CTX>C ![CONTEXT]                  5/22/85)
+
+HEAD: >[CONTEXT] ( -- \ set context stack to frame pointer)
+T:  [CONTEXT] @ CXSP ! SET-CURRENT T;
+
+HEAD: CTX>C ( (--i) \ copy current ctxt iaddr to top of stack )
+T:  (SHIPBOX) VAR>C T;
+
+HEAD: ![CONTEXT] ( -- \ set context stack frame pointer to tos)
+T:  CXSP @ [CONTEXT] ! T;
+
+
+
+
+
+
+---- Screen 31 ----
+( SHPMOV - XID-PLAN XID-ORB/*SEC ...   ***misc***       3-20-85)
+
+HEAD: XIDPLN ( species -- 0 \ planet context id)
+T:  DROP 0 T;
+HEAD: XIDORB/SEC ( species -- 1 or 3 \ orbit or sec context id)
+T:  4 = IF 1 ELSE 3 THEN T;
+HEAD: XIDSYS T: DROP 2 T;
+HEAD: XIDENC T: DROP 4 T;
+HEAD: XIDPRT T: DROP 5 T;
+
+
+
+
+
+
+
+---- Screen 32 ----
+( SHPMOV - CONTEXT-CASES RADIUS-CASES  ***misc***       7/25/85)
+
+CASE CONTEXT-CASES ( species class -- context-id#)
+ 32 IS XIDPLN
+ 11 IS XIDORB/SEC
+ 23 IS XIDSYS
+ 61 IS XIDENC
+ 18 IS XIDPRT  ( actually docking into ship-config )
+OTHERS UNRAVEL
+
+CASE RADIUS-CASES ( context-id# -- radius )
+ 1 IS ORBRADIUS
+ 2 IS SYSRADIUS
+ 4 IS ENCRADIUS
+ 5 IS PRTRADIUS
+OTHERS DEFRADIUS
+---- Screen 33 ----
+( SHPMOV - IVARCASES #CPARMS !CPARMS   ***misc***       5/20/85)
+
+CASE IVARCASES ( xid# -- varaddr \ find address of iaddr )
+ ( holding variable given context id#)
+ 0 IS (PLANET)
+ 1 IS (ORBIT)
+ 2 IS (SYSTEM)
+ 4 IS (ENCOUNTER)
+OTHERS (SHIPBOX)
+
+HEAD: #CPARMS ( i -- i ivar xid# radius \ compute context parms)
+T:  2DUP >C+S @INST-SPECIES @INST-CLASS
+  CONTEXT-CASES DUP RADIUS-CASES >R >R
+  I IVARCASES R> R> ICLOSE T;
+HEAD: !CPARMS ( i ivar xid# radius -- \ store context parms)
+T:  (RADIUS) ! CONTEXT-ID# ! >R 2DUP R> 1.5! (SHIPBOX) 1.5! T;
+---- Screen 34 ----
+( SHPMOV - .COORDINATES  -ENDURIUM                     10/11/85)
+HEAD: .COORDINATES ( -- \ display ship starmap coordinates)
+T: >DISPLAY XORMODE OFF >1FONT
+ 3 GREY1 198 22 2DUP SWAP POS. POS.PXT ( erase old coords)
+ 3 GREY1 198 48 POS.PXT
+ WHITE !COLOR ?CAN-NAVIGATE
+ IF @XYSHP ELSE 0 2000 RRND 0 2000 RRND THEN
+ *MAPSCALE / SWAP *MAPSCALE / 3 .R 48 xBLT ! . T;
+
+HEAD: .E3 T: YELLOW !COLOR " FUEL SUPPLY LOW"      .TTY BEEP T;
+HEAD: .E2 T: ORANGE !COLOR " FUEL SUPPLY CRITICAL" .TTY BEEP T;
+HEAD: .E1 T: PINK   !COLOR " OUT OF FUEL"          .TTY BEEP T;
+CASE .EX   1 IS .E1   2 IS .E2   3 IS .E3   OTHERS NOP
+HEAD: -ENDURIUM ( -- )
+T: -1. 10*END D@ D+ 2DUP NULL DMAX 10*END D! 100 U/MOD 1+
+   SWAP 0= * .EX T;
+---- Screen 35 ----
+( Space Dust SDUST  >DUST                          AWK 10/23/85)
+
+72 C: XBND    120 C: YBND
+255 C: XLIM   255 C: YLIM
+
+V: SDUST -2 DP +!
+  130 C,  40 C,     56 C, 125 C,     215 C,  51 C,
+  212 C, 118 C,    178 C,  67 C,     200 C,  82 C,
+   58 C, 112 C,    134 C,  83 C,     159 C, 123 C,
+   61 C, 205 C,    127 C,  22 C,      39 C, 118 C,
+
+HEAD: >DUST ( -- )
+T: SDUST 24 + SDUST DO
+     0 XLIM RRND I C! 0 YLIM RRND I 1+ C!
+   2 +LOOP T;
+
+==== Page 7 | 11-05-85 -- HYPER-OVCMP -- Binary Systems | image HYPER-OV_CMP_p08 ====
+---- Screen 36 ----
+( Space Dust            ?DUST [.DUST]               AWK 9/23/85)
+
+HEAD: ?DUST ( x y -- x' y' )
+T: YLIM MOD DUP 0 YBND WITHIN * SWAP
+   XLIM MOD DUP 0 XBND WITHIN * SWAP T;
+
+HEAD: (.DUST) ( x y -- )
+T: XABS @ 500 + XWLD:XPIX D@ SWAP */
+   YABS @ 500 + YWLD:YPIX D@ SWAP */
+   ROT + >R + R> ?DUST 2DUP *
+   IF YBND - NEGATE SWAP XBND - NEGATE SWAP LPLOT
+   ELSE 2DROP THEN T;
+
+
+
+
+---- Screen 37 ----
+( SHPMOV - .DUST         .MVS                          11/04/85)
+
+HEAD: .DUST ( -- )
+T: GREY1 !COLOR
+   SDUST 8 + context-id# @ 2 = 16 * + SDUST DO
+     I C@ I 1+ C@ (.DUST)
+   2 +LOOP T;
+
+: .MVS ( -- )
+ ?XIDENC NOT
+ IF >MAINVIEW VCLIPSET DARK
+   CONTEXT-ID# @ 2 4 WITHIN     \ hyperspace or system
+   IF .DUST THEN
+   .LOCAL-ICONS V>DISPLAY
+   >DISPLAY DCLIPSET
+ THEN ;
+---- Screen 38 ----
+( SHPMOV - ?CHANGEXY  .FLUX-ICON                        7/17/85)
+
+HEAD: .FLUX-ICON ( -- )
+T: @CRS @IX @IY WLD>SCR GREY1 !COLOR
+ CURSORSPACE ABLT ! 1 WBLT ! 1 LBLT ! XORMODE OFF
+ NAV-SKILL @ 16 250 */ ?HAS-RING-DEVICE @ MAX 0 DO
+   2DUP 15 RNDCPT ROT + YBLT ! + XBLT ! BLT
+ LOOP 2DROP !CRS T;
+
+HEAD: ?CHANGEXY ( HEADING X Y -- [HEADING X Y 1] OR 0 \ IS NEW)
+    ( LOCATION AND HEADING DIFFERENT THAN CURRENT?)
+T:  >R >R >R
+  I  HEADING @ =
+  I' XABS    @ = AND
+  J  YABS    @ = AND NOT >V R> R> R> V>
+  ?DUP 0= IF 2DROP DROP 0 THEN T;
+---- Screen 39 ----
+( SHPMOV - >NEWHEADXY                                   9/30/85)
+
+HEAD: (>NEWHEADXY) ( heading x y -- )
+T: .AUXSHIP
+   2DUP YABS ! XABS ! 2DUP !XYSHP
+   2DUP ILOCAL @ 1- POINT>ICON !IY !IX ?XIDENC NOT
+   IF 2DUP BVISOFF - SWAP LVISOFF - SWAP
+     2SWAP VISLENGTH + SWAP VISWIDTH + SWAP !VISWINDOW
+   ELSE 2DROP THEN ?HYPER
+   IF .COORDINATES THEN
+   DUP HEADING ! 27 + !ID   ( icon based on heading)
+   .AUXSHIP .MVS T;
+
+HEAD: >NEWHEADXY ( heading x y -- \ move ship to new location)
+  ( and heading)
+T:  ?CHANGEXY IF (>NEWHEADXY) THEN T;
+---- Screen 40 ----
+( SHPMOV - #SLOPE #RELXY                                3-20-85)
+
+HEAD: #SLOPE ( x y -- s 1 OR 0 \ compute the slope * 100 from )
+  ( origin to x,y and leave a code for undefined.)
+T:  SWAP ( dy dx --)
+  ?DUP IF 100 SWAP */ 1
+       ELSE DROP 0
+       THEN T;
+
+HEAD: #RELXY ( Xo Yo Xd Yd -- x' y' \ compute x y relative to)
+  ( origin)
+T:  ROT - >R SWAP - R> T;
+
+
+
+
+---- Screen 41 ----
+( SHPMOV - #QUAD                                        3-20-85)
+
+2 BASE !
+HEAD: #QUAD ( x y -- q \ compute trig quadrant given x y)
+T:  0< NOT IF 0011 ELSE 1100 THEN SWAP
+  0< NOT IF 1001 ELSE 0110 THEN AND
+  DUP 1000 AND IF 2/
+               ELSE DUP 0100 AND IF 1- THEN
+               THEN T;
+DECIMAL
+
+
+
+
+
+
+==== Page 8 | 11-05-85 -- HYPER-OVCMP -- Binary Systems | image HYPER-OV_CMP_p09 ====
+---- Screen 42 ----
+( SHPMOV - #HEADING                                     3-20-85)
+
+HEAD: #HEADING ( Xo Yo Xd Yd -- h \ compute heading number  )
+   ( <0-8> given location and destination. 8 is null heading.  )
+T:  #RELXY 2DUP D0= NOT
+  IF 2DUP #QUAD >R      ( x y -- q \        Heading codes are: )
+     I 1 AND NOT IF SWAP THEN                  (   3  2  1     )
+     ABS SWAP ABS SWAP     ( norm to 1st quad \    \  |  /     )
+     #SLOPE                                    (  4 - 8 - 0    )
+     IF DUP 41 < IF DROP 0 ELSE                (   /  |  \     )
+           241 > IF 2 ELSE 1 THEN THEN         (   5  6  7     )
+     ELSE 2                ( undefined slope)
+     THEN
+     R> 1- 2* +
+  ELSE 2DROP 8 THEN T;
+
+---- Screen 43 ----
+( SHPMOV - HEADDXDY #HEADDXDY #NESTXY                   3-20-85)
+
+V: HEADDXDY -2 DP +!
+  1 C, 0 C, 1 C, 1 C, 0 C, 1 C, -1 C, 1 C, -1 C, 0 C,
+  -1 C, -1 C, 0 C, -1 C, 1 C, -1 C,
+
+HEAD: #HEADDXDY ( heading -- dx dy \ compute "unit" vector )
+  ( given heading)
+T:  2* HEADDXDY + DUP +-@ SWAP 1+ +-@ T;
+
+HEAD: #NESTXY ( radius heading -- x y \ compute entry coords)
+  ( given entry heading and context radius)
+T:  #HEADDXDY >R >R
+  1- R> OVER * NEGATE SWAP R> * NEGATE T;
+
+
+---- Screen 44 ----
+( SHPMOV - #VECTXY MVCLIPSET #DIST                     10/09/85)
+HEAD: #VECTXY ( x y heading dist. -- x'y' \ compute new xy )
+  ( given location, heading and distance)
+T:  >R #HEADDXDY
+  I * SWAP R> * SWAP    ( x y dx dy --)
+  ROT + >R + R> T;
+HEAD: ACLIPSET ( -- \ set clipping window to auxill in mv buf)
+T:  71 71 0 0 SETCLIPWINDOW T;
+
+HEAD: MVCLIPSET ( -- \ set clipping window to mainview in full)
+  ( screen coordinates)
+T:  191 75 72 4 SETCLIPWINDOW T;
+
+HEAD: #DIST ( Xo Yo X1 Y1 -- n \ compute distance)
+T:  ROT - DUP * >R - DUP * R> + 0 SQRT
+    10*END D@ D0= NOT * T;
+---- Screen 45 ----
+( SHPMOV - #NEWHEADXY  #SPEED  #BOUNDXY                 3-20-85)
+
+HEAD: #SPEED ( -- n \ compute distance moved per iteration)
+  ( based on location of ship relative to cursor)
+T:  XABS @ YABS @ XCRS @ YCRS @ #DIST MAXSPEED MIN T;
+
+HEAD: #NEWHEADXY ( -- heading x y \ compute new heading & xy)
+T:  XABS @ YABS @ 2DUP XCRS @ YCRS @ #HEADING ( x y h --)
+  DUP 8 = IF DROP HEADING @ THEN
+  >R I #SPEED  #VECTXY R>   ( x y h --)
+  ROT ROT T;
+
+
+
+
+
+---- Screen 46 ----
+( SHPMOV - NEST-EFFECTS                                 3-19-85)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 47 ----
+( SHPMOV - UNNEST-EFFECTS support                       6/13/85)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==== Page 9 | 11-05-85 -- HYPER-OVCMP -- Binary Systems | image HYPER-OV_CMP_p10 ====
+---- Screen 48 ----
+( SHPMOV - NEST-EFFECTS                                 3-19-85)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 49 ----
+( SHPMOV - UNNEST-FINIS-MESS                            6/28/85)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 50 ----
+( SHPMOV - UNNEST-START-MESS                            6/28/85)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 51 ----
+( SHPMOV - NEST-FINIS-MESS                              9/11/85)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 52 ----
+( SHPMOV - NEST-FINIS-MESS                              9/11/85)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 53 ----
+( SHPMOV - SEC-DISP DISP-SETUP                          9/02/85)
+
+HEAD: SEC-DISP ( -- )
+T: IGLOBAL @ *GLOBAL @ = NOT
+ IF *SECS >C+S IOPEN INIT-ICONLIST
+   +ICONBOX IGLOBAL @ *GLOBAL ! CDROP ICLOSE
+ THEN -5000 DUP ANCHOR D! DEFRADIUS LOCRADIUS ! T;
+
+CASE DISP-SETUP
+  1 IS ORB-DISP
+  2 IS SYS-DISP
+  3 IS SEC-DISP
+  4 IS ENC-DISP
+OTHERS NOP
+
+
+==== Page 10 | 11-05-85 -- HYPER-OVCMP -- Binary Systems | image HYPER-OV_CMP_p11 ====
+---- Screen 54 ----
+( SHPMOV - NEST-SETUP   NEST-SHIPXY                    10/10/85)
+CASE NEST-SETUP ( xid# -- \ set up context)
+\ 0 IS NOP ( bio tv, etc. )
+  1 IS ORBSETUP
+  2 IS SYSSETUP
+\ 3 IS NOP \ no setup needed for hyperspace
+  4 IS ENCSETUP
+  5 IS PRTSETUP
+OTHERS NOP
+
+HEAD: NEST-SPACEXY ( n -- \ position ship within new space ctx )
+T: 1 = NOT
+  IF HEADING @ (RADIUS) @ OVER #NESTXY 2DUP >R >R >NEWHEADXY
+    R> R> YCRS ! XCRS !
+  THEN T;
+
+---- Screen 55 ----
+( SHPMOV - NEST                                        10/22/85)
+: NEST ( i -- \ enter nested context i)
+  (SHIPBOX) VAR>C IOPEN CDROP
+                  SHP>C IEXTRACT   ( i s -- , ( i'i"--))
+  >[CONTEXT] 2SWAP >C+S            ( s --, ( i'i--))
+  CI IINSERT ![CONTEXT]            ( --, (i'i--))
+  CI #CPARMS !CPARMS CONTEXT-ID# @
+                DUP ' NS-MESS MODULE  ( "starting transition..")
+                DUP NEST-SPACEXY      ( position ship in contxt)
+                DUP NEST-SETUP        ( set up new context)
+                DUP DISP-SETUP        ( display setup)
+                    SET-'EXTERNAL     ( external event )
+  >CONS-DISP ORGLIST >DUST HEADING @ XABS @ YABS @ (>NEWHEADXY)
+                  ' NF-MESS MODULE    ( "transition complete.")
+   XABS @ XCRS ! YABS @ YCRS ! 'KEY DROP
+   NULL (COLLIDE) 1.5! ;
+---- Screen 56 ----
+( SHPMOV - RAMVESSEL >ENCOUNTER DOCK ?BOX-NEST         10/17/85)
+
+HEAD: RAMVESSEL ( i -- \ handle vessel collision with ship)
+T:  >C+S CI @INST-SPECIES ICLOSE 24 =   \ is debris?
+  IF 2DROP ( <-- ?GET-DEBRIS ) ELSE 2DROP THEN T;
+
+HEAD: >ENCOUNTER ( i -- \ nest into active encounter or nop)
+T:  >C+S CI ?ENCOUNTER-ON C@ ICLOSE IF NEST ELSE 2DROP THEN T;
+
+HEAD: ?BOX-NEST ( i -- )
+T: >C+S IOPEN @INST-CLASS 24 = NOT ICLOSE
+   IF CI ICLOSE NEST ELSE ICLOSE THEN T;
+
+
+
+
+---- Screen 57 ----
+( SHPMOV - >FLUX-NODE                                   7/19/85)
+HEAD: SET-FLUX-STATE ( x y ( i -- i ) \ set traversal flags )
+T: IGLOBAL @ ?ICONS-AT ?DUP
+ IF 0 DO POINT>ICON @ID 255 =
+ IF 3 !IC @IL @IH >C+S 1 !INST-SPECIES ICLOSE THEN LOOP THEN T;
+
+HEAD: >FLUX-NODE ( i -- \ move ship through flux)
+T:  >C+S
+    INST-X @ INST-Y @ SET-FLUX-STATE ( set source flux flags   )
+    DEST-X @ DEST-Y @ SET-FLUX-STATE ( set target flux flags   )
+    ' OVFLUX-EFFECT  MODULE      ( flash effect to display     )
+    HEADING @ DEST-X @ DEST-Y @ ( get destination              )
+    ICLOSE 0 8 RRND RCOLLIDE 1+  ( arrive out of collis rad    )
+    #VECTXY >NEWHEADXY           ( move ship to new coords     )
+    ORGLIST .MVS
+    TIME D@ 250 NAV-SKILL @ - 500 U* D+ NAV-TIME D! T;
+---- Screen 58 ----
+( SHPMOV - COLLIDE                                      9/24/85)
+
+CASE COLLIDE ( i class -- \ handle class dependent collision)
+  11 IS ?BOX-NEST   ( orbit)
+  18 IS NEST        ( dock w/starport 18 is ship-config class)
+  23 IS NEST        ( starsystem)
+  25 IS RAMVESSEL
+  45 IS >FLUX-NODE
+  61 IS >ENCOUNTER      ( encounter)
+OTHERS 2DROP            ( nebula, planet)
+
+
+
+
+
+
+---- Screen 59 ----
+( SHPMOV - ?COLLISION                                   7/25/85)
+
+HEAD: ?COLLISION ( -- i class 1 OR 0 \ check for collision)
+T:  @XYSHP RCOLLIDE ILOCAL @ ?ICONS-LOCUS ( nnnnn cnt -- )
+  ?DUP IF NULL (COLLIDE) 1.5!
+    0 DO POINT>ICON
+        @IL @IH *SHIP D=                       ( not ship or )
+        @ID 51 131 WITHIN @IC DK-GREEN = AND OR NOT ( nebula )
+        CONTEXT-ID# @ 1 = NOT AND              ( or in orbit )
+        IF @IL @IH (COLLIDE) 1.5! THEN
+      LOOP
+    (COLLIDE) 1.5@ OR
+    IF (COLLIDE) VAR>C CI @INST-CLASS
+      INST-X @ XTRNS ! INST-Y @ YTRNS ! ICLOSE 1
+    ELSE 0 THEN
+ ELSE 0 THEN T;
+==== Page 11 | 11-05-85 -- HYPER-OVCMP -- Binary Systems | image HYPER-OV_CMP_p12 ====
+---- Screen 60 ----
+( SHPMOV - ?DOUBLE-NEST                            AWK 10/17/85)
+HEAD: ?2NEST.ETC ( -- f )
+T: (COLLIDE) 1.5@ D0=             ( a. if no collision        )
+ 2NEST @ 0= AND                   ( b. and not double nested  )
+ CONTEXT-ID# @ 1 = AND DUP T;     ( c. and in orbital context )
+
+HEAD: ?DOUBLE-NEST ( -- i class f \ force collide w/orbital enc)
+T: ?2NEST.ETC SKIP2NEST @ XOR     (  if not forcing skip2nest )
+ IF PLN>C IOPEN 61 0 IFIND DUP    ( d. that has an encounter  )
+   IF ?ENCOUNTER-ON C@ DUP        ( e. which is active        )
+     IF CI (COLLIDE) 1.5!         ( f. make it the collidee   )
+       2NEST ON                   ( g. set double-nest flag   )
+     THEN AND
+   THEN CDROP ICLOSE AND
+ THEN
+ IF (COLLIDE) VAR>C CI @INST-CLASS ICLOSE 1 ELSE 0 THEN T;
+---- Screen 61 ----
+( SHPMOV - ?STARPORT                                AWK 9/11/85)
+
+HEAD: ?STARPORT ( -- i class f \ force collide w/ starport )
+T: ?2NEST.ETC
+ IF PLN>C IOPEN 12 0 IFIND DUP    ( d. that has Starport then )
+   IF CI (COLLIDE) 1.5!           ( e. make Starport collidee )
+     2NEST ON                     ( f. set double-nest flag   )
+   THEN CDROP ICLOSE AND
+ THEN
+ IF *SHIP-CONFIG 18 1             ( dock w/starort ship-config)
+   58 FILE# ! 1 RECORD# !
+   " LAUNCH" 1BTN
+   SWAP CMOVE SET-CURRENT
+ ELSE 0 THEN T;
+
+
+---- Screen 62 ----
+( SHPMOV - UNNEST-CLEANUP                               7/19/85)
+
+CASE UNNEST-CLEANUP ( xid# -- \ set up context)
+\  0 IS NOP ( PLNCLEANUP ) \ handled by Bob's code
+   1 IS ORBCLEANUP
+   2 IS SYSCLEANUP
+\  3 IS NOP     \ because we never leave space!
+   4 IS ENCCLEANUP
+   5 IS PRTCLEANUP
+OTHERS NOP
+
+
+
+
+
+
+---- Screen 63 ----
+( SHPMOV - UNNEST-SHIPXY                               10/10/85)
+
+HEAD: UNNEST-SPACEXY ( n -- \ position ship within prev ctxt)
+  T: HEADING @ >R I
+    XTRNS @ YTRNS @ R> RCOLLIDE 1+ #VECTXY >NEWHEADXY T;
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 64 ----
+( SHPMOV - ?UNNEST  ?DOUBLE-UNNEST                     10/17/85)
+
+HEAD: ?UNNEST ( -- t \ time to unnest?)
+T:  ?HYPER
+  IF 0 ELSE ?ENCOUNTER
+    IF XABS @ YABS @ (RADIUS) @ ILOCAL @ ?ICONS-LOCUS
+      DUP >R ?DUP
+      IF 0 DO DROP LOOP THEN R> 1 =  ( no nearby alien ships? )
+      ENC>C ?ENCOUNTER-ON C@ NOT OR  ( encounter off?         )
+      MAX#SHIPS C@ #SHIPS-DESTROYED C@ OVER =  ( all destroyed?)
+      SWAP 255 < AND OR ICLOSE DUP SKIP2NEST ! ( ltd amount?  )
+      ELSE XABS @ ABS  YABS @ ABS MAX (RADIUS) @ >
+  THEN THEN T;
+
+HEAD: ?DOUBLE-UNNEST ( -- f \ unnest twice from orbital enc? )
+T: 2NEST @ SKIP2NEST @ XOR CONTEXT-ID# @ 1 = AND T;
+---- Screen 65 ----
+( SHPMOV - UNNEST                                      10/21/85)
+: UNNEST ( -- \ leave nested context to next level up)
+  (SHIPBOX) VAR>C IOPEN CDROP
+  SHP>C IEXTRACT ICLOSE                ( s -- , ( i'i"--))
+  CONTEXT-ID# @ >R
+              I ' US-MESS MODULE       ( "leaving ______")
+              I UNNEST-CLEANUP
+  >[CONTEXT] ICLOSE        ( s --, ( i'i--) \ pop context)
+  CI IINSERT ![CONTEXT]    ( --, (i'i--)    \ insert ship)
+  CI #CPARMS !CPARMS                   ( set context parms)
+  CONTEXT-ID# @         UNNEST-SPACEXY ( reposition ship)
+                        SET-'EXTERNAL  ( external event )
+                        DISP-SETUP     ( display setup)
+  ORGLIST >DUST HEADING @ XABS @ YABS @ (>NEWHEADXY)
+              R> ' UF-MESS MODULE      ( "unnest complete")
+  XABS @ XCRS ! YABS @ YCRS ! 'KEY DROP ;
+==== Page 12 | 11-05-85 -- HYPER-OVCMP -- Binary Systems | image HYPER-OV_CMP_p13 ====
+---- Screen 66 ----
+( SHPMOV - #BOUNDXY  AUXLATE   AUX-GETTERS             10/18/85)
+
+HEAD: #BOUNDXY ( X Y -- X'Y' \ BOUND COORDINATES TO MAP )
+T:  ?HYPER IF 0 MAX 219 *MAPSCALE * MIN SWAP
+             0 MAX 249 *MAPSCALE * MIN SWAP THEN T;
+
+: (GET-AUX) ( -- )
+ #AUX @ DUP 5 = NOT (SYSTEM) 1.5@ D0= OR NOT
+ IF DROP .AUXSYS
+ ELSE 6 = NOT (ENCOUNTER) 1.5@ >C+S CI D0= OR NOT
+   IF ( .AUXENC ) THEN ICLOSE
+ THEN ;
+
+: (GET-CX-AUX) ( -- )
+ CONTEXT-ID# @ DUP 4 = IF ENC>C ( .AUXENC ) ICLOSE THEN
+                   2 = IF .AUXSYS THEN ;
+---- Screen 67 ----
+( SHPMOV - FLY                                         10/11/85)
+HEAD: (FLY) ( -- )
+T: ?COLLISION >R              ( collided w/ something?        )
+   ?DOUBLE-NEST R> OR >R      ( or orbiting a homeworld?      )
+   ?STARPORT R> OR            ( or at starport?               )
+   IF COLLIDE THEN T;
+
+: FLY ( -- \ fly ship toward destination. Handles context )
+  ( changes, collisions and boundary limits.)
+   #NEWHEADXY     ( heading x y -- \ compute new heading & xy )
+   #BOUNDXY                   ( limit xy if hyperspace        )
+   >NEWHEADXY                 ( update location,icon etc.     )
+   -ENDURIUM                  ( decrement fuel supply         )
+   ?UNNEST ?DOUBLE-UNNEST OR
+   IF UNNEST THEN ORGLIST     ( unnest from current context   )
+   (FLY) ;
+---- Screen 68 ----
+( SHPMOV - SET-DESTINATION                            10/04/85 )
+
+V: KEYINC
+
+: SET-DESTINATION ( n -- \ use cursor key to position cursor)
+ (XYSCAN) 500. KEYTIME D@ LKEYTIME D@ D- D>
+ KEYINC @ * 2* 1 MAX MAXSPEED MIN DUP KEYINC ! SWAP OVER
+ * XABS @ + SYSRADIUS NEGATE 1- ?HYPER NOT * MAX
+ 249 *MAPSCALE * MIN XCRS !
+ * YABS @ + SYSRADIUS NEGATE 1- ?HYPER NOT * MAX
+ 219 *MAPSCALE * MIN YCRS !
+ FTRIG @ NULL 10*END D@ D= OR
+ IF NOT THEN FLY ;
+
+
+
+---- Screen 69 ----
+( SHPMOV - SETUP-MOV                                   10/21/85)
+
+: SETUP-MOV ( -- \ initialize for movement )
+  8 ' ov?ARTIFACT MODULE 16* ?HAS-RING-DEVICE !
+  *STARSHIP-HOLD >C+S IOPEN 11 10 IFIND
+  IF IOPEN 26 6 IFIND INST-QTY @ * 10 U* CDROP ELSE NULL THEN
+  10*END D! CDROP ICLOSE
+  CONTEXT-ID# @ 1 =
+  IF 6 ' US-MESS MODULE THEN
+  *ASSIGN-CREW >C+S NAV VAR>C ^NAV C@ NAV-SKILL ! CDROP ICLOSE
+  SET-'EXTERNAL >CONS-DISP
+  CONTEXT-ID# @ DISP-SETUP                      ( display setup)
+  ORGLIST HEADING @ XABS @ YABS @ (>NEWHEADXY)
+  CONTEXT-ID# @ 1 =
+  IF 6 ' UF-MESS MODULE ELSE FLY THEN ;
+
+---- Screen 70 ----
+( SHPMOV - CLEANUP-MOV                                 10/16/85)
+
+: CLEANUP-MOV ( -- \ clean up after movement)
+  *STARSHIP-HOLD >C+S IOPEN 11 10 IFIND DROP IOPEN 26 6 IFIND
+  IF 10*END D@ 10 U/MOD INST-QTY ! DROP THEN
+  ICLOSE CDROP ICLOSE
+  CONTEXT-ID# @ 1 =
+  IF ORBITSETUP THEN
+  CONTEXT-ID# @ 5 =
+  IF >MAINVIEW GREY2 !COLOR BFILL V>DISPLAY >DISPLAY THEN
+  SAVE-OVERLAY ;
+
+: CHK-MOV ( -- f )
+ CONTEXT-ID# @ 1 5 WITHIN DUP NOT
+ IF CTINIT " STANDING BY TO LAUNCH" .TTY THEN ;
+
+---- Screen 71 ----
+( SHPMOV - COME-HITHER                                 10/21/85)
+
+HEAD: +NEST ( i -- )  T: 2DUP (COLLIDE) 1.5! NEST T;
+
+: COME-HITHER ( ( x -- x' ) )
+\ TCLR OFF
+\ BEGIN CONTEXT-ID# @ 3 = NOT WHILE UNNEST REPEAT
+ CONTEXT-ID# @ 3 =
+ IF *ASYS +NEST
+   (SYSTEM) VAR>C IOPEN
+   BEGIN INST-QTY @ 3 = NOT WHILE INEXT REPEAT
+   CI CDROP ICLOSE +NEST
+   *SHIP-CONFIG +NEST
+ THEN ;
+\ WHITE TCLR ! ;
+
+==== Page 13 | 11-05-85 -- HYPER-OVCMP -- Binary Systems | image HYPER-OV_CMP_p14 ====
+---- Screen 72 ----
+( SHPMOV INITIALIZERS                              AWK 10/09/85)
+
+ XABS @ XCRS ! YABS @ YCRS !
+ ' .FLUX-ICON '.FLUX-ICON !
+ CCLR *SECS >C ![CONTEXT]
+ 0 !%HEADING HEADING OFF 3 CONTEXT-ID# !
+ XLLDEST OFF YLLDEST OFF
+ NULL (COLLIDE) 1.5!
+
+
+
+
+
+
+
+
+---- Screen 73 ----
+( SHPMOV ---------- OVERLAY SUFFIX --------------------10/23/85)
+DISPOSE CLOSE-OVERLAY
+106 OVERLAY SHPMOV-OV
+SHPMOV-OV   FORTH DEFINITIONS
+
+: MANEUVER ( -- \ do maneuver tasks)
+  SHPMOV-OV SHPMOV-VOC CHK-MOV
+  IF (GET-CX-AUX)
+    ' CLEANUP-MOV ' SET-DESTINATION ' SETUP-MOV DOTASKS
+  THEN FTRIG OFF ;
+: SETUP-MOV ( -- ) SHPMOV-OV SHPMOV-VOC SETUP-MOV ;
+: GET-HAUX SHPMOV-OV SHPMOV-VOC (GET-AUX) ;
+: ov.MVS ( -- ) SHPMOV-OV SHPMOV-VOC .MVS ;
+: S>PORT ( -- ) SHPMOV-OV SHPMOV-VOC COME-HITHER ;
+\  S>PORT
+OV-CANCEL

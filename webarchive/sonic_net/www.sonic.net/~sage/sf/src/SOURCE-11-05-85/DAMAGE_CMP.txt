@@ -1,0 +1,600 @@
+==== Page (none) | (none) | image DAMAGE_CMP_p01 ====
+ 0 ( overlay prefix---------DAMAGE------------------(
+ 1 \ basic routines
+ 2 \ instance and species variables: VESSEL
+ 3 \ instance and species variables: SHIP
+ 4 \ crew variables
+ 5 \ dist
+ 6 \ refresh auxilliary screen
+ 7 \ calculate damage from alien laser
+ 8 \ damage a crew member- setup
+ 9 \ wounded array
+10 \ end game and hull check
+11 \ random# to damage field case
+12 \ random# to damage field case
+13 \ find-resource
+14 \ .wounded
+15 \ crew-damage
+16 \ crew-damage
+17 \ pdamage
+18 \ do-pdamage, do-pldamage
+19 \ mcalc drain-shield
+20 \  drain-armor
+21 \ hull-damage, etal
+22 \ random# to damage area case
+23 \ distribute damage mechanism
+24 \ do-damage for a particular missle, to ship
+25 \ explode, for misssles
+26 \ do-mdamage for a particular missle, to ship
+27
+28 \ which missle damage routine to execute
+29 \ which laser damage routine to execute
+30
+31
+==== Page 1 | 11-05-85 -- DAMAGE CMP -- Binary Systems | image DAMAGE_CMP_p02 ====
+---- Screen 0 ----
+( overlay prefix---------DAMAGE------------------((rfg18oct85)
+
+5 width !
+vocabulary damage-voc immediate
+133 open-overlay
+damage-voc definitions
+1500 trans-allot newt-dp
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+\ basic routines                                   (rfg02oct85)
+head: >flag t: 0= 0= t; \ insures 0bit set
+
+head: rand% t: 1 100 rrnd t;
+
+head: ship-coords \ --- x,y
+   t: xabs @ yabs @ t;
+
+head: ves-coords \ --- x,y | assume pointed to ci vessel icon
+   t: @ix @iy t;
+
+head: @xy t: inst-x @ inst-y @ t;
+
+head: ship>c t: #ship >c+s t;
+
+
+---- Screen 2 ----
+\ instance and species variables: VESSEL           (rfg22oct85)
+decimal 25 c: vessel
+
+vessel 12 2 afield ves-armorpts
+vessel 14 2 afield ves-shieldpts
+vessel 18 1 afield: ves-missle
+vessel 19 1 afield: ves-laser
+vessel 21 1 afield ves-element
+
+vessel 12 1 ifield: ves-speed
+vessel 23 4 ifield: ves-last-fired
+vessel 18 2 ifield ves-armor-hits
+vessel 20 2 ifield ves-shield-hits
+vessel 11 1 ifield: ves-heading
+vessel 18 1 ifield ves-debris
+
+---- Screen 3 ----
+\ instance and species variables: SHIP             (rfg22oct85)
+20 c: sship
+sship 17 1 ifield: %hull-pts     sship 18 1 ifield: %arm-cls
+sship 19 1 ifield: %engine-pts   sship 20 1 ifield: %eng-cls
+sship 21 1 ifield: %sensor-pts   sship 22 1 ifield: %sen-cls
+sship 23 1 ifield: %comm-pts     sship 24 1 ifield: %com-cls
+sship 25 1 ifield: %shield-pts   sship 26 1 ifield: %shd-cls
+sship 27 1 ifield: %missle-pts   sship 28 1 ifield: %mis-cls
+sship 29 1 ifield: %laser-pts    sship 30 1 ifield: %las-cls
+sship 48 2 ifield: shield-cnt    sship 69 4 ifield: %status
+sship 50 2 ifield: armor-cnt
+sship 73 1 ifield: %heading
+
+61 20 1 ifield: #ships-destroyed
+
+
+---- Screen 4 ----
+\ crew variables                                   (rfg18oct85)
+16 31 1 ifield: ^vit \ crewmember vitality
+16 19 1 afield: ^dur
+16 11 15 ifield: ^name
+
+create rsrc 9 allot \ holds resource#s
+v: #rsrc #rsrc off \ # of resources damaged this time
+
+v= mclass  \ missle class: ditto below
+2v= mcrds \ gets stuffed when missle call is made by combat
+
+head: @mclass t: mclass c@ 15 and t;
+head: @rclass \ resource addr --- value
+t:  c@ 7 and t;
+
+
+---- Screen 5 ----
+\ dist                                             (rfg22oct85)
+head: mcoords t: mcrds d@ t;
+\ returns missle coords, as stuffed
+
+head: dist \ x,y,x1,y1 --- distant
+t:  rot - dup * >r
+      - dup * 0 r> 0 d+ sqrt t;
+
+head: 0max-!  \ decrement,field --- sets field to 0 or more
+t:  >r r@ ifld@ swap - 0 max r> ifld! t;
+
+head: +!destroy
+   t:  (encounter) 1.5@ >c+s
+       1 #ships-destroyed dup c@ rot + swap c! iclose t;
+
+
+==== Page 2 | 11-05-85 -- DAMAGE CMP -- Binary Systems | image DAMAGE_CMP_p03 ====
+---- Screen 6 ----
+\ refresh auxilliary screen                        (rfg13oct85).
+
+' ovdbars c: #ov/damage
+' ov/status c: #ov/status
+' nop c: #nop
+
+case #aux>module
+ 1 is #ov/status  3 is #ov/damage  others #nop
+
+head: refresh-aux t: #aux @ #aux>module module t;
+
+head: ?shields-up
+   t: %status c@  8 and >flag t;
+
+
+
+---- Screen 7 ----
+\ calculate damage from alien laser                (rfg18oct85)
+
+create ldamage 0 , 30 , 70 , 120 , 170 , 220 ,
+\ damage per laser class
+
+head: lcalc \ parameter --- damage points ( vessel --- vessel )
+t:  >r @xy ship-coords dist
+  70 swap -
+  r> ifld@ 2* ldamage + @ *
+  70 / t;
+
+head: alien-lcalc t: ' ves-laser lcalc t;
+
+head: player-lcalc t: ' %las-cls lcalc t;
+
+
+---- Screen 8 ----
+\ damage a crew member- setup                      (rfg18oct85)
+v: #crew-damage
+
+head: ?injure \ -- flag| true if are to injure
+t:  rand% 70 < t;
+
+head: #injure \  --- damage
+t:     10 #crew-damage @ 1+ rrnd
+    ^dur c@ /    t;
+
+
+
+
+
+
+
+---- Screen 9 ----
+\ wounded array                                    (rfg30oct85)
+create wounded 6 allot \ hold offset into roster of injured
+
+v= #wounded #wounded off
+
+head: !wound  \ offset# ---
+t:  wounded dup 6 +  swap do i c@ over =
+       if drop leave \ already in array
+       else i c@ 255 =
+         if i c! 1 #wounded +! leave then
+       then loop t;
+
+head: init-wound t: wounded 6 255 fill #wounded off t;
+
+
+
+---- Screen 10 ----
+\ end game and hull check                          (rfg22oct85)
+
+
+
+head: end-game
+t:     yellow !color bfill red !color
+    "    HULL DESTROYED - RESTART GAME " .tty
+\      begin ?terminal until t;
+      begin  again t; \ hah!
+
+
+
+
+
+
+
+---- Screen 11 ----
+\ random# to damage field case                     (rfg18oct85)
+head: ?resource t: create  , ,
+  does> d@ ifld@ 7 and >flag >r \ check class>0
+           ifld@ >flag r> and t;
+\ leaves True flag if resource exists
+
+' %hull-pts ' %arm-cls ?resource hull-check
+' %engine-pts ' %eng-cls ?resource engine-check
+' %sensor-pts ' %sen-cls  ?resource sensor-check
+' %comm-pts ' %com-cls ?resource comm-check
+' %missle-pts ' %mis-cls ?resource miss-check
+' %laser-pts ' %las-cls ?resource laser-check
+' %shield-pts ' %shd-cls ?resource shield-check
+
+head: crew-check t: roster 1.5@ or >flag t;
+\ see if first slot is filled: if not, no crew!!
+==== Page 3 | 11-05-85 -- DAMAGE CMP -- Binary Systems | image DAMAGE_CMP_p04 ====
+---- Screen 12 ----
+\ random# to damage field case                     (rfg09oct85)
+case #>?field \ check field for existance of resource
+1 is hull-check
+2 is engine-check
+3 is sensor-check
+4 is comm-check
+5 is miss-check
+6 is laser-check
+7 is crew-check
+8 is shield-check
+others 0= \ return false
+\ returns true flag if resource exists (to be destroyed!)
+
+
+
+
+---- Screen 13 ----
+\ find-resource                                    (rfg18oct85)
+head: ?any-resources \ --- flag| true if any on player's ship
+t: rsrc 9 0 fill #rsrc off
+0 9 1 do i #>?field dup
+         if i #rsrc @ rsrc + c! 1 #rsrc +!
+         then or loop t; \ also sets lookup array for choosing
+
+head: find-resource
+t:  ?any-resources
+    if 0 #rsrc @ rrnd rsrc + c@ \ holds valid resource#
+    then t;
+
+
+
+
+
+---- Screen 14 ----
+\ .wounded                                         (rfg09oct85)
+head: wounds \ position set by .tty of name
+t: ^vit c@ dup >r  0=
+              if " KILLED"
+              else r@ 1 21 within
+                 if " CRITICALLY "
+                 else r@ 21 51 within
+                  if " HEAVILIY "
+                  else r@ 51 81 within
+                      if " MODERATELY "
+                      else " SLIGHTLY "
+                      then
+                  then
+                 then type " WOUNDED "
+              then type r> drop t;
+
+---- Screen 15 ----
+\ crew-damage                                      (rfg22oct85)
+head: .wounded
+t:  #wounded @ ?dup
+  if white !color
+     0 do i wounded + c@ 3* roster + 1.5@ 2dup or
+    if >c+s ^name count -trailing .tty
+      ."  IS " wounds iclose
+    else 2drop
+    then loop
+  then #wounded off t;
+
+: destroy-ves  43 !id 8 ves-heading c!
+ white !color >display " ALIEN SHIP DESTROYED " .tty
+ 0 ves-speed c! \ lose damage: now debris !
+ ves-element ves-debris 7 cmove 24 !inst-species +!destroy ;
+
+---- Screen 16 ----
+\ crew-damage                                      (rfg18oct85)
+
+head: crew-damage \ damage --- \ apply to crew memebers
+t: #crew-damage ! init-wound
+   roster dup 18 + swap
+  do i 1.5@ 2dup or
+     if ?injure
+         if >c+s #injure
+            ' ^vit 0max-! iclose
+            i roster - 3 / !wound
+         else 2drop
+         then
+     else 2drop leave ( never any gaps in roster )
+     then 3 +loop t;
+
+
+---- Screen 17 ----
+\ pdamage                                          (rfg22oct85)
+
+: pdamage \ damage --- ( vessel --- vessel )
+       ves-shield-hits @
+       ves-armor-hits @ null d= \ get both fields!!
+         if drop destroy-ves \ no more damage possible
+         else ves-shield-hits @ 0=
+          if ' ves-armor-hits 0max-!
+          else ' ves-shield-hits 0max-!
+          then
+         then ;
+
+
+
+
+
+==== Page 4 | 11-05-85 -- DAMAGE CMP -- Binary Systems | image DAMAGE_CMP_p05 ====
+---- Screen 18 ----
+\ do-pdamage, do-pldamage                          (rfg22oct85)
+
+head: do-pdamage \ coords,damage --- | apply to alien vessels
+t: >r ilocal @ ?icons-at ?dup if
+      r@ swap 0 do beep
+      dup rot  point>icon
+      @il @ih >c+s
+      @inst-species 24 = not \ avoid dead ships
+      if pdamage
+      else drop \ no damage to our own ship
+      then iclose loop drop then r> drop t;
+
+head: do-pldamage t: player-lcalc do-pdamage t;
+
+
+
+---- Screen 19 ----
+\ mcalc drain-shield                               (rfg22oct85)
+create Mdamage 0 ,
+ 200 , 400 , 700 , 1000 , 1500 , 4000 ,
+\ plasma bolt acts like a class 6 missle
+
+head: mcalc \ damage done by missle
+t:  @mclass 2* mdamage  + @ t;
+
+
+head: drain-shield \ damage --- |drain the player's shield
+t:  shield-cnt @ swap
+  6 %shd-cls @rclass - * 5 / \ compute actaul drainage
+  -  0 max shield-cnt ! t;
+
+
+
+---- Screen 20 ----
+\  drain-armor                                     (rfg18oct85)
+
+head: drain-armor \ damage --- | drain the player's armorshield
+t:  armor-cnt @ swap
+  6 %arm-cls @rclass - * 5 / \ compute actual drainage
+  -  0 max armor-cnt !
+  armor-cnt @ 0=
+  if ' ov/damage module 3 #aux ! then t;
+
+
+
+
+
+
+
+
+---- Screen 21 ----
+\ hull-damage, etal                                (rfg18oct85)
+
+head: hull-damage \ damage --- | affect hull
+t:  ' %hull-pts 0max-! t;
+
+head: engine-damage t: ' %engine-pts 0max-! t;
+head: sensor-damage t: ' %sensor-pts 0max-! t;
+head: comm-damage   t: ' %comm-pts 0max-! t;
+head: miss-damage   t: ' %missle-pts 0max-! t;
+head: shield-damage t: ' %shield-pts 0max-! t;
+head: laser-damage  t: ' %laser-pts 0max-! t;
+
+\ shields already taken care of in draining
+
+
+
+---- Screen 22 ----
+\ random# to damage area case                      (rfg07oct85)
+
+case #>damage
+1 is hull-damage
+2 is engine-damage
+3 is sensor-damage
+4 is comm-damage
+5 is miss-damage
+6 is laser-damage
+7 is crew-damage
+8 is shield-damage
+others drop
+
+\ all the routines consume damage amount
+
+
+---- Screen 23 ----
+\ distribute damage mechanism                      (rfg30oct85)
+
+head: #damage \ initial damage --- remainder,actual damage
+t: dup 1 swap 1+ rrnd 10 max
+     dup >r - 0 max r> t;
+
+: (do-damage)
+  shield-cnt @ >flag ?shields-up and
+  if drain-shield
+  else armor-cnt @
+    if drain-armor
+    else 10 %hull-pts c@ */ \ reduced by 10
+         3 #aux ! find-resource #>damage \ force damage display
+    then
+  then ;
+
+==== Page 5 | 11-05-85 -- DAMAGE CMP -- Binary Systems | image DAMAGE_CMP_p06 ====
+---- Screen 24 ----
+\ do-damage for a particular missle, to ship       (rfg30oct85)
+head: ?refresh \ update display only if shields depleted
+t:  shield-cnt @ armor-cnt @ null d= drop 1 ( always, for now)
+  if refresh-aux then t;
+
+: do-adamage \ damage --- | distributed among resources
+   begin ?dup 0= not
+     while  #damage (do-damage)
+     repeat #wounded @
+          if .wounded ' (obits) module ' (role) module
+          then ?refresh
+  ' %hull-pts ifld@ 0= if end-game then ;
+
+head: do-aldamage
+t:  alien-lcalc ship>c do-adamage iclose t;
+
+---- Screen 25 ----
+\ explode, for misssles                            (rfg22oct85)
+
+head: !mparms t: mclass c! mcrds d! t;
+
+head: explode \ color ---
+t:  >mainview !color
+  mcoords wld>scr scr>blt
+ swap 4 + swap
+xwld:xpix @ 6 min 2 ( 1 ) do 2dup i .circle 2 +loop 2drop
+  v>display
+  ( >0font >alpha quit)  t;
+
+
+
+
+
+---- Screen 26 ----
+\ do-mdamage for a particular missle, to ship      (rfg22oct85)
+
+head: damage-disp \ color ---
+t:    explode white !color
+   >display  @mclass dup 6 =
+if drop " PLASMA BOLT" .tty
+else " MISSLE CLASS " .tty . then t;
+
+head: do-pmdamage
+t:    !mparms  ship>c lt-blue explode
+    mcoords mcalc do-pdamage iclose ( black explode ) t;
+
+head: do-amdamage
+t:    !mparms red damage-disp
+   mcalc ship>c do-adamage  iclose ( black explode ) t;
+
+---- Screen 27 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 28 ----
+\ which missle damage routine to execute           (rfg18oct85)
+
+head: do-mdamage \ flag --- | true if player, else alien
+t:     if do-pmdamage
+    else do-amdamage
+     then t;
+
+\ expects x,y,class,origin
+
+
+
+
+
+
+
+
+---- Screen 29 ----
+\ which laser damage routine to execute            (rfg18oct85)
+
+head: do-ldamage \ flag --- | true if player, else alien
+t:     if do-pldamage
+    else do-aldamage
+    then t;
+\ expects origin- rest handled in calc routine
+
+: do-damage \ flag --- | true if missle, else laser
+  if do-mdamage
+  else do-ldamage
+  then ;
+
+
+
+
+==== Page 6 | 11-05-85 -- DAMAGE CMP -- Binary Systems | image DAMAGE_CMP_p07 ====
+---- Screen 30 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 31 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 32 ----
+( overlay suffix---------DAMAGE-------------------(rfg02oct85)
+
+dispose
+close-overlay
+133 overlay damage-ov   damage-ov
+
+forth definitions
+: do-damage damage-ov damage-voc do-damage save-overlay ;
+
+ov-cancel
+: dm ov-cancel damage-ov ;
+
+
+
+
+

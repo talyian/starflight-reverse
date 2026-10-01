@@ -1,0 +1,383 @@
+==== Page (none) | (none) | image HUFFMAN_CMP_p01 ====
+ 1 ( Huffman Tree Builder: field addrs @.!
+ 2 ( Huffman Tree Builder: ?ACTIVE 2*H+1 2*H
+ 3 ( Huffman Tree Builder: HUFFARRAY H:
+ 4 ( Huffman Tree Builder: DOWN/OP DESCEND
+ 5 ( Huffman Tree Builder: variables
+ 6 ( Huffman Tree Builder: LEAST2
+ 7 ( Huffman Tree Builder: CODEH1 CODEH2
+ 8 ( Huffman Tree Builder: H1><H2
+ 9 ( Huffman Tree Builder: HUFFMAN
+10 ( Huffman Tree Builder: HUFFCODE
+11 ( Huffman Branch Table: variables
+12 ( Huffman Branch Table: ?LEAF >2LEAF >0LEAF
+13 ( Huffman Branch Table: >LLEAF >RLEAF
+14 ( Huffman Branch Table: DESCEND2
+15 ( Huffman Branch Table: BRANCH-TABLE
+16 ( Huffman Branch Table: [.BTABLE] .BTABLE
+17 ( Huffman Encoder: variables string-buffers
+18 ( Huffman Encoder: ENCODE-TRACE
+19 ( Huffman Encoder: CHAR>RC$
+20 ( Huffman Encoder: DELTA-PTRS RCODE>HB$
+21 ( Huffman Encoder: DATA$>HB$ >HUFF
+==== Page 1 | 7-15-85  FILE: HUFFMAN.CMP  --  BINARY SYSTEMS | image HUFFMAN_CMP_p02 ====
+---- Screen 1 ----
+( Huffman Tree Builder: field addrs @.!            3/12/85 AWK )
+V= HUFFCNT       \ count of nodes (incl. leaves) generated
+V= HUFFADDR      \ address of huffman tree table
+V= NODE          \ address of current node in table
+
+: HCOUNT ( -- addr )  NODE @ 1+ ;     \ freq cnt field
+: PARENT ( -- addr )  NODE @ 5 + ;   \ parent ptr field
+: LCHILD ( -- addr )  NODE @ 7 + ;    \ left(0) child ptr field
+: RCHILD ( -- addr )  NODE @ 9 + ;    \ right(1) child ptr field
+: HCODE  ( -- addr )  NODE @ 11 + ;  \ reverse code field
+
+: @HCODE ( -- d )  HCODE D@ ;     \ fetch reverse code
+: !HCODE ( -- d )  HCODE D! ;     \ store reverse code
+: @HCOUNT ( -- d )  HCOUNT D@ ;   \ fetch node frequency count
+: !HCOUNT ( -- d )  HCOUNT D! ;   \ store node frequency count
+
+---- Screen 2 ----
+( Huffman Tree Builder: ?ACTIVE 2*H+1 2*H          3/12/85 AWK )
+
+V= #UNLINKED     \ number of nodes waiting to linked into tree
+
+: ?UNLINKED ( -- f )  PARENT @ 0= DUP #UNLINKED +! ;
+
+: 2*H+1 ( -- )  @HCODE 2DUP D+ 1. D+ !HCODE ;
+: 2*H ( -- )  @HCODE 2DUP D+ !HCODE ;
+\ add a 1 or a 0 to the reverse code
+
+
+
+
+
+
+
+---- Screen 3 ----
+( Huffman Tree Builder: HUFFARRAY H:               3/12/85 AWK )
+
+: HUFFARRAY ( n -- )
+ HERE HUFFADDR ! HERE SWAP 30 * DUP ALLOT 0 FILL HUFFCNT OFF ;
+\ allot space for an array capable of holding a binary tree of
+\ n elements (i.e. 2n-1 nodes)
+
+: H: ( -- ) \ <char> <freq>
+ HUFFADDR @ HUFFCNT @ 15 * + NODE ! \ HUFFARRAY row address
+ [COMPILE] ASCII NODE @ C!           \ store ascii char value
+ BL WORD NUMBER !HCOUNT              \ store count #
+ 1. !HCODE                           \ store code place-holder
+ 1 HUFFCNT +! ;                      \ inc huffcnt
+\ compile word for character & frequency w/which it occurs.
+\ HUFFARRAY must be executed first.
+
+---- Screen 4 ----
+( Huffman Tree Builder: DOWN/OP DESCEND            3/12/85 AWK )
+
+' NOP C= 'OPERATION   \ pfa of 2*H+1 or 2*H
+' NOP C= 'RECURSE     \ pfa of recursive routine (see below)
+
+: DOWN/OP ( n -- )
+ ?DUP IF NODE @ >V NODE ! 'RECURSE EXECUTE V> NODE !
+      ELSE 'OPERATION EXECUTE THEN ;
+\ descend one level in the tree or perform link operation
+
+: DESCEND ( -- )
+ LCHILD @ DUP DOWN/OP
+ IF RCHILD @ DOWN/OP THEN ;
+\ recursive descend called by, and calls, DOWN/OP
+
+' DESCEND ' 'RECURSE !
+---- Screen 5 ----
+( Huffman Tree Builder: variables                  3/12/85 AWK )
+
+V= H1          \ active node w/lowest freq count
+V= H2          \ active node w/2nd lowest freq count
+2V= LEAST      \ lowest freq count
+2V= 2NDLEAST   \ 2nd lowest freq count
+
+
+
+
+
+
+
+
+
+
+---- Screen 6 ----
+( Huffman Tree Builder: LEAST2                     3/12/85 AWK )
+
+: LEAST2 ( -- )
+ 9999999. 2DUP LEAST D! 2NDLEAST D! #UNLINKED OFF
+ HUFFCNT @ 0 DO HUFFADDR @ I 15 * + NODE ! ?UNLINKED
+   IF @HCOUNT 2DUP LEAST D@ D<
+     IF LEAST DUP D@ 2NDLEAST D! D! H1 @ H2 ! NODE @ H1 !
+       ELSE 2DUP 2NDLEAST D@ D<
+       IF 2NDLEAST D! NODE @ H2 ! ELSE 2DROP THEN
+     THEN
+   THEN
+ LOOP ;
+
+\ try to find 2 unlinked nodes (if so, w/least counts).
+\ #UNLINKED contains count of unlinked nodes after execution of
+\ LEAST2.
+==== Page 2 | 7-15-85  FILE: HUFFMAN.CMP  --  BINARY SYSTEMS | image HUFFMAN_CMP_p03 ====
+---- Screen 7 ----
+( Huffman Tree Builder: CODEH1 CODEH2              3/12/85 AWK )
+
+: CODEH1 ( -- )
+ ' 2*H ' 'OPERATION ! H1 @ NODE ! DESCEND ;
+
+\ add 1 to reverse code of leaves under H1
+
+: CODEH2 ( -- )
+ ' 2*H+1 ' 'OPERATION ! H2 @ NODE ! DESCEND ;
+
+\ add 0 to reverse code of leaves under H2
+
+
+
+
+
+---- Screen 8 ----
+( Huffman Tree Builder: H1><H2                     3/12/85 AWK )
+
+: H1><H2 ( -- )
+ H1 @ NODE ! @HCOUNT H2 @ NODE ! @HCOUNT D+   \ sum counts
+ HUFFADDR @ HUFFCNT @ 15 * + NODE ! !HCOUNT   \ ! parent count
+ H1 @ LCHILD ! H2 @ RCHILD !                  \ ! child ptrs
+ NODE @ DUP H1 @ NODE ! PARENT !              \ ! parent ptr
+            H2 @ NODE ! PARENT !              \ ! parent ptr
+ 1 HUFFCNT +! ;                               \ inc huffcnt
+
+\ link the nodes whose addresses are stored in H1 and H2. the
+\ new node has a freq. count equal to the sum of its children's.
+
+
+
+
+---- Screen 9 ----
+( Huffman Tree Builder: HUFFMAN                    3/12/85 AWK )
+
+: CODING-TREE ( -- )
+ BEGIN LEAST2 #UNLINKED @ 1 >
+ WHILE CODEH1 CODEH2 H1><H2
+ REPEAT ;
+
+\ while the number of active nodes is at least 2, link the two
+\ with the lowest frequency counts. when only one active node
+\ remains, it is the super-node, and the tree is complete.
+
+
+
+
+
+
+---- Screen 10 ----
+( Huffman Tree Builder: HUFFCODE                   3/12/85 AWK )
+
+: HUFFCODE ( -- )
+ HUFFCNT @ 0 DO
+   HUFFADDR @ I 15 * + NODE !
+   NODE @ C@ ?DUP
+   IF CR EMIT SPACE
+     BINARY @HCODE
+   <# #S #> OVER + SWAP 1+ SWAP 1- DO I C@ EMIT -1 +LOOP
+   DECIMAL THEN
+ LOOP ;
+
+\ reverses the reverse code, and eliminates the place holder to
+\ display the true Huffman code for each of the characters in
+\ the tree.
+
+---- Screen 11 ----
+( Huffman Branch Table: variables                  3/22/85 AWK )
+
+V= BTADDR           \ address of branch table
+V= BTCNT            \ node count
+V= NODE-OFFSET      \ branch offset register in # of dbl bytes
+' NOP C= 'RECURSE2  \ pfa of recursive routine (see below)
+
+
+
+
+
+
+
+
+
+
+---- Screen 12 ----
+( Huffman Branch Table: ?LEAF >2LEAF >0LEAF        3/22/85 AWK )
+
+: ?LEAF ( addr -- f ) \ f= 1: leaf 0: not a leaf
+ NODE @ >R NODE ! LCHILD @ RCHILD @ OR 0= R> NODE ! ;
+\ is this node a leaf?
+
+: >2LEAF ( -- )
+ LCHILD @ C@ C, RCHILD @ C@ C, ;
+\ store the 2 leaves (chars) into the branch table
+
+: >0LEAF ( -- )
+ HERE >V 0 C, 129 C,            \ sav lft addr & store rt offset
+ RCHILD @ 'RECURSE2 EXECUTE   \ descend right branch
+ NODE-OFFSET @ 128 OR V> C!     \ rcl left addr & store offset
+ LCHILD @ 'RECURSE2 EXECUTE ;   \ descend left branch
+\ no leaves -- recursively descend both branches
+==== Page 3 | 7-15-85  FILE: HUFFMAN.CMP  --  BINARY SYSTEMS | image HUFFMAN_CMP_p04 ====
+---- Screen 13 ----
+( Huffman Branch Table: >LLEAF >RLEAF              3/22/85 AWK )
+
+: >LLEAF ( -- )
+ LCHILD @ C@ C, 129 C,          \ store left leaf & right offset
+ RCHILD @ 'RECURSE2 EXECUTE ;   \ descend right branch
+\ left branch is leaf -- store it & descend right branch
+
+: >RLEAF ( -- )
+ 129 C, RCHILD @ C@ C,          \ store left offset & right leaf
+ LCHILD @ 'RECURSE2 EXECUTE ;   \ descend left branch
+\ right branch is leaf -- store it & descend left branch
+
+\ for all of the above >xLEAF words, a branch offset is
+\ differentiated from a character by bit 7 (128) being set
+\ as the branch flag.
+
+---- Screen 14 ----
+( Huffman Branch Table: DESCEND2                   3/22/85 AWK )
+
+: DESCEND2 ( addr -- )
+ 2 BTCNT +!                            \ inc table count
+ NODE @ >V NODE !                      \ save node addr
+ 1 NODE-OFFSET DUP @ >V !              \ save & set node offset
+ LCHILD @ ?LEAF
+ IF RCHILD @ ?LEAF
+    IF >2LEAF ELSE >LLEAF THEN
+ ELSE RCHILD @ ?LEAF
+    IF >RLEAF ELSE >0LEAF THEN
+ THEN V> NODE-OFFSET +!                \ rcl & inc node offset
+ V> NODE ! ;                           \ rcl node addr
+\ recursive descend finds # of leaves & descends accordingly
+
+' DESCEND2 ' 'RECURSE2 !
+---- Screen 15 ----
+( Huffman Branch Table: BRANCH-TABLE               3/22/85 AWK )
+
+: BRANCH-TABLE ( -- )
+ HERE BTADDR ! NODE-OFFSET OFF BTCNT OFF
+ HUFFADDR @ HUFFCNT @ 1- 15 * + DESCEND2 ;
+
+\ builds the branch table. one call to the recursive descend
+\ function scans the entire tree.
+
+: HUFFMAN ( -- )  CODING-TREE BRANCH-TABLE ;
+
+
+
+
+
+
+---- Screen 16 ----
+( Huffman Branch Table: [.BTABLE] .BTABLE          3/22/85 AWK )
+
+: (.BTABLE) ( addr -- )
+ DUP C@ DUP 128 AND
+ IF 127 AND 2* 3 .R SPACE ELSE
+ DUP 2 SPACES EMIT 48 58 WITHIN 10 * 32 + EMIT THEN 1+ SPACE
+ C@ DUP 128 AND
+ IF 127 AND 2* 3 .R SPACE ELSE
+ DUP 2 SPACES EMIT 48 58 WITHIN 10 * 32 + EMIT THEN SPACE ;
+
+: .BTABLE ( -- )
+ BTCNT @ 0 DO I 8 MOD 0=
+   IF CR THEN
+   BTADDR @ I + (.BTABLE) 4 SPACES
+ 2 +LOOP ;
+\ display routine for the branch table
+---- Screen 17 ----
+( Huffman Encoder: variables string-buffers        3/29/85 AWK )
+
+V= HB$-PTR                  \ pointer to current byte in HB$
+V= D$-OFF                   \ offset of current char in D$
+V= HBIT                     \ current bit of HB$ + HB$-PTR
+V= O$ADDR                   \ pointer to original string address
+
+CREATE HB$ 257 ALLOT        \ buffer for compressed string
+                            \ b0 is compressed count
+                            \ b1 is uncompressed count
+
+CREATE D$ 256 ALLOT         \ holding space for data string
+
+CREATE RC$ 33 ALLOT         \ reverse code string
+
+
+---- Screen 18 ----
+( Huffman Encoder: ENCODE-TRACE                    3/29/85 AWK )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==== Page 4 | 7-15-85  FILE: HUFFMAN.CMP  --  BINARY SYSTEMS | image HUFFMAN_CMP_p05 ====
+---- Screen 19 ----
+( Huffman Encoder: CHAR>RC$                        3/29/85 AWK )
+
+: CHAR>RC$ ( b -- )
+ BINARY RC$ OFF
+ HUFFADDR @ HUFFCNT @ 15 * OVER + SWAP DO
+   I C@ OVER =
+   IF I 11 + D@ <# #S #>
+     DUP RC$ C! RC$ 1+ SWAP CMOVE
+     LEAVE
+   THEN
+ 15 +LOOP DECIMAL DROP
+ RC$ C@ 0= ABORT" Couldn't find next character." ;
+
+\ find char b's reverse code, convert it to a string, and move
+\ it to the reverse string code string buffer.
+
+---- Screen 20 ----
+( Huffman Encoder: DELTA-PTRS RCODE>HB$            5/02/85 AWK )
+
+: DELTA-PTRS ( -- )
+ HBIT @ DUP 128 = HB$-PTR +! 2/ DUP 0= 128 * + HBIT ! ;
+
+\ change current bit value and compressed string pointer.
+
+: RCODE>HB$ ( -- )
+ RC$ COUNT OVER + 1- SWAP 1+ SWAP DO
+   HB$ HB$-PTR @ + DUP C@ I C@ 49 = HBIT @ * OR SWAP C!
+   DELTA-PTRS
+ -1 +LOOP ;
+
+\ convert reverse code to forward code while moving it to the
+\ compressed string buffer.
+
+---- Screen 21 ----
+( Huffman Encoder: DATA$>HB$ >HUFF                 5/02/85 AWK )
+
+: DATA$>HB$ ( -- )
+ D$ COUNT OVER + SWAP DO
+   I C@ CHAR>RC$ RCODE>HB$
+ LOOP
+ HB$-PTR @ HB$ C! ;
+\ move data buffer Huffman buffer while compressing
+
+: >HUFF ( addr cnt -- addr' cnt' )
+ OVER SWAP HB$ OFF HB$ 1+ C! 1- D$ $!
+ HB$ 2+ 255 0 FILL
+ 128 HBIT ! 2 HB$-PTR !
+ DATA$>HB$
+ 1- HB$ OVER $! COUNT ;
+\ translate string into Huffman compressed string

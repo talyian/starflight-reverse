@@ -1,0 +1,510 @@
+==== Page (none) | (none) | image FIELDS00_CMP_p01 ====
+ 0 ( Starport File Definitions   STARPORT           A
+ 1   ( contd.  BANK BANK-TRANS                      A
+ 2   ( contd.  PERSONNEL CREWMEMBER                 A
+ 3   ( contd.  CREWMEMBER                           A
+ 4   ( contd.  ASSIGN-CREW                          A
+ 5   ( contd.  SHIP-CONFIG  TRADE-DEPOT             A
+ 6   ( contd.  SHIP                                 A
+ 7 ( File Defs.  starship-hold  ELEMENT
+ 8 ( Field init ELEMENT
+ 9   ( cont'd.
+10 ( File Defs.  ARTIFACT
+11 ( Field init ARTIFACT
+12   ( cont'd.
+13   ( cont'd.
+14   ( cont'd.
+15 ( File Defs.  SPECIMEN
+16 ( Field init SPECIMEN
+17   ( cont'd.
+18   ( contd.  ITEMS-FOR-SALE  repair elements      A
+19
+20 ( File Defs. ANALYZE-TEXT
+21 ( Field init ANALYZE-TEXT
+22   ( cont'd.
+23   ( cont'd.
+24   ( cont'd.
+25   ( cont'd.
+26   ( cont'd.
+
+==== Page 1 | 11-05-85 -- fields00cmp -- Binary Systems | image FIELDS00_CMP_p02 ====
+---- Screen 0 ----
+( Starport File Definitions   STARPORT           AWK 09/10/84 )
+
+11 C= BOX
+
+: FIND-ARTH-SYS ( -- )
+ BEGIN INEXT INST-X @ 125 *MAPSCALE * =
+             INST-Y @ 100 *MAPSCALE * = AND UNTIL ;
+12 C= STARPORT
+STARPORT 0 ICREATE 2DUP 2C= *STARPORT (STARPORT) 1.5!
+*SECS >C SET-CURRENT      IOPEN
+         FIND-ARTH-SYS    IOPEN INEXT
+*STARPORT C> IINSERT CCLR
+
+
+
+
+---- Screen 1 ----
+  ( contd.  BANK BANK-TRANS                      AWK 09/12/84 )
+
+13 C= BANK
+BANK 11 4 IFIELD MASTERBALANCE  BANK 15 4 IFIELD BALANCE
+BANK 19 1 IFIELD TFLAG
+BANK 0 ICREATE 2C= *BANK *BANK *STARPORT IINSERT
+
+14 C= BANK-TRANS
+BANK-TRANS 0 19 AFIELD TRANSTEXT
+BANK-TRANS 11 4 IFIELD T-AMT BANK-TRANS 15 2 IFIELD T-DATE
+
+: !BANK-REC ( $addr len rec# -- )
+ RECORD# ! TRANSTEXT 19 32 FILL >R TRANSTEXT 1+ I CMOVE
+ R> TRANSTEXT C! ;
+
+
+---- Screen 2 ----
+  ( contd.  PERSONNEL CREWMEMBER                 AWK 09/12/84 )
+ BANK-TRANS FILE# !
+ " FINE" 0 !BANK-REC          " SHIP CONFIGURATION" 1 !BANK-REC
+ " TRADE DEPOT" 2 !BANK-REC  " BONUS" 3 !BANK-REC
+ " PERSONNEL" 4 !BANK-REC     " INTEREST" 5 !BANK-REC
+ " GAME PURCHASE" 6 !BANK-REC
+ FORGET !BANK-REC
+
+15 C= PERSONNEL
+PERSONNEL 0 ICREATE 2C= *PERSONNEL
+*STARPORT >C SET-CURRENT IOPEN *PERSONNEL C> <INSERT ICLOSE
+
+16 C= CREWMEMBER
+*PERSONNEL >C SET-CURRENT IOPEN CREWMEMBER 0 25 *CREATE
+ICLOSE ICLOSE
+
+---- Screen 3 ----
+  ( contd.  CREWMEMBER                           AWK 09/10/84 )
+CREWMEMBER FILE# !
+CREWMEMBER  0 8 AFIELD ^RACE
+CREWMEMBER  8 1 AFIELD ^SCI-B CREWMEMBER 13 1 AFIELD ^SCI-M
+CREWMEMBER  9 1 AFIELD ^NAV-B CREWMEMBER 14 1 AFIELD ^NAV-M
+CREWMEMBER 10 1 AFIELD ^ENG-B CREWMEMBER 15 1 AFIELD ^ENG-M
+CREWMEMBER 11 1 AFIELD ^CMC-B CREWMEMBER 16 1 AFIELD ^CMC-M
+CREWMEMBER 12 1 AFIELD ^MED-B CREWMEMBER 17 1 AFIELD ^MED-M
+CREWMEMBER 18 1 AFIELD ^LRN   CREWMEMBER 19 1 AFIELD ^DUR
+
+CREWMEMBER 11 15 IFIELD ^NAME CREWMEMBER 26 1 IFIELD ^SCI
+CREWMEMBER 27  1 IFIELD ^NAV  CREWMEMBER 28 1 IFIELD ^ENG
+CREWMEMBER 29  1 IFIELD ^CMC  CREWMEMBER 30 1 IFIELD ^MED
+CREWMEMBER 31  1 IFIELD ^VIT  CREWMEMBER 32 2 IFIELD ^STA
+CREWMEMBER 34  1 IFIELD CREWFILE#
+
+---- Screen 4 ----
+  ( contd.  ASSIGN-CREW                          AWK 09/12/84 )
+17 C= ASSIGN-CREW
+ASSIGN-CREW 0 ICREATE 2C= *ASSIGN-CREW
+*STARPORT >C SET-CURRENT IOPEN *ASSIGN-CREW C> <INSERT ICLOSE
+
+ASSIGN-CREW 17 3 IFIELD CAPTAIN
+ASSIGN-CREW 20 3 IFIELD SCI-OFF
+ASSIGN-CREW 23 3 IFIELD NAVIGATOR
+ASSIGN-CREW 26 3 IFIELD ENGINEER
+ASSIGN-CREW 29 3 IFIELD COMM-OFF
+ASSIGN-CREW 32 3 IFIELD DOCTOR
+
+
+
+
+
+---- Screen 5 ----
+  ( contd.  SHIP-CONFIG  TRADE-DEPOT             AWK 05/10/85 )
+18 C= SHIP-CONFIG
+SHIP-CONFIG 0 ICREATE 2C= *SHIP-CONFIG
+*STARPORT >C SET-CURRENT IOPEN *SHIP-CONFIG C> <INSERT ICLOSE
+
+19 C= TRADE-DEPOT
+TRADE-DEPOT 0 ICREATE 2C= *TRADE-DEPOT
+*STARPORT >C SET-CURRENT IOPEN *TRADE-DEPOT C> <INSERT ICLOSE
+
+BOX 22 ICREATE 2C= *ITEMS-FOR-SALE
+*TRADE-DEPOT >C SET-CURRENT *ITEMS-FOR-SALE C> IINSERT
+
+34 C= OPERATIONS
+OPERATIONS 0 ICREATE 2C= *OPERATIONS
+*STARPORT >C SET-CURRENT IOPEN *OPERATIONS C> <INSERT ICLOSE
+
+==== Page 2 | 11-05-85 -- fields00cmp -- Binary Systems | image FIELDS00_CMP_p03 ====
+---- Screen 6 ----
+  ( contd.  SHIP                                 AWK 09/12/84 )
+20 C= SHIP
+SHIP 0 ICREATE 2C= *SHIP *SHIP *SECS IINSERT
+SHIP 13  2 IFIELD XSHIP       SHIP 15  2 IFIELD YSHIP
+SHIP 17  2 IFIELD %ARMOR      SHIP 19  2 IFIELD %ENGINE
+SHIP 21  2 IFIELD %SENSORS    SHIP 23  2 IFIELD %COMMUNICATION
+SHIP 25  2 IFIELD %SHIELD     SHIP 27  2 IFIELD %MISSILE
+SHIP 29  2 IFIELD %LASER      SHIP 31  2 IFIELD %PODS
+SHIP 33  2 IFIELD %FPODS      SHIP 35  2 IFIELD %HOLD
+SHIP 37  2 IFIELD %ACC        SHIP 39  2 IFIELD %MASS
+SHIP 41  7 IFIELD %REPAIR     SHIP 48  1 IFIELD %FSHIELD
+SHIP 49  1 IFIELD %ASHIELD    SHIP 50  1 IFIELD %SSHIELD
+SHIP 51  1 IFIELD %PSHIELD  ( SHIP 52 15 IFIELD %NAME )
+SHIP 67  2 IFIELD %CARGO      SHIP 69  4 IFIELD %STATUS
+
+
+---- Screen 7 ----
+( File Defs.  starship-hold  ELEMENT                          )
+*SHIP >C SET-CURRENT %ARMOR 52 0 FILL %NAME OFF
+868 %COMMUNICATION ! 868 %SENSORS ! 100 %ARMOR C! 500 %CARGO !
+ICLOSE *SHIP (SHIP) 1.5!
+
+*SECS (SHIPBOX) 1.5!
+*SHIP >C SET-CURRENT 0 INST-Y ! 0 INST-X ! ICLOSE
+42  0 ICREATE 2DUP TVEHICLE 1.5! *SHIP IINSERT
+11 23 ICREATE 2DUP 2C= *STARSHIP-HOLD *SHIP IINSERT
+
+11 17 2 iFIELD CONTENT-VOL
+11 40 ICREATE >C SET-CURRENT
+500 INST-QTY ! 0 CONTENT-VOL !
+CI TVEHICLE 1.5@ IINSERT
+CI TV-HOLD 1.5! ICLOSE SAVE-BUFFERS FORGET CONTENT-VOL
+
+---- Screen 8 ----
+( Field init ELEMENT                                          )
+26 18  1 AFIELD ELEM-MW        26 18  1 AFIELD ELEM-MELTING
+26 21  2 AFIELD ELEM-BOILING
+
+: !ELEMENT ( $ val mw melt boil record# -- )
+ RECORD# ! ELEM-BOILING ! ELEM-MELTING ! ELEM-MW C! ELEM-VAL !
+ DROP ELEM-NAME 16 CMOVE ;
+
+26 FILE# !
+ " ALUMINUM........"    44  10   933  2740   1 !ELEMENT
+ " ANTIMONY........"    56  13  1267  2880   2 !ELEMENT
+ " CHROMIUM........"    52  12  2130  2945   3 !ELEMENT
+ " COBALT.........."    16   3  1768  3143   4 !ELEMENT
+ " COPPER.........."    24   5  1356  2840   5 !ELEMENT
+ " ENDURIUM........"   100  22  6348  7910   6 !ELEMENT
+ " GOLD............"    76  18  1337  3080   7 !ELEMENT
+---- Screen 9 ----
+  ( cont'd.                                                   )
+" IRON............"     12   2  1808  3023   8 !ELEMENT
+" LEAD............"      8   1   601  2013   9 !ELEMENT
+" MAGNESIUM......."     40   9   922  1363  10 !ELEMENT
+" MERCURY........."     64  15   234   630  11 !ELEMENT
+" MOLYBDENUM......"     32   7  2890  4885  12 !ELEMENT
+" NICKEL.........."     20   4  1726  3005  13 !ELEMENT
+" PLATINUM........"     80  19  2045  4100  14 !ELEMENT
+" PLUTONIUM......."     84  20   914  3505  15 !ELEMENT
+" PROMETHIUM......"     60  14  1353  2733  16 !ELEMENT
+" RODNIUM........."     88  21  4445  5627  17 !ELEMENT
+" SILVER.........."     72  17  1235  2485  18 !ELEMENT
+" TIN............."     36   8   505  2543  19 !ELEMENT
+" TITANIUM........"     48  11  1933  3560  20 !ELEMENT
+" TUNGSTEN........"     68  16  3683  5933  21 !ELEMENT
+" ZINC............"     28   6   693  1180  22 !ELEMENT
+---- Screen 10 ----
+( File Defs.  ARTIFACT                                        )
+28 C= ARTIFACT
+
+ARTIFACT 24  1 AFIELD ART-TEXT
+ARTIFACT 29  1 AFIELD ART-ANLYZ
+
+: !ARTIFACT ( $ vol val record# -- )
+ RECORD# ! ART-VAL ! ART-VOL !
+ DROP ART-NAME 24 CMOVE ART-TEXT C! 0 ART-ANLYZ C! ;
+
+
+
+
+
+
+
+---- Screen 11 ----
+( Field init ARTIFACT                                         )
+ARTIFACT FILE# !
+ 1 " CRYSTAL ORB............."   2   48000       1    !ARTIFACT
+ 1 " CRYSTAL CONE............"   2   48000       2    !ARTIFACT
+ 2 " BLACK EGG..............."   1   25000       3    !ARTIFACT
+ 4 " WHINING ORB............."   2   36000       4    !ARTIFACT
+ 5 " FLAT DEVICE............."   3   30000       5    !ARTIFACT
+ 6 " ROD DEVICE.............."   3   36000       6    !ARTIFACT
+ 7 " TESSERACT..............."   5   60000       7    !ARTIFACT
+ 8 " RING DEVICE............."   2   24000       8    !ARTIFACT
+ 9 " HYPERCUBE..............."   4   30000       9    !ARTIFACT
+10 " SHIMMERING BALL........."   3   48000      10    !ARTIFACT
+12 " RED CYLINDER............"   3   60000      11    !ARTIFACT
+13 " DODECAHEDRON............"   4   12000      12    !ARTIFACT
+14 " CRYSTAL PEARL..........."   1   30000      13    !ARTIFACT
+ 3 " ELLIPSOID..............."   1   30000      14    !ARTIFACT
+==== Page 3 | 11-05-85 -- fields00cmp -- Binary Systems | image FIELDS00_CMP_p04 ====
+---- Screen 12 ----
+  ( cont'd.                                                   )
+11 " BLACK BOX..............."   4   12000      15    !ARTIFACT
+ 0 " AMAZING ARTIFACT........"  10    5000      16    !ARTIFACT
+ 0 " ARMALCOLITE RELIC......."   7    2500      17    !ARTIFACT
+ 0 " BLADED TOY.............."   1     500      18    !ARTIFACT
+ 0 " BLUE BAUBLE............."   1     600      19    !ARTIFACT
+ 0 " BUTTONED BOX............"   1    1000      20    !ARTIFACT
+ 0 " COMPLEX MACHINE........."  18    3200      21    !ARTIFACT
+ 0 " CUTE DOODAD............."   1     200      22    !ARTIFACT
+ 0 " FRIGHTENING APPARATUS..."  12    2600      23    !ARTIFACT
+ 0 " GLOWING DISK............"   2    1000      24    !ARTIFACT
+ 0 " GOLDEN GLOBE............"   2    1800      25    !ARTIFACT
+ 0 " HOT P.Y.T..............."   1    5000      26    !ARTIFACT
+ 0 " HUMMING GIZZY..........."   2    1000      27    !ARTIFACT
+ 0 " METAL BALL.............."   1     200      28    !ARTIFACT
+ 0 " MOBIUS DEVICE..........."   3     700      29    !ARTIFACT
+---- Screen 13 ----
+  ( cont'd.                                                   )
+ 0 " NICE THING.............."   2     300      30    !ARTIFACT
+ 0 " OCTAGONAL LENS.........."   1     600      31    !ARTIFACT
+ 0 " OVAL OBJECT............."   1     400      32    !ARTIFACT
+ 0 " PLASTIC THING-A-MA-JIG.."   2     600      33    !ARTIFACT
+ 0 " PRETTY PICTURE.........."   1     400      34    !ARTIFACT
+ 0 " PYRAMID DEVICE.........."   3    2300      35    !ARTIFACT
+ 0 " QUIVERING LUMP.........."   1     250      36    !ARTIFACT
+ 0 " RUBBER WIDGET..........."   1     200      37    !ARTIFACT
+ 0 " SILVER GADGET..........."   1    1300      38    !ARTIFACT
+ 0 " SMALL OBELISK..........."   1    1100      39    !ARTIFACT
+ 0 " SPIRAL TUBE............."   2     750      40    !ARTIFACT
+ 0 " STRANGE CLOTH..........."   1     400      41    !ARTIFACT
+ 0 " SURPRISING UTENSIL......"   1     350      42    !ARTIFACT
+ 0 " THROBBING MASS.........."   1     250      43    !ARTIFACT
+ 0 " TICKING SPHERE.........."   3    4500      44    !ARTIFACT
+---- Screen 14 ----
+  ( cont'd.                                                   )
+ 0 " TRANSLUCENT CUBE........"   2    1000      45    !ARTIFACT
+ 0 " WEE GREEN BLOBBIE......."   1     300      46    !ARTIFACT
+ 0 " SHRUGGING ATLAS........."   1     500      47    !ARTIFACT
+ 0 " PINK TUBE-A-TRON........"  10    5000      48    !ARTIFACT
+ 0 " ROD'S ARTIFACT.........."   0       0      49    !ARTIFACT
+ 0 " ALEC'S ARTIFACT........."   0       0      50    !ARTIFACT
+
+FORGET !ARTIFACT
+
+
+
+
+
+
+
+---- Screen 15 ----
+( File Defs.  SPECIMEN                                        )
+
+40 C= SPECIMEN
+
+SPECIMEN  0 16 AFIELD SPEC-NAME
+
+SPECIMEN 19  2 IFIELD INST-DATE
+SPECIMEN 21  1 IFIELD INST-STARX
+SPECIMEN 22  1 IFIELD INST-STARY
+SPECIMEN 23  1 IFIELD INST-PLAN#
+
+: !SPECIMEN ( spec-name record# -- )
+ RECORD# ! DROP SPEC-NAME 16 CMOVE ;
+
+
+
+---- Screen 16 ----
+( Field init SPECIMEN                                         )
+SPECIMEN FILE# !
+" AMORPHOUS......."   1             !SPECIMEN
+" IRREGULAR......."   2             !SPECIMEN
+" SPHERICAL......."   3             !SPECIMEN
+" RADIAL.........."   4             !SPECIMEN
+" BILATERAL......."   5             !SPECIMEN
+" AMOEBOID........"   6             !SPECIMEN
+" TREE-LIKE......."   7             !SPECIMEN
+" BALLOON-LIKE...."   8             !SPECIMEN
+" ANTELOPE-LIKE..."   9             !SPECIMEN
+" BIRD-LIKE......."  10             !SPECIMEN
+" DINOSAUR-LIKE..."  11             !SPECIMEN
+" HUMANOID........"  12             !SPECIMEN
+" INSECTOID......."  13             !SPECIMEN
+" PLANT-LIKE......"  14             !SPECIMEN
+---- Screen 17 ----
+  ( cont'd.                                                   )
+" BEAR-LIKE......."  15             !SPECIMEN
+" REPTILIAN......."  16             !SPECIMEN
+" RODENT-LIKE....."  17             !SPECIMEN
+" SLUG-LIKE......."  18             !SPECIMEN
+" SNAIL-LIKE......"  19             !SPECIMEN
+" SNAKE-LIKE......"  20             !SPECIMEN
+" SPIDER-LIKE....."  21             !SPECIMEN
+" TURTLE-LIKE....."  22             !SPECIMEN
+" ROCK-LIKE......."  23             !SPECIMEN
+" FUNGOID........."  24             !SPECIMEN
+" EWOK-LIKE......."  25             !SPECIMEN
+" STARFISH-LIKE..."  26             !SPECIMEN
+" ANEMONE-LIKE...."  27             !SPECIMEN
+
+FORGET !SPECIMEN
+==== Page 4 | 11-05-85 -- fields00cmp -- Binary Systems | image FIELDS00_CMP_p05 ====
+---- Screen 18 ----
+  ( contd.  ITEMS-FOR-SALE  repair elements      AWK 09/12/84 )
+
+*ITEMS-FOR-SALE >C+S
+  26  6 ICREATE >BOX
+  26  1 ICREATE >BOX
+  26  4 ICREATE >BOX
+  26 12 ICREATE >BOX
+  26 16 ICREATE >BOX
+  26 20 ICREATE >BOX
+  28  4 ICREATE >BOX
+  28  5 ICREATE >BOX
+IOPEN 11  0 1 *CREATE ICLOSE
+ICLOSE
+
+
+
+---- Screen 19 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 20 ----
+( File Defs. ANALYZE-TEXT                                     )
+57 C= ANALYZE-TEXT
+
+ANALYZE-TEXT 0 190 AFIELD ANALYSIS
+
+: !ANALYZE-TEXT ( line# $nopack record# -- )
+ RECORD# ! DROP SWAP 38 * ANALYSIS + 38 CMOVE ;
+
+ ANALYZE-TEXT FILE# !
+
+   0 " EXHAUSTIVE ANALYSIS HAS REVEALED      "  0 !ANALYZE-TEXT
+   1 " ABSOLUTELY NOTHING OF INTEREST ABOUT  "  0 !ANALYZE-TEXT
+   2 " THIS ITEM. ITS ONLY VALUE LIES IN THE "  0 !ANALYZE-TEXT
+   3 " FACT THAT IT IS OBVIOUSLY OF ALIEN    "  0 !ANALYZE-TEXT
+   4 " MANUFACTURE.                          "  0 !ANALYZE-TEXT
+
+---- Screen 21 ----
+( Field init ANALYZE-TEXT                                     )
+
+   0 " OUR GUESS IS THIS IS SOME DEVICE OF   "  1 !ANALYZE-TEXT
+   1 " THE ANCIENTS. BEYOND THAT. WE CAN'T   "  1 !ANALYZE-TEXT
+   2 " TELL.                                 "  1 !ANALYZE-TEXT
+   3 "                                       "  1 !ANALYZE-TEXT
+   4 "                                       "  1 !ANALYZE-TEXT
+
+
+   0 " THIS APPEARS TO BE A BOMB OF SOME     "  2 !ANALYZE-TEXT
+   1 " SORT. THE TYPE IS UNFAMILIAR. TO      "  2 !ANALYZE-TEXT
+   2 " ACTIVATE IT. YOU MUST DROP IT.        "  2 !ANALYZE-TEXT
+   3 "                                       "  2 !ANALYZE-TEXT
+   4 "                                       "  2 !ANALYZE-TEXT
+
+
+---- Screen 22 ----
+  ( cont'd.                                                   )
+
+   0 " THIS IS CRAFTED OF ENDURIUM. IT       "  3 !ANALYZE-TEXT
+   1 " DOESN'T APPEAR TO HAVE ANY FUNCTION   "  3 !ANALYZE-TEXT
+   2 " OTHER THAN BEING DECORATIVE.          "  3 !ANALYZE-TEXT
+   3 "                                       "  3 !ANALYZE-TEXT
+   4 "                                       "  3 !ANALYZE-TEXT
+
+
+   0 " THIS WAS FOUND IN THE UNDERGROUND     "  4 !ANALYZE-TEXT
+   1 " COLONY. WE'RE NOT SURE WHAT IS DOES.  "  4 !ANALYZE-TEXT
+   2 " WE THINK IT HAS SOMETHING TO DO WITH  "  4 !ANALYZE-TEXT
+   3 " COMMUNICATION.                        "  4 !ANALYZE-TEXT
+   4 "                                       "  4 !ANALYZE-TEXT
+
+
+---- Screen 23 ----
+  ( cont'd.                                                   )
+
+   0 " THIS DEVICE WILL PROJECT A SHIELD     "  5 !ANALYZE-TEXT
+   1 " AROUND YOUR TERRAIN VEHICLE WHICH     "  5 !ANALYZE-TEXT
+   2 " MAKES IT DIFFICULT FOR DANGEROUS      "  5 !ANALYZE-TEXT
+   3 " LIFEFORMS TO ATTACK YOU.              "  5 !ANALYZE-TEXT
+   4 "                                       "  5 !ANALYZE-TEXT
+
+
+   0 " THIS APPEARS TO BE A DEVICE OF THE OLD"  6 !ANALYZE-TEXT
+   1 " EMPIRE THAT PROJECTS AN ENHANCED LASER"  6 !ANALYZE-TEXT
+   2 " SHIELD AROUND A SPACESHIP.            "  6 !ANALYZE-TEXT
+   3 "                                       "  6 !ANALYZE-TEXT
+   4 "                                       "  6 !ANALYZE-TEXT
+
+
+==== Page 5 | 11-05-85 -- fields00cmp -- Binary Systems | image FIELDS00_CMP_p06 ====
+---- Screen 24 ----
+  ( cont'd.                                                   )
+
+   0 " THIS IS A DEVICE OF THE OLD EMPIRE    "  7 !ANALYZE-TEXT
+   1 " THAT PROJECTS A FIELD WHICH DOUBLES   "  7 !ANALYZE-TEXT
+   2 " THE ENERGY EFFICIENCY OF A SHIP.      "  7 !ANALYZE-TEXT
+   3 "                                       "  7 !ANALYZE-TEXT
+   4 "                                       "  7 !ANALYZE-TEXT
+
+
+   0 " THIS IS AN ANCIENT SHIP NAVIGATIONAL  "  8 !ANALYZE-TEXT
+   1 " AID. IT WILL IDENTIFY ANY NEARBY      "  8 !ANALYZE-TEXT
+   2 " CONTINUUM FLUX.                       "  8 !ANALYZE-TEXT
+   3 "                                       "  8 !ANALYZE-TEXT
+   4 "                                       "  8 !ANALYZE-TEXT
+
+
+---- Screen 25 ----
+  ( cont'd.                                                   )
+
+   0 " THIS IS A DEVICE FROM SOME ALIEN SHIP "  9 !ANALYZE-TEXT
+   1 " THAT REDUCES THE TIME REQUIRED TO JUMP"  9 !ANALYZE-TEXT
+   2 " TO HYPERSPACE.  IT SEEMS TO FUNCTION  "  9 !ANALYZE-TEXT
+   3 " INTERMITTENTLY. HOWEVER.              "  9 !ANALYZE-TEXT
+   4 " **************************************"  9 !ANALYZE-TEXT
+
+
+   0 " WE CANNOT ASCERTAIN THIS ARTIFACT'S   " 10 !ANALYZE-TEXT
+   1 " ORIGIN. IT SEEMS TO PROJECT A VERY    " 10 !ANALYZE-TEXT
+   2 " EFFECTIVE HEAT SHIELD.                " 10 !ANALYZE-TEXT
+   3 "                                       " 10 !ANALYZE-TEXT
+   4 " **************************************" 10 !ANALYZE-TEXT
+
+
+---- Screen 26 ----
+  ( cont'd.                                                   )
+
+   0 " THIS SEEMS TO BE SOME SORT OF FOOD    " 11 !ANALYZE-TEXT
+   1 " PROCESSOR. IT SLICES. IT DICES. IT    " 11 !ANALYZE-TEXT
+   2 " EVEN MAKES JULIENNE FRIES!            " 11 !ANALYZE-TEXT
+   3 "                                       " 11 !ANALYZE-TEXT
+   4 "                                       " 11 !ANALYZE-TEXT
+
+
+   0 " THIS SEEMS TO BE AN ORBITAL SCANNER OF" 12 !ANALYZE-TEXT
+   1 " SOME SORT. WE'RE NOT SURE WHAT IT'S   " 12 !ANALYZE-TEXT
+   2 " TUNED TO LOCATE THOUGH.               " 12 !ANALYZE-TEXT
+   3 "                                       " 12 !ANALYZE-TEXT
+   4 "                                       " 12 !ANALYZE-TEXT
+
+
+---- Screen 27 ----
+  ( cont'd.                                                   )
+
+   0 " THIS IS SOME SORT OF TRANSMITTER. IT  " 13 !ANALYZE-TEXT
+   1 " IS BROADCASTING CONTINUALLY ON SEVERAL" 13 !ANALYZE-TEXT
+   2 " BANDS. THE NET EFFECT SHOULD BE THAT  " 13 !ANALYZE-TEXT
+   3 " IT WILL ATTRACT THE ATTENTION OF      " 13 !ANALYZE-TEXT
+   4 " ANYONE IN THE AREA.                   " 13 !ANALYZE-TEXT
+
+
+   0 " THIS SEEMS TO BE A DEVICE OF THE      " 14 !ANALYZE-TEXT
+   1 " ANCIENTS. BUT WE CAN'T FIGURE OUT WHAT" 14 !ANALYZE-TEXT
+   2 " IS DOES. IT CONTAINS A TERRIFIC AMOUNT" 14 !ANALYZE-TEXT
+   3 " OF ENERGY.                            " 14 !ANALYZE-TEXT
+   4 "                                       " 14 !ANALYZE-TEXT
+
+FORGET !ANALYZE-TEXT

@@ -1,0 +1,486 @@
+==== Page (none) | (no header) | image COMMSPEC_CMP_p01 ====
+0 ( -----------overlay prefix COMM SPEC ------------
+1 ( special communications phrases             AWK
+2 ( Exceptional actions: support
+3 ( Exceptional actions: support
+4 ( Exceptional actions: ?>=ELEMENT >EADDR
+5 ( Exceptional actions: -ELEMENT
+6 ( Exceptional actions: VPROBE#                  1
+7 ( Exceptional actions:  THRYNN-CREW  THRYNN-PALS
+8 ( Exceptional actions: HUMAN-CREW
+9 ( Exceptional actions:  ELOWAN-CREW  ELOWAN-PALS
+10 ( Exceptional actions: XY/N
+11 ( Exceptional actions: ELLIPSOID
+12 ( Exceptional actions: CRYSTAL-ORB
+13 ( Exceptional actions: PLUTONIUM
+14 ( Exceptional actions: BLACK-BOX$
+15 ( Exceptional actions: BLACK-BOX
+16 ( Exceptional actions: ELAN                     1
+17 ( Exceptional actions: NEED-ENERGY
+18 ( Exceptional actions: TRIBUTE
+19 ( Exceptional actions: BARTER$
+20 ( Exceptional actions: BARTER
+21 ( Exceptional actions:
+22 ( Exceptional actions:                          1
+23 ( Exceptional actions:
+
+==== Page 1 | 11-05-85 -- COMMSPECCMP -- Binary Systems | image COMMSPEC_CMP_p02 ====
+
+---- Screen 0 ----
+( -----------overlay prefix COMM SPEC -------------8/13/85 AWK )
+
+VOCABULARY COMMSPEC-VOC IMMEDIATE
+94 OPEN-OVERLAY
+COMMSPEC-VOC DEFINITIONS
+1200 TRANS-ALLOT NEWT-DP
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+( special communications phrases              AWK 8/17/85      )
+48 11 255 IFIELD: PHRASE$
+TRANSIENT
+
+: I" ( <phrase> ( n -- n ) iaddr )
+ *COMM-SPEC >C+S
+ ASCII " WORD COUNT 2DUP >UPPERCASE     ( addr cnt -- )
+ DUP 1+ VICREATE 2DUP CI IINSERT IOPEN  ( addr cnt iaddr -- )
+ 2SWAP DROP 1- PHRASE$ $!               ( iaddr -- )
+ ICLOSE ICLOSE
+ ' 2LIT CFA , SWAP , ,     \ , iaddr into definition
+ ' >C+S CFA ,              \ , processing routines into def
+ ' PHRASE$ CFA ,           \
+ ' COUNT CFA , ;     IMMEDIATE
+
+RESIDENT
+
+---- Screen 2 ----
+( Exceptional actions: support                    8/17/85 AWK )
+
+HEAD: ?ARTIFACT ( n -- f ) T: ' ov?ARTIFACT MODULE T;
+HEAD: A>ORIGINATOR ( -- ) T: ' A>O MODULE T;
+HEAD: ORIGINATOR>C ( -- ) T: ' O>C MODULE T;
+\ HEAD: ?TIRED-OF-WAITING ( -- f ) T: ' ?TOW MODULE T;
+HEAD: +!EDL  ( n -- ) T: ' ov+!EDL MODULE T;
+
+52 18   1 IFIELD: BASE-EDL   52 19 1 IFIELD: AET
+
+1 ORGIADDR 1.5@ 2C: *ELOWAN  7 ORGIADDR 1.5@ 2C: *THRYNN
+
+HEAD: (PHRASE>CT) ( addr cnt ( n -- ) )
+T: A>ORIGINATOR ORIGINATOR>C ICLOSE
+   ' P>CT MODULE ICLOSE T;
+
+
+---- Screen 3 ----
+( Exceptional actions: support                    8/13/85 AWK )
+
+HEAD: (>BUTTON) ( -- )
+T: XYSCAN DROP ?DUP IF NEW-BUTTON THEN  T;
+
+HEAD: ?VINITIAL ( addr -- f )
+T: C@ DUP ASCII A = OVER ASCII E = OR OVER ASCII I = OR
+ OVER ASCII O = OR SWAP ASCII U = OR T;
+
+ASCII . C: XTRAIL
+HEAD: -XTRAILING ( addr cnt b -- addr' cnt' )
+T: ' XTRAIL ! ' XTRAIL CFA ' -TRAILING 14 + !
+ -TRAILING
+ ' BL CFA ' -TRAILING 14 + ! T;
+
+
+
+---- Screen 4 ----
+( Exceptional actions: ?>=ELEMENT >EADDR          8/13/85 AWK )
+
+V: QTY
+
+HEAD: ?>=ELEMENT ( amt spec -- f )
+T: *STARSHIP-HOLD >C+S IOPEN 11 10 IFIND
+ IF IOPEN 0 SWAP IFIND
+   IF INST-QTY @ DUP QTY ! SWAP - 0< NOT ELSE DROP 0 THEN ICLOSE
+ ELSE 2DROP 0 THEN CDROP ICLOSE T;
+
+HEAD: >EADDR ( spec ( -- n n' n" ) )
+T: *STARSHIP-HOLD >C+S
+ IOPEN 11 10 IFIND DROP IOPEN 0 SWAP IFIND DROP T;
+
+HEAD: SHIP-HOLD> ( ( n *SHIP-HOLD n' ... --- n ) )
+T: BEGIN CI *STARSHIP-HOLD D= NOT WHILE CDROP REPEAT ICLOSE T;
+
+---- Screen 5 ----
+( Exceptional actions: -ELEMENT                   3/20/85 AWK )
+
+HEAD: -ELEMENT ( amt spec -- )
+T: SWAP 10 - SWAP >EADDR NEGATE INST-QTY +! BOX> >INACTIVE DROP
+ SHIP-HOLD> T;
+
+HEAD: +ELEMENT ( amt spec -- )
+T: 26 SWAP ICREATE >C+S INST-QTY ! C>
+ *STARSHIP-HOLD >C+S >BOX ICLOSE T;
+
+HEAD: -ARTIFACT ( spec -- )
+T: *STARSHIP-HOLD >C+S
+ IOPEN 11 15 IFIND DROP IOPEN 0 SWAP IFIND DROP BOX> >INACTIVE
+ SHIP-HOLD> T;
+
+
+
+==== Page 2 | 11-05-85 -- COMMSPECCMP -- Binary Systems | image COMMSPEC_CMP_p03 ====
+
+---- Screen 6 ----
+( Exceptional actions: VPROBE#                   10/16/85 AWK )
+
+V: STOP-SA
+
+HEAD: VPROBE# ( -- )
+T: A>ORIGINATOR ORIGINATOR>C
+ 1 6 0 DO 1 10000 RRND DUP 0 <# #S #>
+   2DUP + ASCII ? SWAP C! 1+ (PHRASE>CT)      cr
+   10 .BTN-TEXT INIT-BUTTON
+   TIME D@ 15000. D+ TIRED-TIME D!
+   BEGIN (>BUTTON) FTRIG @
+     TIME D@ TIRED-TIME D@ D> OR
+   UNTIL ?TRIG
+   IF THIS-BUTTON @ ELSE 2 THEN SWAP 6 MOD 0> = * DUP 0=
+   IF LEAVE THEN
+ LOOP 0= 100 * +!EDL ICLOSE CR T;
+
+---- Screen 7 ----
+( Exceptional actions:  THRYNN-CREW  THRYNN-PALS  3/20/85 AWK )
+
+HEAD: THRYNN-CREW ( -- )
+T: P-RACES @ 8 AND
+ IF A>ORIGINATOR ORIGINATOR>C STOP-SA ON
+I" WE DOST DETECT THE PRESENCE OF ACCURSED THRYNN ABOARD THY VES
+SEL. WE WOULDST HAVE NO DEALINGS WITH THEE, FRIENDS OF OUR ENEMI
+ES."  (PHRASE>CT) 100 +!EDL ICLOSE THEN T;
+
+HEAD: THRYNN-PALS ( -- )
+T: *THRYNN >C+S BASE-EDL C@ AET C@ < ICLOSE
+ IF A>ORIGINATOR ORIGINATOR>C STOP-SA ON
+I" OUR INVESTIGATIONS REVEAL THAT THOU ART FRIENDS OF THE EVIL T
+HRYNN. THEREFORE ART THOU ENEMIES OF THE ELOWAN."
+ (PHRASE>CT) 100 +!EDL ICLOSE THEN T;
+
+
+---- Screen 8 ----
+( Exceptional actions: HUMAN-CREW                 3/19/85 AWK )
+
+HEAD: HUMAN-CREW ( -- )
+T: P-RACES @ 1 AND 0=
+ IF A>ORIGINATOR ORIGINATOR>C
+I" WE DO NOT DETECT THE PRESENCE OF ANY HUMAN LIFEFORMS ABOARD Y
+OUR VESSEL. WE THEREFORE CONCLUDE YOU CANNOT BE GROUP 9."
+ (PHRASE>CT) 100 +!EDL ICLOSE THEN T;
+
+
+
+
+
+
+
+
+
+---- Screen 9 ----
+( Exceptional actions:  ELOWAN-CREW  ELOWAN-PALS  3/20/85 AWK )
+
+HEAD: ELOWAN-CREW ( -- )
+T: P-RACES @ 16 AND
+ IF A>ORIGINATOR ORIGINATOR>C STOP-SA ON
+I" SSSO YOU ARRRE FRIENDSS WITHH THE ELLLOWANN. OURR SCANNERSSS
+SSHOW THEY ARRE ABOARRD YOURR SSHIP. MOSSST RREGRRETABLE."
+ (PHRASE>CT) 100 +!EDL ICLOSE THEN T;
+
+HEAD: ELOWAN-PALS ( -- )
+T: *ELOWAN >C+S BASE-EDL C@ AET C@ < ICLOSE
+ IF A>ORIGINATOR ORIGINATOR>C STOP-SA ON
+I" OUR INNTELLIGENCCCE INNDICATESS THAT YOU HAVVE ALLIED WITH TH
+E ELLOWANNN. UNLESSS YOU CHANGE YOUR MINND WE MUSSST CONSSIDER Y
+OU OUR ENNEMY."
+ (PHRASE>CT) 100 +!EDL ICLOSE THEN T;
+
+---- Screen 10 ----
+( Exceptional actions: XY/N                       3/19/85 AWK )
+
+: XY/N ( n1 n2 -- f ) \ n1 on YES n2 on NO/TERM added to EDL
+ 10 .BTN-TEXT INIT-BUTTON TIME D@ 20.000 D+ TIRED-TIME D!
+ BEGIN
+   (>BUTTON) FTRIG @
+   TIME D@ TIRED-TIME D@ D> OR
+ UNTIL 9 .BTN-TEXT
+ THIS-BUTTON @ ?TRIG 0= 2* + 0=
+ IF DROP +!EDL 1 ELSE +!EDL DROP 0 THEN ;
+
+
+
+
+
+
+
+---- Screen 11 ----
+( Exceptional actions: ELLIPSOID                  3/20/85 AWK )
+
+HEAD: CONE$ ( -- addr cnt ) T:
+I" OUR SCANNER ARE SHOW YOU IS HAVE FOCUSING STONE OF VELOXI. YO
+U IS IMMEDIATELY GIVING TO VELOXI. AGREEING?" T;
+
+HEAD: ELLIPSOID ( -- )
+T: 2 ?ARTIFACT
+ IF A>ORIGINATOR ORIGINATOR>C CONE$ (PHRASE>CT) -40 50 XY/N
+   IF 2 ' -ARTIFACT MODULE -40 ELSE STOP-SA ON 50 THEN
+ BASE-EDL C@ + 100 MIN 0 MAX BASE-EDL C! ICLOSE THEN T;
+
+
+
+
+
+
+==== Page 3 | 11-05-85 -- COMMSPECCMP -- Binary Systems | image COMMSPEC_CMP_p04 ====
+
+---- Screen 12 ----
+( Exceptional actions: CRYSTAL-ORB                3/20/85 AWK )
+
+HEAD: ORB$ ( -- addr cnt ) T:
+I" OUR SCANNER IS SHOW YOU ARE HAVE MOST PRECIOUS SMALL EGG OF V
+ELOXI GRAND LOVELY. YOU ARE RETURN IMMEDIATELY, OR VELOXI IS DEC
+LARING WAR. AGREEING?" T;
+
+HEAD: CRYSTAL-ORB ( -- )
+T: 1 ?ARTIFACT
+ IF A>ORIGINATOR ORIGINATOR>C ORB$ (PHRASE>CT) 0 100 XY/N
+   IF 1 -ARTIFACT ELSE STOP-SA ON 100 BASE-EDL C! THEN
+ THEN ICLOSE T;
+
+
+
+
+
+---- Screen 13 ----
+( Exceptional actions: PLUTONIUM                  3/20/85 AWK )
+
+V: EnQTY
+
+HEAD: PLUTONIUM$ ( -- addr cnt ) T:
+I" WE DETTECT YOU ARE CARRRYING SSOME PLLLUTONIUM. WE WILLL PAYY
+ WELLL FOR THISSS. LET USS SSAY xxx UNITSS OF ENERGY CRYSTALSSS.
+ AGREED?" T;
+
+HEAD: PLUTONIUM ( -- )
+T: 3 15 ?>=ELEMENT
+ IF A>ORIGINATOR ORIGINATOR>C PLUTONIUM$ QTY @ 84 200 */ DUP
+   EnQTY ! 10 / 0 <# #S #> 2OVER DROP 93 + DUP 3 BL FILL SWAP
+   CMOVE (PHRASE>CT) ICLOSE 0 5 XY/N
+   IF QTY @ 15 -ELEMENT EnQTY @ 6 +ELEMENT ELSE STOP-SA ON THEN
+ THEN T;
+
+---- Screen 14 ----
+( Exceptional actions: BLACK-BOX$                 3/20/85 AWK )
+
+1 C: ?BLACK-BOX
+
+HEAD: 1BLACK-BOX$ ( -- addr cnt ) T:
+I" TO DEMONSSTRATTE OUR GOOD WILLL WE WILLL SSSELL YOU A DEVICCE
+ THAT WILLL MAKE YOUR SSSHIP INVULLLNERRABLE. THE COSST ISS ONLY
+ 30 OF YOUR ENERGY CRYSTALSSS. DO YOU WISH TO PURRCHASSE THISS?"
+ T;
+
+HEAD: 2BLACK-BOX$ ( -- addr cnt ) T:
+I" YOU DO NOTT HAVE ENOUGHHH. DO NNOT TRYY TO DECEIVVE USSS."
+T;
+
+
+
+
+---- Screen 15 ----
+( Exceptional actions: BLACK-BOX                  3/20/85 AWK )
+
+HEAD: BLACK-BOX ( -- )
+T: A>ORIGINATOR ORIGINATOR>C A-POSTURE @ 2 = ?BLACK-BOX AND
+ IF 1BLACK-BOX$ (PHRASE>CT) 0 0 XY/N
+   IF 300 6 ?>=ELEMENT
+     IF 300 6 -ELEMENT 28 15 ICREATE *STARSHIP-HOLD >C+S
+       >BOX ICLOSE ' ?BLACK-BOX OFF SAVE-OVERLAY ELSE
+     2BLACK-BOX$ (PHRASE>CT) 5 +!EDL THEN
+   ELSE I" VERY WELLLL." (PHRASE>CT) THEN
+ THEN ICLOSE T;
+
+
+
+
+
+
+---- Screen 16 ----
+( Exceptional actions: ELAN                      10/18/85 AWK )
+
+HEAD: ELAN$ ( -- addr cnt ) T:
+I" THOU HAST DONE A DEED MOST UNTHINKABLY FOUL. THOU HAST DESTRO
+YED ELAN, THE SACRED PLANET OF OUR YOUNG AND THEREBY HAST THOU A
+LL BUT DESTROYED THE ELOWAN. TRULY ART THOU MORE VILE EVEN THAN
+THE THRYNN. WE ARE NOW AND FOREVER MORTAL ENEMIES." T;
+
+HEAD: ELAN ( -- )
+T: ?ELAN @ NOT
+ IF A>ORIGINATOR ORIGINATOR>C STOP-SA ON ELAN$ (PHRASE>CT)
+ 100 +!EDL 100 BASE-EDL C! ICLOSE THEN T;
+
+
+
+
+
+---- Screen 17 ----
+( Exceptional actions: NEED-ENERGY                3/20/85 AWK )
+HEAD: 1NEED$ ( -- addr cnt ) T:
+I" SCANNERS OF OURS SHOW THAT THOU HAST 10 ARTH UNITS AT LEAST.
+THY NEED DOES NOT SEEM DIRE. THOU WOULD'ST SPEAK FALSELY AND TAK
+E ADVANTAGE ON US." T;
+HEAD: 2NEED$ ( -- addr cnt ) T:
+I" WE GIVE UNTO THEE, FRIENDS OF THE ELOWAN, 5 ARTH UNITS OF FUE
+L." T;
+
+HEAD: NEED-ENERGY ( -- )
+T: A>ORIGINATOR ORIGINATOR>C A-POSTURE @ 2 =
+ IF I" IS THINE NEED FOR ENERGY DIRE?" (PHRASE>CT) 0 0 XY/N
+   IF 101 6 ?>=ELEMENT
+     IF 8 +!EDL 1NEED$ ELSE STOP-SA ON 2NEED$ 50 6 +ELEMENT THEN
+ (PHRASE>CT) THEN THEN ICLOSE T;
+
+
+==== Page 4 | 11-05-85 -- COMMSPECCMP -- Binary Systems | image COMMSPEC_CMP_p05 ====
+
+---- Screen 18 ----
+( Exceptional actions: TRIBUTE                    3/21/85 AWK )
+
+HEAD: TRIBUTE$ ( -- addr cnt ) T:
+I" THE YOU ALIENS TRESPASSING IN OURS THE SPACE. MOST GRACIOUS G
+ROSSNESS OF AUGUST QUEEN PERHAPS FORGIVING IF YOU ARE PAY TRIBUT
+E OF 1/x ENERGY SUPPLY RIGHT AWAY, BY JOVE. AGREEING?" T;
+
+HEAD: TRIBUTE ( -- )
+T: A>ORIGINATOR ORIGINATOR>C A-POSTURE @ 12 AND
+ IF TRIBUTE$ 2 A-POSTURE @ 4 = 2* + ASCII 0 + 3 PICK 132 + C!
+   (PHRASE>CT) 0 100 XY/N
+   IF 0 6 ?>=ELEMENT DROP
+     QTY @ 2 A-POSTURE @ 4 = 2* + / 6 -ELEMENT
+   ELSE STOP-SA ON THEN
+ THEN ICLOSE T;
+
+
+---- Screen 19 ----
+( Exceptional actions: BARTER$                    8/17/85 AWK )
+HEAD: BARTER$ ( -- addr cnt ) T:
+I" OUR SCANNERSS INNDICATE THAT YOU HAVVE ABOARD YOUR SSHIP A  x
+xxxxxxxxxxxxxxxxxxxxxxx THISS ARTIFACT ISS OF INTERESST TO USS.
+WE WILL BUY ITT FROM YOU FOR xxxx CUBIC ARTH UNITx  OF ENERGY CR
+YSSTALSSS. AGREED?" T;
+
+HEAD: ART>BARTER ( ( n -- n ) )
+T: ART-NAME DUP PAD 24 CMOVE ?VINITIAL
+ IF 78 ELSE BL THEN BARTER$ DROP 58 + C! BARTER$ DROP 60 + DUP
+ 24 BL FILL PAD 24 ASCII . -XTRAILING 1+ ROT SWAP CMOVE T;
+
+HEAD: VAL>BARTER ( ( n -- n ) )
+T: ART-VAL @ 0 333 U/MOD 1 MAX DUP 10 * EnQTY ! 0 <# #S #>
+ BARTER$ DROP 154 + DUP 4 BL FILL SWAP CMOVE DROP EnQTY @ 10 >
+ IF ASCII S ELSE BL THEN BARTER$ DROP 174 + 2 ROT FILL T;
+
+---- Screen 20 ----
+( Exceptional actions: BARTER                     3/21/85 AWK )
+
+HEAD: BARTER ( --)
+T: A>ORIGINATOR ORIGINATOR>C *STARSHIP-HOLD >C+S IOPEN
+ 11 15 IFIND
+ IF IOPEN
+   BEGIN @INST-SPECIES 15 = NOT DUP
+     IF ART>BARTER ICLOSE ICLOSE VAL>BARTER ICLOSE ICLOSE
+       BARTER$ (PHRASE>CT) 0 5 XY/N
+       IF BOX> >INACTIVE DROP EnQTY @ 6 +ELEMENT THEN
+     THEN INEXT ?FIRST OR
+   UNTIL
+ THEN SHIP-HOLD> ICLOSE T;
+
+
+
+
+---- Screen 21 ----
+( Exceptional actions:                            3/21/85 AWK )
+
+V: SA-ELOWAN -2 DP +!
+ 3 C,  ' THRYNN-CREW ,  ' THRYNN-PALS ,  ' NEED-ENERGY ,
+V: SA-THRYNN -2 DP +!
+ 5 C,  ' ELOWAN-CREW ,  ' ELOWAN-PALS ,  ' PLUTONIUM ,
+       ' BARTER ,       ' BLACK-BOX ,
+
+V: SA-VELOX -2 DP +!
+ 3 C,  ' CRYSTAL-ORB ,  ' ELLIPSOID ,      ' TRIBUTE ,
+
+V: SA-MECHAN -2 DP +! 1 C,  ' HUMAN-CREW ,
+
+V: SA-VPROBE -2 DP +! 1 C,  ' VPROBE# ,
+
+
+
+---- Screen 22 ----
+( Exceptional actions:                           10/16/85 AWK )
+
+HEAD: DO-SA'S ( addr -- )
+T: ?DUP
+ IF STOP-SA OFF
+   COUNT 2* OVER + SWAP DO
+     I @ EXECUTE STOP-SA @
+     IF LEAVE THEN
+   2 +LOOP
+ THEN T;
+
+
+
+
+
+
+
+---- Screen 23 ----
+( Exceptional actions:                            8/13/85 AWK )
+
+CASE SA-CASE
+   1 IS SA-ELOWAN   7 IS SA-THRYNN
+   8 IS SA-VELOX    3 IS SA-MECHAN
+  10 IS SA-VPROBE
+OTHERS 0
+
+: (XCOMM) ( -- )
+ (AORIGINATOR) 1.5@ >C+S @INST-SPECIES ICLOSE SA-CASE DO-SA'S ;
+
+
+
+
+
+
+
+==== Page 5 | 11-05-85 -- COMMSPECCMP -- Binary Systems | image COMMSPEC_CMP_p06 ====
+
+---- Screen 24 ----
+( -----------overlay suffix COMM SPEC -------------8/13/85 AWK )
+
+DISPOSE
+CLOSE-OVERLAY
+94 OVERLAY COMMSPEC-OV
+COMMSPEC-OV
+FORTH DEFINITIONS
+
+: XCOMM COMMSPEC-OV COMMSPEC-VOC (XCOMM) ;
+
+OV-CANCEL
+
+' XCOMM 'XCOMM !
+
+
+
+

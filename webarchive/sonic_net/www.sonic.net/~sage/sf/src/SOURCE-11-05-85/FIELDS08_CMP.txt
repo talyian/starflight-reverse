@@ -1,0 +1,224 @@
+==== Page 1 | 11-05-85 -- FIELDS08CMP -- Binary Systems | image FIELDS08_CMP_p01 ====
+---- Screen 0 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 2 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 3 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 4 ----
+( Starflight Button Afields                            AWK 12/21/84 )
+
+58 C= BUTTONS
+BUTTONS  0 12 AFIELD 1BTN  BUTTONS 12 12 AFIELD 2BTN
+BUTTONS 24 12 AFIELD 3BTN  BUTTONS 36 12 AFIELD 4BTN
+BUTTONS 48 12 AFIELD 5BTN  BUTTONS 60 12 AFIELD 6BTN
+BUTTONS 72  1 AFIELD #BTN
+
+: !BUTTON$ ( $nopack len n -- )
+ 12 * 1BTN + SWAP CMOVE ;
+
+: !BUTTON ( #btn record# -- )
+ RECORD# ! #BTN C! ;
+
+
+BUTTONS FILE# !
+---- Screen 5 ----
+( Starflight Button Afields                            AWK 12/21/84 )
+
+6 0 !BUTTON  ( bridge )
+" CAPTAIN     " 0 !BUTTON$   " SCIENCE OFF." 1 !BUTTON$
+" NAVIGATOR   " 2 !BUTTON$   " ENGINEER    " 3 !BUTTON$
+" COMM. OFF.  " 4 !BUTTON$   " DOCTOR      " 5 !BUTTON$
+
+6 1 !BUTTON  ( captain )
+" LAUNCH      " 0 !BUTTON$   " DISEMBARK   " 1 !BUTTON$
+" ITEMS       " 2 !BUTTON$   " LOG PLANET  " 3 !BUTTON$
+" SHIP'S LOG  " 4 !BUTTON$   " BRIDGE      " 5 !BUTTON$
+
+3 6 !BUTTON  ( doctor )
+" EXAMINE     " 0 !BUTTON$   " TREAT       " 1 !BUTTON$
+" BRIDGE      " 2 !BUTTON$   "             " 3 !BUTTON$
+"             " 4 !BUTTON$   "             " 5 !BUTTON$
+==== Page 2 | 11-05-85 -- FIELDS08CMP -- Binary Systems | image FIELDS08_CMP_p02 ====
+---- Screen 6 ----
+( Starflight Button Afields                            AWK 10/10/85 )
+
+4 2 !BUTTON  ( science officer )
+" STATUS      " 0 !BUTTON$   " SENSORS     " 1 !BUTTON$
+" ANALYSIS    " 2 !BUTTON$   " BRIDGE      " 3 !BUTTON$
+"             " 4 !BUTTON$   "             " 5 !BUTTON$
+
+6 3 !BUTTON  ( navigator )
+" MANEUVER    " 0 !BUTTON$   " STARMAP     " 1 !BUTTON$
+" RAISE SHIELD" 2 !BUTTON$   " ARM WEAPON  " 3 !BUTTON$
+" COMBAT      " 4 !BUTTON$   " BRIDGE      " 5 !BUTTON$
+
+3 4 !BUTTON  ( engineer )
+" DAMAGE      " 0 !BUTTON$   " REPAIR      " 1 !BUTTON$
+" BRIDGE      " 2 !BUTTON$   "             " 3 !BUTTON$
+"             " 4 !BUTTON$   "             " 5 !BUTTON$
+---- Screen 7 ----
+( Starflight Button Afields                            AWK 12/21/84 )
+
+4 5 !BUTTON  ( communications officer )
+" HAIL        " 0 !BUTTON$   " DRONE       " 1 !BUTTON$
+" MESSAGES    " 2 !BUTTON$   " BRIDGE      " 3 !BUTTON$
+"             " 4 !BUTTON$   "             " 5 !BUTTON$
+
+3 7 !BUTTON  ( sub LAND )
+" SELECT SITE " 0 !BUTTON$   " DESCEND     " 1 !BUTTON$
+" ABORT       " 2 !BUTTON$   "             " 3 !BUTTON$
+"             " 4 !BUTTON$   "             " 5 !BUTTON$
+
+3 8 !BUTTON  ( sub HAIL )
+" HOSTILE     " 0 !BUTTON$   " FRIENDLY    " 1 !BUTTON$
+" OBSEQUIOUS  " 2 !BUTTON$   "             " 3 !BUTTON$
+"             " 4 !BUTTON$   "             " 5 !BUTTON$
+---- Screen 8 ----
+( Starflight Button Afields                            AWK 12/21/84 )
+
+4 9 !BUTTON  ( sub POSTURE )
+" STATEMENT   " 0 !BUTTON$   " QUESTION    " 1 !BUTTON$
+" POSTURE     " 2 !BUTTON$   " TERMINATE   " 3 !BUTTON$
+"             " 4 !BUTTON$   "             " 5 !BUTTON$
+
+3 10 !BUTTON  ( sub alien question )
+" YES         " 0 !BUTTON$   " NO          " 1 !BUTTON$
+" TERMINATE   " 2 !BUTTON$   "             " 3 !BUTTON$
+"             " 4 !BUTTON$   "             " 5 !BUTTON$
+
+5 11 !BUTTON  ( sub QUESTION )
+" THEMSELVES  " 0 !BUTTON$   " OTHER RACES " 1 !BUTTON$
+" OLD EMPIRE  " 2 !BUTTON$   " THE ANCIENTS" 3 !BUTTON$
+" GENERAL INFO" 4 !BUTTON$   "             " 5 !BUTTON$
+---- Screen 9 ----
+( Starflight Button Afields                            AWK  7/19/85 )
+
+3 12 !BUTTON  ( sub POSTURE )
+" RESPOND     " 0 !BUTTON$   " SOS DRONE   " 1 !BUTTON$
+" BRIDGE      " 2 !BUTTON$   "             " 3 !BUTTON$
+"             " 4 !BUTTON$   "             " 5 !BUTTON$
+
+
+
+
+
+
+
+
+
+
+---- Screen 10 ----
+( Starflight Button Afields                            AWK 12/21/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 11 ----
+( Starflight Button Afields                            AWK 12/21/84 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==== Page 3 | 11-05-85 -- FIELDS08CMP -- Binary Systems | image FIELDS08_CMP_p03 ====
+---- Screen 12 ----
+( Starflight Button Afields                            AWK 12/21/84 )
+
+FORGET BUTTONS
+
+
+
+
+
+
+
+
+
+
+
+
+

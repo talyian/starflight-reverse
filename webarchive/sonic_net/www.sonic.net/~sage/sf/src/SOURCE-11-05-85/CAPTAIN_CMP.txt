@@ -1,0 +1,583 @@
+==== Page (none) | (no header) | image CAPTAIN_CMP_p01 ====
+0
+1 ( ----------------Overlay Prefix for CAPTAIN -----
+2 ( Crew fcns: Captain                             A
+3 ( Crew fcns: Captain
+4 ( Crew fcns: Captain
+5 ( Crew fcns: Captain
+6 ( Crew fcns: Captain
+7 ( Crew fcns: Captain                             A
+8 ( Crew fcns: Captain                             A
+9 ( Crew fcns: Captain                             A
+10 ( Crew fcns: Captain                             A
+11 ( Crew fcns: Captain                             A
+12 ( Crew fcns: Captain                             A
+13 ( Trade Depot                                    A
+14 ( Trade Depot                                    A
+15 ( Crew fcns: Captain                             A
+16 ( Crew fcns: Captain                             A
+17 ( Crew fcns: Captain                             A
+18 ( Crew fcns: Captain                             A
+19 ( Crew fcns: Captain                             A
+20 ( Crew fcns: Captain                             A
+21 ( Crew fcns: Captain                             A
+22 ( Crew fcns: Captain                             A
+23 ( Crew fcns: Captain                             A
+24 ( Crew fcns: Captain                             A
+25 ( Crew fcns: Captain                             A
+26 ( Crew fcns: Captain                             A
+27 ( Crew fcns: Captain                             A
+28 ( Crew fcns: Captain                             A
+29 ( Crew fcns: Captain                             A
+30 ( Crew fcns: Captain                             A
+==== Page 1 | 11-05-85 -- CAPTAIN CMP -- Binary Systems | image CAPTAIN_CMP_p02 ====
+---- Screen 0 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+( ----------------Overlay Prefix for CAPTAIN -----------------)
+
+( 101 C= CAPTAIN-DIR# )
+
+VOCABULARY CAPTAIN-VOC IMMEDIATE
+101 OPEN-OVERLAY
+CAPTAIN-VOC DEFINITIONS
+
+2500 TRANS-ALLOT NEWT-DP
+
+HEAD: *TOSS T: ' TOSS MODULE T;
+
+
+
+
+
+---- Screen 2 ----
+( Crew fcns: Captain                             AWK 10/15/85 )
+47 11  36 IFIELD: LOG-TEXT
+28 24   1 AFIELD: ART-TEXT       28 29  1 AFIELD: ART-ANLYZ
+57  0 190 AFIELD: ANALYSIS
+20 69   4 IFIELD: %STATUS
+32  7   2 AFIELD: PLAN-TSEED     32  2  2 AFIELD: PLAN-MASS
+32 17   2 AFIELD: ATMO-ACT       32  4  1 AFIELD: PLAN-LIFE
+32  9   1 AFIELD: PLAN-MIN
+32 15   2 AFIELD: COLDEST        32 16  1 AFIELD: WARMEST
+36 10   1 IFIELD: E$$            36 11  2 IFIELD: EDATE
+36 17   2 IFIELD: E#             36 19  1 IFIELD: EORBIT
+36 20   1 IFIELD: EBITS          36 21 15 IFIELD: ENAME
+20 19   2 IFIELD: %ENGINE
+23 18   1 IFIELD: RECOMMENDED
+HEAD: $-TB ( $1 -- $2 )
+T: PAD $! PAD COUNT -TRAILING PAD OVER 1- C! 1- T;
+---- Screen 3 ----
+( Crew fcns: Captain                              AWK 10/29/85 )
+
+HEAD: LOG-WINDOW ( -- )   T: 50 4 7 36 WINDOW T;
+
+HEAD: .LOG-TEXT ( -- )
+T: BLACK !COLOR XORMODE OFF CI
+ WLINES @ 0 DO 0 I CTPOS. LOG-TEXT 36 TYPE INEXT LOOP
+ CDROP >C+S NULL CTPOS. T;
+
+HEAD: .LOG-WINDOW ( -- )
+T: WHITE ERASE-TEXT LOG-WINDOW
+ DK-BLUE !COLOR 148 51 OVER 1 LLINE
+ 51 149 1 158 DK-BLUE POLY-WINDOW-FILL >1FONT WHITE !COLOR
+ 152 38 POS. ." E" 152 31 POS. ." X"
+ 152 24 POS. ." I" 152 17 POS. ." T" T;
+
+---- Screen 4 ----
+( Crew fcns: Captain                              AWK 8/22/85 )
+HEAD: LOG>PAD ( -- )
+T: PAD 36 32 FILL 36 PAD C! LOG-TEXT PAD 1+ 36 CMOVE T;
+
+HEAD: .CHAR>SCR ( b -- )
+T: CTX @ CTY @ XORMODE OFF WHITE !COLOR ." #" CTPOS.
+ BLACK !COLOR EMIT XORMODE ON WHITE !COLOR 1 CTX +! CTX @ 36 =
+ IF INEXT CTY @ 6 =
+   IF BLACK !COLOR LOG>PAD PAD WLINE-UP WHITE !COLOR THEN
+ CTCR THEN T;
+
+HEAD: CHAR>INST ( b -- )  T: LOG-TEXT CTX @ + C! T;
+
+HEAD: CHAR-FILTER ( b -- )
+T: >R I 32 91 WITHIN
+ IF I CHAR>INST I .CHAR>SCR ELSE DROP THEN R> DROP T;
+---- Screen 5 ----
+( Crew fcns: Captain                              AWK 8/22/85 )
+HEAD: LOG-TAB ( n -- )
+T: 2DROP CTX @ 4 + 35 MIN DUP CTY @ CTPOS. T;
+HEAD: LOG-BACK ( n -- )
+T: DROP CTX @ 1 36 WITHIN
+ IF WHITE !COLOR -4 xBLT +! XORMODE OFF ." #" XORMODE ON
+ -4 xBLT +! -1 CTX +! 32 CHAR>INST THEN T;
+
+HEAD: CR/QUIT ( b -- )
+T: DROP CTX @ 35 > IF FTRIG ON ELSE INEXT CTY @ 6 =
+   IF BLACK !COLOR LOG>PAD PAD WLINE-UP WHITE !COLOR THEN
+ CTCR THEN T;
+
+CASE CHAR>SCR
+  13 IS CR/QUIT  8 IS LOG-BACK 9 IS LOG-TAB
+OTHERS CHAR-FILTER
+==== Page 2 | 11-05-85 -- CAPTAIN CMP -- Binary Systems | image CAPTAIN_CMP_p03 ====
+---- Screen 6 ----
+( Crew fcns: Captain                               AWK 7/02/85 )
+HEAD: LOG-LINE ( n -- )
+T: BLACK !COLOR 0<
+ IF IPREV CTY @ 0<
+   IF LOG>PAD PAD WLINE-DOWN THEN
+   ELSE INEXT CTY @ 6 >
+   IF LOG>PAD PAD WLINE-UP THEN
+ THEN WHITE !COLOR T;
+
+HEAD: LOG-CRS ( n -- )
+T: (XYSCAN) CTX +! NEGATE DUP CTY +! ?DUP
+ IF LOG-LINE THEN CTX @ 0 MAX 36 MIN DUP CTX !
+ CTY @ 0 MAX 6 MIN DUP CTY ! CTPOS. FTRIG OFF T;
+
+HEAD: KEY-PAUSE ( n -- ) T:
+0 TIME D@ D+ BEGIN TIME D@ 2OVER D> ?TERMINAL OR UNTIL 2DROP T;
+---- Screen 7 ----
+( Crew fcns: Captain                             AWK 10/04/85 )
+HEAD: FLASH-CURSOR ( -- )
+T: @CRS XORMODE ON RED !COLOR ." #"
+ 500 KEY-PAUSE -4 xBLT +! ." #" 500 KEY-PAUSE !CRS T;
+
+HEAD: LOG-IN$ ( -- )
+T: BEGIN FLASH-CURSOR 'KEY ?DUP UNTIL >R I 255 >
+ IF I LOG-CRS ELSE CTX @ 36 < I 13 = OR
+   IF I I CHAR>SCR THEN
+ THEN R> DROP T;
+
+: (/CAPT-LOG) ( -- )
+ *SHIP >C+S IOPEN 11 43 IFIND DROP IOPEN
+ .LOG-WINDOW .LOG-TEXT FTRIG OFF
+ BEGIN LOG-IN$ ?TRIG UNTIL
+ BLACK ERASE-TEXT ICLOSE CDROP ICLOSE ;
+---- Screen 8 ----
+( Crew fcns: Captain                             AWK 11/11/84 )
+
+HEAD: THIS-ITEM ( -- iaddr )  T: (THIS-ITEM) 1.5@ T;
+
+HEAD: NEXT-THIS-ITEM ( -- )
+T: THIS-ITEM >C+S INEXT CI (THIS-ITEM) 1.5! ICLOSE T;
+
+HEAD: PREV-THIS-ITEM ( -- )
+T: THIS-ITEM >C+S IPREV CI (THIS-ITEM) 1.5! ICLOSE T;
+
+HEAD: GET-THIS-INST ( ( -- n ) )
+T: THIS-ITEM >C+S
+ TEXT-INST 1.5@ ICLOSE >C+S T;
+
+
+
+---- Screen 9 ----
+( Crew fcns: Captain                             AWK 10/30/85 )
+
+HEAD: (CRS-TOGGLE) ( v -- )
+T: >R @CRS 3 R> POS. CURSORSPACE aBLT ! 7 lBLT ! 154 wBLT !
+ DK-GREEN !COLOR XORMODE ON BLT !CRS T;
+
+HEAD: CRS-TOGGLE ( -- ) T:  WTOP @ 1+ (CRS-TOGGLE) T;
+
+HEAD: .ITEMS ( ( n -- n' ) )
+T: WHITE !COLOR WLINES @ 0 DO
+ WLEFT @ WTOP @ I 7 * - POS. TEXT>PAD PAD $. INEXT LOOP T;
+
+HEAD: .ITEM-PAGE ( ( -- n n' ) )
+T: (SCROLL-BOX) 1.5@ >C+S IOPEN CI (THIS-ITEM) 1.5!
+ 0 BEGIN 1+ INEXT ?FIRST UNTIL >R
+ >1FONT 43 3 5 R> MIN 38 WINDOW .ITEMS IPREV CRS-TOGGLE T;
+---- Screen 10 ----
+( Crew fcns: Captain                             AWK 10/26/85 )
+
+HEAD: (TD-UP) ( -- )
+T: INEXT NEXT-THIS-ITEM T;
+
+HEAD: TD-UP ( -- )
+T: (TD-UP) TEXT>PAD PAD CRS-TOGGLE WLINE-UP CRS-TOGGLE T;
+
+HEAD: TD-DOWN ( -- )
+T: IPREV PREV-THIS-ITEM
+ THIS-ITEM >C+S TEXT>PAD ICLOSE
+ PAD CRS-TOGGLE WLINE-DOWN CRS-TOGGLE T;
+
+CASE TD-SCROLL
+  1 IS TD-UP   -1 IS TD-DOWN
+OTHERS NOP
+---- Screen 11 ----
+( Crew fcns: Captain                             AWK 11/11/84 )
+
+HEAD: -HEAD+1ERASE ( c -- )
+T: >R WTOP @ 7 - WLEFT @ WBOTTOM @ 7 - WRIGHT @ R>
+ POLY-WINDOW-FILL T;
+
+
+
+
+
+
+
+
+
+
+
+==== Page 3 | 11-05-85 -- CAPTAIN CMP -- Binary Systems | image CAPTAIN_CMP_p04 ====
+---- Screen 12 ----
+( Crew fcns: Captain                             AWK 10/29/85 )
+
+HEAD: (.ITEM-TEXT)
+T: BLUE !COLOR 6 6 CTPOS. ." SCROLL ITEMS: ^\  QUIT: ]" T;
+
+HEAD: .ITEM-TEXT ( -- )
+T: >1FONT CTERASE (.ITEM-TEXT)
+ 4 WTOP @ 7 + POS. ." ITEM" 108 xBLT ! ." VOLUME"
+ 136 xBLT ! ." VALUE" T;
+
+
+
+
+
+
+
+---- Screen 13 ----
+( Trade Depot                                    AWK 10/24/85 )
+
+HEAD: MOD-ELEM-LINE ( -- )
+T: GET-THIS-INST INST-QTY @ 10 /MOD ICLOSE
+ THIS-ITEM >C+S TEXT-TEXT 26 + 6 46 FILL
+ U>$ TEXT-TEXT 30 + OVER - SWAP CMOVE
+ U>$ DROP C@ TEXT-TEXT 31 + C!
+ CRS-TOGGLE WTOP @ WLEFT @ 38 BLACK 2OVER POS.PXT SWAP POS.
+ TEXT-TEXT 38 TYPE ICLOSE CRS-TOGGLE T;
+
+
+
+
+
+
+
+---- Screen 14 ----
+( Trade Depot                                    AWK 10/26/85 )
+
+HEAD: MOD-DISPLAY ( n -- )
+T: ?DUP
+ IF 0 DO
+     THIS-ITEM PREV-THIS-ITEM >C+S
+       IDELETE ICLOSE SCROLL-LEN @ WLINES @ <
+       IF IPREV BLACK WSHORTEN THEN (TD-UP)
+     LOOP
+ ELSE GET-THIS-INST @INST-CLASS ICLOSE 26 =
+   IF MOD-ELEM-LINE THEN
+ THEN T;
+
+
+
+
+---- Screen 15 ----
+( Crew fcns: Captain                             AWK 10/30/85 )
+
+HEAD: .DESC ( ( item -- item ) )
+T: BLACK -HEAD+1ERASE >1FONT WHITE !COLOR ART-ANLYZ C@
+ IF ART-TEXT C@ 57 FILE# ! RECORD# ! 0 2 CTPOS.
+   190 0 DO ANALYSIS I + PAD 38 CMOVE
+     PAD 38 -TRAILING
+     38 OVER - 2/ SPACES TYPE GCR
+   38 +LOOP SET-CURRENT
+ ELSE 1 3 CTPOS. ." THIS ARTIFACT HAS NOT BEEN ANALYZED"
+ THEN KEY DROP T;
+
+
+
+
+
+---- Screen 16 ----
+( Crew fcns: Captain                             AWK 10/28/85 )
+
+HEAD: .PLAYBACK T: NOP T;
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 17 ----
+( Crew fcns: Captain                             AWK 10/04/85 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==== Page 4 | 11-05-85 -- CAPTAIN CMP -- Binary Systems | image CAPTAIN_CMP_p05 ====
+---- Screen 18 ----
+( Crew fcns: Captain                             AWK 10/28/85 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 19 ----
+( Crew fcns: Captain                             AWK 10/29/85 )
+
+CASE 2ndOPTION
+  28 IS .DESC   27 IS .PLAYBACK
+OTHERS NOP
+
+V: THIS-OPTION
+V: #OPTIONS
+
+: DO-OPTION ( ( item -- item ) f )
+ THIS-OPTION @ 0=
+ IF *TOSS DUP MOD-DISPLAY ELSE @INST-CLASS 2ndOPTION 1 THEN ;
+
+
+
+
+---- Screen 20 ----
+( Crew fcns: Captain                             AWK 10/30/85 )
+
+HEAD: .OTH T: ."  JETTISON" 0 T;
+HEAD: .ART T: .OTH GCR ."  DESCRIBE" 1+ T;
+HEAD: .BIO T: ."  ERASE" 0 T;
+HEAD: .MSG T: .BIO GCR ."  PLAYBACK" 1+ T;
+
+CASE ITEM-OPTIONS
+  28 IS .ART  27 IS .MSG  43 IS BIO
+OTHERS .OTH
+
+HEAD: SET-OPTIONS ( ( item -- item ) )
+T: WLEFT @ WTOP @ 7 - POS. >1FONT WHITE !COLOR
+  @INST-CLASS ITEM-OPTIONS #OPTIONS ! THIS-OPTION OFF
+  BLUE !COLOR 7 6 CTPOS.
+  ." ^\ SELECT ITEM OR QUIT ]" WTOP @ 6 - (CRS-TOGGLE) T;
+---- Screen 21 ----
+( Crew fcns: Captain                             AWK 10/30/85 )
+
+HEAD: PROCESS-THIS-ITEM ( -- )
+T: GET-THIS-INST @INST-CLASS ICLOSE 11 = NOT
+   IF GET-THIS-INST BLACK -HEAD+1ERASE CRS-TOGGLE SET-OPTIONS
+     BEGIN XYSCAN DROP ?DUP
+       IF NEGATE THIS-OPTION @ + DUP 0 #OPTIONS 1+ WITHIN
+         IF THIS-OPTION @ 2+ 7 * 50 SWAP - (CRS-TOGGLE)
+           DUP THIS-OPTION ! 2+ 7 * 50 SWAP - (CRS-TOGGLE)
+         ELSE DROP THEN
+       THEN ?TRIG
+       IF DO-OPTION ELSE 0 THEN FQUIT @ OR
+     UNTIL CDROP CDROP ICLOSE .ITEM-TEXT .ITEM-PAGE
+   ELSE BEEP THEN T;
+
+
+---- Screen 22 ----
+( Crew fcns: Captain                             AWK 10/30/85 )
+HEAD: 0HOLD ( -- )
+T: CTINIT ." STARSHIP HOLD IS EMPTY." 2000 MS T;
+
+: (/ITEMS) ( -- )
+ CTERASE *STARSHIP-HOLD >C+S ?CHILD ICLOSE
+ IF 43 3 7 38 WINDOW .ITEM-TEXT MAKE-SCROLL-BOX
+   *STARSHIP-HOLD GET-BOXES .ITEM-PAGE
+   BEGIN XYSCAN DROP TD-SCROLL ?TRIG
+     IF PROCESS-THIS-ITEM FQUIT OFF THEN
+   ?QUIT UNTIL CDROP ICLOSE
+   DELETE-SCROLL-BOX CRS-TOGGLE
+ ELSE 0HOLD THEN CTERASE ;
+
+HEAD: CAP$[ ( -- )  T: 58 FILE# ! 1 RECORD# ! T;
+HEAD: ]CAP$ ( -- )  T: SWAP CMOVE SET-CURRENT T;
+---- Screen 23 ----
+( Crew fcns: Captain                             AWK 10/14/85 )
+: >DESCEND ( -- )
+ CAP$[ " LAUNCH" 1BTN ]CAP$ CONTEXT-ID# OFF
+ ' NOP 'EXTERNAL-EVENTS !
+ *SHIP >C+S %STATUS C@ 239 AND %STATUS C! ICLOSE ;
+
+HEAD: >LAUNCH ( -- )
+T: CONTEXT-ID# @ 0= (PLANET) 1.5@ D0= NOT AND
+ IF (PLANET) 1.5@ >C+S IOPEN
+   BEGIN ?-NULL WHILE IDELETE REPEAT
+   ICLOSE ICLOSE
+   ' OVCOUNTDOWN MODULE ' ASCEND MODULE
+   ' MROTATE 'EXTERNAL-EVENTS !
+ ELSE ' OVCOUNTDOWN MODULE THEN PLHI OFF
+ CAP$[ " LAND  " 1BTN ]CAP$ T;
+
+[handwritten: lines 8-10 struck through with pen, with a checked box drawn to the right (near lines 8-10)]
+==== Page 5 | 11-05-85 -- CAPTAIN CMP -- Binary Systems | image CAPTAIN_CMP_p06 ====
+---- Screen 24 ----
+( Crew fcns: Captain                             AWK 10/15/85 )
+
+HEAD: -ORBIT ( -- )
+ T: CTINIT CTERASE ." WE'RE NOT IN ORBIT" T;
+
+HEAD: >LAND ( -- f )
+T: ?PORT @
+  IF CTINIT CTERASE ." WE CAN'T LAND ON ARTH" 0
+    ELSE CONTEXT-ID# @ 1 = ?DUP 0= IF -ORBIT 0 THEN
+  THEN T;
+
+: (/LAUNCH/LAND) ( -- f )
+ *SHIP >C+S 5 %ENGINE 1+ C@ ICLOSE ' ov?.EQUIP-OK MODULE
+ IF CONTEXT-ID# @ DUP 0= SWAP 5 = OR
+   IF >LAUNCH 0 ELSE >LAND THEN
+ ELSE 0 THEN ;
+---- Screen 25 ----
+( Crew fcns: Captain                             AWK  9/06/85 )
+
+V: +PLAN
+
+HEAD: +BONUS ( n -- ) T: +PLAN +! T;
+
+HEAD: ?XHEAT ( ( n --n ) n )
+T: WARMEST C@ 2 < DUP NOT +BONUS T;
+
+HEAD: ?XCOLD ( ( n --n ) n )
+T: COLDEST C@ 2 > DUP NOT +BONUS T;
+
+HEAD: ?CRUSH ( -- n )
+T: PLAN-MASS @ DUP 69 > OVER 131 < + +BONUS 200 > T;
+
+
+---- Screen 26 ----
+( Crew fcns: Captain                             AWK  9/09/85 )
+
+HEAD: ?STORM ( -- n )
+T: ATMO-ACT @ DUP 4 < OVER 3 < + +BONUS 2 > T;
+
+HEAD: ?NO.02 ( -- n ) T:      0        T;
+
+HEAD: ?NOH20 ( -- n ) T:      0        T;
+
+HEAD: +LIFE ( -- ) T: PLAN-LIFE C@ 0> +BONUS T;
+
+HEAD: +MINERALS ( -- )
+T: PLAN-MIN C@ DUP 0> SWAP 50 / MAX +BONUS T;
+
+
+
+---- Screen 27 ----
+( Crew fcns: Captain                             AWK  9/16/85 )
+
+HEAD: NAME>EVAL ( -- )
+T: CTINIT CTERASE ." NAME THIS PLANET: " CTCR
+   ENAME 15 BL FILL PAD 16 BL FILL
+   15 ' ov#IN$ MODULE COUNT ENAME SWAP CMOVE T;
+
+HEAD: EVAL>BANK ( ( n -- n ) )
+T: ' ovINIT-BALANCE MODULE
+ E$$ C@ 1000 U* 100. DMAX EBITS C@
+ IF DNEGATE THEN ' ovD@BALANCE MODULE D+
+ ' ovD!BALANCE MODULE ' ov!TFLAG MODULE
+ EBITS C@ 0= 3* ' ovTRANSACT MODULE T;
+
+V: #BAD-EVAL #BAD-EVAL OFF
+
+---- Screen 28 ----
+( Crew fcns: Captain                             AWK  9/06/85 )
+HEAD: >EVAL ( ( -- n n'n" ) )
+T: *OP >C+S IOPEN 11 45 IFIND DROP IOPEN 36 0 1 *CREATE
+ (SYSTEM) 1.5@ >C+S INST-X @ INST-Y @ ICLOSE INST-Y ! INST-X !
+ (ORBIT) 1.5@ >C+S INST-QTY @ ICLOSE EORBIT C! T;
+
+HEAD: PLANET>EVAL ( ( n -- n ) )
+T: (PLANET) 1.5@ >C+S
+   ?XHEAT          ?XCOLD  2* OR  ?CRUSH  4 * OR
+   ?STORM  8 * OR  ?NO.02 16* OR  ?NOH20 32 * OR
+   +LIFE +MINERALS ICLOSE EBITS C! T;
+HEAD: $>EVAL ( -- )
+T: EBITS C@
+ IF #BAD-EVAL @ 8 MIN 10 * 1 #BAD-EVAL +! SAVE-OVERLAY
+ ELSE +PLAN @ 5 * THEN E$$ C! T;
+
+---- Screen 29 ----
+( Crew fcns: Captain                             AWK  9/27/85 )
+
+HEAD: MAKE-EVAL ( ( -- ) )
+T: +PLAN OFF >EVAL STARDATE @ EDATE !
+ CI' >C+S 1 INST-QTY +! INST-QTY @ ICLOSE E# !
+ PLANET>EVAL $>EVAL NAME>EVAL EVAL>BANK
+ ICLOSE ICLOSE ICLOSE ?EVAL ON T;
+HEAD: >LOG ( -- )
+T: MAKE-EVAL ." RECOMMENDATION LOGGED." T;
+
+
+
+
+
+
+
+==== Page 6 | 11-05-85 -- CAPTAIN CMP -- Binary Systems | image CAPTAIN_CMP_p07 ====
+---- Screen 30 ----
+( Crew fcns: Captain                             AWK 10/18/85 )
+HEAD: ?-RECOMMENDED ( -- f )
+T: (ORBIT) 1.5@ >C+S INST-QTY @ BIT DUP ICLOSE
+   (SYSTEM) 1.5@ >C+S RECOMMENDED C@ AND DUP
+   ROT RECOMMENDED C@ OR RECOMMENDED C! ICLOSE
+   IF ." THIS PLANET HAS ALREADY BEEN LOGGED." THEN NOT T;
+
+: (/LOG-PLAN) ( -- ) CTINIT CTERASE
+ (PLANET) 1.5@ >C+S IOPEN 12 0 IFIND CDROP ICLOSE
+ IF ." THAT'S ARTH YOU FOOL!"
+ ELSE CONTEXT-ID# @ 2 <
+     IF ." RECOMMEND THIS PLANET FOR" CTCR
+       ." COLONIZATION? [N Y]" Y/N CTCR
+       IF ?-RECOMMENDED IF >LOG THEN THEN
+   ELSE -ORBIT THEN
+ THEN ;
+---- Screen 31 ----
+( ----------------Overlay Suffix for CAPTAIN -----------------)
+DISPOSE
+CLOSE-OVERLAY
+101 OVERLAY CAPTAIN-OV
+CAPTAIN-OV
+FORTH DEFINITIONS
+
+: ov/ITEMS  CAPTAIN-OV CAPTAIN-VOC (/ITEMS) ;
+: ov/CAPT-LOG  CAPTAIN-OV CAPTAIN-VOC (/CAPT-LOG) ;
+: ov/LAUNCH/LAND  CAPTAIN-OV CAPTAIN-VOC (/LAUNCH/LAND) ;
+: ov>DESCEND  CAPTAIN-OV CAPTAIN-VOC >DESCEND ;
+: ov/LOG-PLAN CAPTAIN-OV CAPTAIN-VOC (/LOG-PLAN) ;
+
+OV-CANCEL
+
+

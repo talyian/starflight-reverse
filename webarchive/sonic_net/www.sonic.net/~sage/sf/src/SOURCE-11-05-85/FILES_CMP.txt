@@ -1,0 +1,552 @@
+==== Page (none) | (no header) | image FILES_CMP_p01 ====
+ 0
+ 1 ( FILES - LOAD/READ ME
+ 2 ( FILES - Directory record field access
+ 3 ( FILES - Directory field definitions
+ 4 ( FILES - INIT-DIR
+ 5 ( FILES - GET# DISK-CODE FILE
+ 6 ( FILES - SPACE ALLOCATION VARIABLES AND CONSTANTS
+ 7 ( FILES - FILE-START/END
+ 8 ( FILES - FILE-START/END
+ 9 ( FILES - 0-START/END A-START/END B-START/END
+10 ( FILES - INSTALL-FILES
+11 ( FILES - DIRECTORY RECORDS 000 - 009
+12 ( FILES - DIRECTORY RECORDS 010 - 019
+13 ( FILES - DIRECTORY RECORDS 020 - 029
+14 ( FILES - DIRECTORY RECORDS 030 - 039
+15 ( FILES - DIRECTORY RECORDS 040 - 049
+16 ( FILES - DIRECTORY RECORDS 050 - 059
+17 ( FILES - DIRECTORY RECORDS 060 - 069
+18 ( FILES - DIRECTORY RECORDS 070 - 079
+19 ( FILES - DIRECTORY RECORDS 080 - 089
+20 ( FILES - DIRECTORY RECORDS 090 - 099
+21 ( FILES - DIRECTORY RECORDS 100 - 109
+22 ( FILES - DIRECTORY RECORDS 110 - 119
+23 ( FILES - DIRECTORY RECORDS 120 - 129
+24 ( FILES - DIRECTORY RECORDS 130 - 139
+25 ( FILES - BLOCK 26 IS START OF GENERATED DIRECTORY
+26 DIRECTORY    .........INSTANCE    ..Z?~@$..IROOT
+27 STRING       .........BPORT-PIC   .c.(.....PHRASECO
+28 LISTICONS   .j...(...MOVE-OV     ...~.m...ENGINEER
+29 ( FILES - BLOCK 28 IS END   OF GENERATED DIRECTORY
+
+==== Page 1 | 11-05-85 -- FILES  CMP -- Binary Systems | image FILES_CMP_p02 ====
+---- Screen 0 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+( FILES - LOAD/READ ME                                  8-29-85)
+
+2 24 THRU ( load file compiler & data)
+
+INSTALL-FILES ( allocate disk space)
+23040 28 BLOCK 1008 + !
+46016 28 BLOCK 1010 + ! ( add b signature to directory)
+
+SAVE-BUFFERS
+
+FORGET DIRBASE
+
+
+
+
+
+---- Screen 2 ----
+( FILES - Directory record field access              3-1-85)
+
+26 C= DIRBASE ( base block of directory)
+
+: DOFFBLK ( dirrec# -- offset blk \ calc directory record#)
+  ( offset & block)
+  DUP 96 < NOT
+  IF 96  DIRBASE 2+
+  ELSE DUP 48 < NOT
+       IF 48 DIRBASE 1+
+       ELSE  0 DIRBASE
+       THEN
+  THEN
+  >R - 21 * R> ;
+
+
+---- Screen 3 ----
+( FILES - Directory field definitions                      3-1-85)
+: DFIELD
+  ( offset <name> -- \ define directory field )
+  ( At run time: record# <fieldname> -- addr \ in buffer      )
+  CREATE C, ( PFA==>[offset] )
+  DOES>
+    C@ SWAP DOFFBLK BLOCK + SWAP + ;
+
+ 0 DFIELD FILE-NAME  ( 12 ASCII characters          )
+12 DFIELD FILE-TYPE  ( 0=fixed,1=var,2=overlay  )
+13 DFIELD FILE-START ( start of file on disk    )
+15 DFIELD FILE-END   ( end of file on disk      )
+17 DFIELD FILE-#REC  ( max # records            )
+19 DFIELD FILE-RLEN  ( max record length        )
+20 DFIELD FILE-SLEN  ( status record length     )
+
+---- Screen 4 ----
+( FILES - INIT-DIR                                         3-1-85)
+: INIT-DIR ( -- \ initialize disk file directory)
+  140 0 DO I FILE-NAME 12 BL FILL
+           I FILE-TYPE  9  0 FILL LOOP ;
+: .RJ ( n -- \ right justify) 0 5 D.R SPACE ;
+: DIR ( start -- \ display directory from start to end)
+  CR ." dir#             disk  #rec   rlen   slen"
+  ."   start    end " 140 SWAP
+  DO  CR ?TERMINAL IF LEAVE THEN
+      I .RJ
+      I FILE-NAME 12 TYPE
+      I FILE-TYPE C@ .RJ
+      I FILE-#REC  @ .RJ
+      I FILE-RLEN C@ .RJ
+      I FILE-SLEN C@ .RJ
+      I FILE-START @ .RJ I FILE-END @ .RJ LOOP ;
+---- Screen 5 ----
+( FILES - GET# DISK-CODE FILE                              3-1-85)
+: GET# ( <number> -- n \ get number from input stream)
+  BL WORD NUMBER DROP ;
+
+CASE DISK-CODE ( c -- n)
+  ASCII A IS 1
+  ASCII B IS 2
+  ASCII X IS 3
+OTHERS 0
+
+: FILE ( file# <name> disk #rec rlen slen -- \)
+       ( enter a file in the file directory)
+  GET# >R BL WORD COUNT  I FILE-NAME SWAP CMOVE
+  BL WORD COUNT DROP C@  DISK-CODE I FILE-TYPE C!
+  GET# I FILE-#REC !     GET# I FILE-RLEN  C!
+  GET# I FILE-SLEN C! R> DROP ;
+==== Page 2 | 11-05-85 -- FILES  CMP -- Binary Systems | image FILES_CMP_p03 ====
+---- Screen 6 ----
+( FILES - SPACE ALLOCATION VARIABLES AND CONSTANTS     8-29-85)
+( ASSUMES 9 SEC/TRK ACCESS)
+    0 C= INITIAL-DPA  ( initial freespace pointer for disk a)
+23040 C= INITIAL-DPB  ( initial freespace pointer for disk b)
+22848 C= FINAL-DPA     ( end of freespace on disk a)
+45888 C= FINAL-DPB     ( end of freespace on disk b)
+V= DPA                ( disk a free space pointer)
+V= DPB                ( disk b free space pointer)
+: INIT-DPAB ( -- \ set initial free space pointers)
+  INITIAL-DPA DPA !    INITIAL-DPB DPB ! ;
+: .FREE-SPACE ( -- \ display amount of free space on the disks)
+  FINAL-DPA DPA @ - CR ." DISK A = " U. ."  FREE SEGS"
+  FINAL-DPB DPB @ - CR ." DISK B = " U. ."  FREE SEGS" ;
+: BYTES>BLOCKEND ( vsa -- n \ compute number of bytes to end)
+  ( of block)
+  0 64 U/MOD DROP NEGATE 64 + 16* ;
+---- Screen 7 ----
+( FILES - FILE-START/END                               3-4-85)
+
+: SEGISTBLK ( dp-vsa -- dp-vsa #segslstblk #rlstb #rec rlen)
+  ( \ given a freespace address and the current file in )
+  ( file#, calc some parameters)
+  DUP BYTES>BLOCKEND          ( dp-vsa c>eob --)
+  FILE# @ FILE-RLEN C@      ( dp-vsa c>eob rlen -- )
+  2DUP < IF >R DROP DUP BYTES>BLOCKEND 16/ + 1024 R> THEN
+  >R I /                      ( dp-vsa recs>eob -- rlen)
+  FILE# @ FILE-#REC @ >R I MIN
+                              ( dp-vsa #recslstblk -- #rec rlen)
+  >R I J * 16 /MOD SWAP IF 1+ THEN
+         ( dp-vsa #segslstblk -- #rlstblk #rec rlen)
+  I I' = NOT IF OVER BYTES>BLOCKEND 16/ MAX THEN
+  R> R> R> ;
+
+---- Screen 8 ----
+( FILES - FILE-START/END                               3-4-85)
+
+: FILE-START/END ( dp-vsa -- start-vsa end-vsa \ given a)
+  ( freespace address and the current file in file#, compute)
+  ( the adjusted freespace pointer and the start & end vsas.)
+  SEGISTBLK ( dp-vsa #segslstblk #rlstb #rec rlen --)
+  >R SWAP - ( dp-vsa #segslstblk #rec' -- rlen )
+  1024 I / ( dp-vsa #segslstblk #rec' rec/blk -- rlen )
+  /MOD 64 * ( dp-vsa #segslstblk remrec sblk -- rlen )
+  SWAP R> * ( dp-vsa #segslstblk sblk #rbytes -- )
+  16 /MOD SWAP IF 1+ THEN + + ( dp-vsa vsa-len --)
+  OVER + 1- ;
+
+
+
+
+[handwritten: vsa>va / va>blk / va -- offset blk (near lines 12-15)]
+---- Screen 9 ----
+( FILES - 0-START/END A-START/END B-START/END              9-09-85)
+: 0-START/END 0 0 ;
+: A-START/END ( -- start-vsa end-vsa \ allocate space on diska)
+  DPA @ FILE-START/END
+  DUP 1+ DUP FINAL-DPA U< NOT IF UNRAVEL THEN DPA ! ;
+: B-START/END ( -- start-vsa end-vsa \ allocate space on diskb)
+  DPB @ FILE-START/END
+  DUP 1+ DUP FINAL-DPB U< NOT IF UNRAVEL THEN DPB ! ;
+: X-START/END ( -- start-vsa end-vsa \ allocate space on diskb)
+  ( and block align) DPB @ BYTES>BLOCKEND 16/ DUP 64 = NOT
+  IF DPB +! ELSE DROP THEN B-START/END ;
+
+CASE FILE-CASES ( file-type -- start end \ find disk space)
+  0 IS 0-START/END  1 IS A-START/END  2 IS B-START/END
+  3 IS X-START/END
+OTHERS UNRAVEL
+---- Screen 10 ----
+( FILES - INSTALL-FILES                                    3-4-85)
+
+: INSTALL-FILES ( -- \ allocate space for files)
+  INIT-DPAB
+  140 1 DO I 43 = NOT IF I DUP FILE# !
+                        FILE-TYPE C@ FILE-CASES
+                        I FILE-END ! I FILE-START !
+                     ELSE 40 FILE-START @ 43 FILE-START !
+                          40 FILE-END   @ 43 FILE-END   !
+                     THEN
+           LOOP .FREE-SPACE ;
+
+
+
+
+
+---- Screen 11 ----
+( FILES - DIRECTORY RECORDS 000 - 009                      9-12-85)
+INIT-DIR
+(      dir#  name          disk  #rec    rlen  slen)
+
+FILE 000  DIRECTORY     0     140     21     0
+FILE 001  INSTANCE      B    9408     16     0
+FILE 002  IROOT         0       0      0     0
+FILE 003  ISYSTEM       0       0      0     0
+FILE 004  INACTIVE      0       0      0     0
+FILE 005  FRAGMENT      0       0      0     0
+FILE 006  ELO-CPIC      B     301     16     0
+FILE 007  IAPPLICATION  0       0      0     0
+FILE 008  GAZ-CPIC      A     195     16     0
+FILE 009  MEC-CPIC      A     178     16     0
+
+
+==== Page 3 | 11-05-85 -- FILES  CMP -- Binary Systems | image FILES_CMP_p04 ====
+---- Screen 12 ----
+( FILES - DIRECTORY RECORDS 010 - 019                     3-1-85)
+
+(      dir#  name          disk  #rec    rlen  slen)
+
+FILE 010  BOOT/KERNEL   A    8192     16     0
+FILE 011  BOX           B      64     16     8
+FILE 012  STARPORT      0       0      0     0
+FILE 013  BANK          0       0      0     9
+FILE 014  BANK-TRANS    B       7     19     6
+FILE 015  PERSONNEL     0       0      0     0
+FILE 016  CREWMEMBER    B       6     20    24
+FILE 017  ASSIGN-CREW   0       0      0    24
+FILE 018  SHIP-CONFIG   0       0      0     0
+FILE 019  TRADE-DEPOT   0       0      0     0
+
+
+---- Screen 13 ----
+( FILES - DIRECTORY RECORDS 020 - 029                   10/31/85)
+
+(      dir#  name          disk  #rec    rlen  slen)
+
+FILE 020  SHIP          0       0      0    75
+FILE 021  MYS-CPIC      A     379     16     0
+FILE 022  TIME          0       0      0     4
+FILE 023  STARSYSTEM    0       0      0     8
+FILE 024  STAR          0       0      0     6
+FILE 025  VESSEL        B      25     65    16
+FILE 026  ELEMENT       B      23     23     6
+FILE 027  MESSAGE       0       0      0    17
+FILE 028  ARTIFACT      B      51     30     6
+FILE 029  PROJECTILE    0       0      0     8
+
+
+---- Screen 14 ----
+( FILES - DIRECTORY RECORDS 030 - 039                    3/23/85)
+
+(      dir#  name          disk  #rec    rlen  slen)
+
+FILE 030  NOM-CPIC      A      71     16     0
+FILE 031  SPE-CPIC      B     118     16     0
+FILE 032  PLANET        B      61     22     0
+FILE 033  THR-CPIC      B     155     16     0
+FILE 034  OPERATIONS    0       0      0     0
+FILE 035  NOTICE        0       0      0     1
+FILE 036  EVALUATION    0       0      0    25
+FILE 037  VEL-CPIC      B     292     16     0
+FILE 038  VPR-CPIC      A      78     16     0
+FILE 039  MIN-CPIC      A     131     16     0
+
+
+---- Screen 15 ----
+( FILES - DIRECTORY RECORDS 040 - 049                      3-1-85)
+
+(      dir#  name          disk  #rec    rlen  slen)
+
+FILE 040  SPECIMEN      B      28     16    13
+FILE 041  RUIN          0       0      0     7
+FILE 042  TVEHICLE      0       0      0     7
+FILE 043  BIO-DATA      0      28     16    13 ( use specimen ca)
+FILE 044  TPORT-PIC     B     145     16     0
+FILE 045  FLUX-NODE     0       0      0     8
+FILE 046  NEBULA        0       0      0     6
+FILE 047  CAPT-LOG      0       0      0    36
+FILE 048  STRING        0       0      0     0
+FILE 049  BPORT-PIC     B     153     16     0
+
+
+---- Screen 16 ----
+( FILES - DIRECTORY RECORDS 050 - 059                      3-1-85)
+
+(      dir#  name          disk  #rec    rlen  slen)
+
+FILE 050  PHRASECONTRL  0       0      0     6
+FILE 051  SUBJECT       0       0      0     0
+FILE 052  ORIGINATOR    0       0      0    19
+FILE 053  MESSAGE       0       0      0     2
+FILE 054  (UNUSED)      0       0      0     0
+FILE 055  TEXT          0       0      0    40
+FILE 056  SCROLL-TEXT   0       0      0    44
+FILE 057  ANALYZE-TEXT  B      15    190     0
+FILE 058  BUTTONS       B      14     73     0
+FILE 059  BLT-HEAD      0       0      0    18
+
+
+[handwritten: faint pencil marks over FILE 053/054 values (near lines 7-8)]
+---- Screen 17 ----
+( FILES - DIRECTORY RECORDS 060 - 069                      3-1-85)
+
+(      dir#  name          disk  #rec    rlen  slen)
+
+FILE 060  (UNUSED)      ~       0      0     0
+FILE 061  ENCOUNTER     0       0      0    17
+FILE 062  ICON1:1       B      50     18     0
+FILE 063  ICON1:2       B      50     18     0
+FILE 064  ICON1:4       B      50     18     0
+FILE 065  ICON-NAME     B      27     27     0
+FILE 066  (UNUSED)      ~       ~      ~     0
+FILE 067  REGIONS       B       6     28     2
+FILE 068  CREATURE      B     100    156    17
+FILE 069  ORD:          0       0      0     1
+
+
+[handwritten: "(UNUSED)" crossed out and replaced with "MED-PIC", disk "A", #rec "128", rlen "16" (near line 4)]
+[handwritten: "12" with checkmark (near line 9)]
+[handwritten: "(UNUSED)" crossed out and replaced with "GENERIC"(?), disk "B", #rec "4075"(?), rlen "16" (near line 10)]
+==== Page 4 | 11-05-85 -- FILES  CMP -- Binary Systems | image FILES_CMP_p05 ====
+---- Screen 18 ----
+( FILES - DIRECTORY RECORDS 070 - 079                  9-30-85)
+
+(      dir#  name          disk  #rec    rlen  slen     compressed )
+
+FILE 070 CHKFLIGHT-OV  B     65     16     0   \ [+]
+FILE 071 FRACT-OV      B    270     16     0   \ [ ]
+FILE 072 ICONP-OV      B     50     16     0   \ [+]
+FILE 073 SITE-OV       B     80     16     0   \ [ ]
+FILE 074 HYPERMSG-OV   B    100     16     0   \ [+]
+FILE 075 GPOLY         B     89      4     0   \ [ ]
+FILE 076 FACET         B     72      4     0   \ [ ]
+FILE 077 VERTEX        B    134      3     0   \ [ ]
+FILE 078 BLT-OV        B     35     16     0   \ [+]
+FILE 079 MISC-OV       B     77     16     0   \ [+]
+
+
+---- Screen 19 ----
+( FILES - DIRECTORY RECORDS 080 - 089                  3-1-85)
+
+(      dir#  name          disk  #rec    rlen  slen     compressed )
+
+FILE 080 BANK-OV       B    104     16     0   \ [+]
+FILE 081 ASSCREW-OV    B    170     16     0   \ [+]
+FILE 082 PERSONNEL-OV  B    270     16     0   \ [+]
+FILE 083 SHIPGRPH-OV   B    159     16     0   \ [+]
+FILE 084 CONFIG-OV     B    189     16     0   \ [+]
+FILE 085 TDEPOT-OV     B    235     16     0   \ [+]
+FILE 086 EDIT-OV       B    220     16     0   \ [ ]
+FILE 087 PORTMENU-OV   B    148     16     0   \ [+]
+FILE 088 VITA-OV       B    250     16     0   \ [+]
+FILE 089 HP-OV         B    320     16     0   \ [+]
+
+
+---- Screen 20 ----
+( FILES - DIRECTORY RECORDS 090 - 099                  10-06-85)
+
+(      dir#  name          disk  #rec    rlen  slen     compressed )
+
+FILE 090 LP-OV         B    340     16     0   \ [+]
+FILE 091 SENT-OV       B    299     16     0   \ [+]
+FILE 092 TV-OV         B    275     16     0   \ [ ]
+FILE 093 COMM-OV       B    425     16     0   \ [+]
+FILE 094 COMMSPEC-OV   B    140     16     0   \ [+]
+FILE 095 SEED-OV       B    150     16     0   \ [ ]
+FILE 096 LISTICONS     B     40     16     0   \ [+]
+FILE 097 MOVE-OV       B    237     16     0   \ [ ]
+FILE 098 ENGINEER      B    140     16     0   \ [+]
+FILE 099 DOCTOR        B     78     16     0   \ [+]
+
+
+---- Screen 21 ----
+( FILES - DIRECTORY RECORDS 100 - 109                  10-06-85)
+
+(      dir#  name          disk  #rec    rlen  slen     compressed )
+
+FILE 100 ORBIT-OV      B    400     16     0   \ [+]
+FILE 101 CAPTAIN       B    247     16     0   \ [+]
+FILE 102 SCIENCE       B    195     16     0   \ [ ]
+FILE 103 NAVIGATR      B     39     16     0   \ [ ]
+FILE 104 SHIPBUTTONS   B    200     16     0   \ [ ]
+FILE 105 *MAP-OV       B    250     16     0   \ [ ] 145+stk
+FILE 106 HYPER-OV      B    435     16     0   \ [ ]
+FILE 107 ANALYZE-OV    B    135     16     0   \ [+]
+FILE 108 LAUNCH-OV     B     50     16     0   \ [+]
+FILE 109 FLUX-EFFECT   B     33     16     0   \ [ ]
+
+
+---- Screen 22 ----
+( FILES - DIRECTORY RECORDS 110 - 119                  3-1-85)
+
+(      dir#  name          disk  #rec    rlen  slen     compressed )
+
+FILE 110 OP-OV         B    204     16     0   \ [+]
+FILE 111 ITEMS-OV      B    354     16     0   \ [ ]
+FILE 112 LSYSICON      B     47     16     0   \ [ ]
+FILE 113 MSYSICON      B     28     16     0   \ [ ]
+FILE 114 SSYSICON      B     11     16     0   \ [ ]
+FILE 115 BEHAV-OV      B    360     16     0   \ [ ]
+FILE 116 CMAP          B     10     64     0   \ [ ]
+FILE 117 INSTALL       B     50     16     0   \ [ ]
+FILE 118 HEAL-OV       B     67     16     0   \ [ ]
+FILE 119 REPAIR-OV     B     78     16     0   \ [ ]
+
+
+---- Screen 23 ----
+( FILES - DIRECTORY RECORDS 120 - 129                  9-09-85)
+
+(      dir#  name          disk  #rec    rlen  slen     compressed )
+
+FILE 120 GAME-OV       B    313     16     0   \ [ ]
+FILE 121 PLSET-OV      B    150     16     0   \ [+]
+FILE 122 MAPS-OV       B    150     16     0   \ [+]
+FILE 123 VES-BLT       X    188     16     0
+FILE 124 STORM-OV      B     75     16     0   \ [ ]
+FILE 125 HUM-PIC       B     30     16     0
+FILE 126 VEL-PIC       B     27     16     0
+FILE 127 THR-PIC       B     17     16     0
+FILE 128 ELO-PIC       B     38     16     0
+FILE 129 AND-PIC       B     27     16     0
+
+
+==== Page 5 | 11-05-85 -- FILES  CMP -- Binary Systems | image FILES_CMP_p06 ====
+---- Screen 24 ----
+( FILES - DIRECTORY RECORDS 130 - 139                  10/15/85)
+
+(      dir#  name          disk  #rec    rlen  slen     compressed )
+
+FILE 130 COMPOUNDS     B     23      7     0
+FILE 131 IT-OV         B    103     16     0
+FILE 132 COMBAT-OV     B    400     16     0
+FILE 133 DAMAGE-OV     B    200     16     0
+FILE 134 <UNUSED>      0      0      0     0
+FILE 135 <UNUSED>      0      0      0     0
+FILE 136 <UNUSED>      0      0      0     0
+FILE 137 <UNUSED>      0      0      0     0
+FILE 138 <UNUSED>      0      0      0     0
+FILE 139 <UNUSED>      0      0      0     0
+
+( END)
+---- Screen 25 ----
+( FILES - BLOCK 26 IS START OF GENERATED DIRECTORY      3-1-85)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 26 ----
+DIRECTORY   .........INSTANCE    ..Z?~@$..IROOT       .........I
+SYSTEM     .........INACTIVE    .........FRAGMENT    .........EL
+O-CPIC    .@~-...IAPPLICATION.........GAZ-CPIC    ...B.C...MEC
+-CPIC    .C.t.2...BOOT/KERNEL .u.t!. ..BOX         ...@...STAR
+PORT      .........BANK         .........BANK-TRANS  .-.5.....PERSO
+NNEL   .........CREWMEMBER  .6.=.....ASSIGN-CREW .........SHIP-C
+ONFIG .........TRADE-DEPOT .........SHIP         ........KMYS-CPI
+C     .u!o"(...TIME          .........STARSYSTEM .........STAR
+     .........VESSEL      .@.(...A.ELEMENT     .).J.....MESSAGE
+    .........ARTIFACT     .K.+.3...PROJECTILE  .........NOM-CPIC
+  .p"6#G...SPE-CPIC     .,.!.v...PLANET       .".v.=...THR-CPIC
+  .w.......OPERATIONS  .........NOTICE      .........EVALUATION
+ .........VEL-CPIC     ...5.$...VPR-CPIC    .7#.#N...MIN-CPIC    .
+ .#.$....SPECIMEN     .6.Q.....RUIN         .........TVEHICLE    ..
+ .......BIO-DATA     .6.Q.....TPORT-PIC   .R.b.....FLUX-NODE    ...
+ ......NEBULA        .........CAPT-LOG     ........$
+---- Screen 27 ----
+STRING       .........BPORT-PIC   .c.(.....PHRASECONTRL.........S
+UBJECT      .........ORIGINATOR  .........MESSAGE~   .........<U
+NUSED>    .........TEXT         ........(SCROLL-TEXT .........ANA
+LYZE-TEXT...?...).BUTTONS      .@...I.BLT-HEAD      .........<UNU
+SED>      .........ENCOUNTER   .........ICON1:1     ...8.2...ICON1
+:2      .9.q.Z...ICON1:4      .r.*.2...ICON-NAME   .+.Y.....<UNUSE
+D>    .........REGIONS      .Z.d.....CREATURE     .e...d...ORD:
+     .........CHKFLIGHT-OV...T.A...FRACT-OV     .U.b.....ICONP-OV
+   .c...2...SITE-OV       ...d.P...HYPERMSG-OV .e.H.d...GPOLY
+   .I._.Y...FACET        .`.q.H...VERTEX       .r.......BLT-OV
+  .....#...MISC-OV      ./.(.M...BANK-OV      .!.c.h...ASSCREW-OV
+ .d...*...PERSONNEL-OV.........SHIPGRPH-OV ...:.....CONFIG-OV
+.:.w.=...TDEPOT-OV    .x.b.k...EDIT-OV      .c.).\...PORTMENU-OV .
+?.R.....VITA-OV      .S.L.z...HP-OV        .M...@...LP-OV        ..
+.`.T...SENT-OV       .a...+...TV-OV        .........COMM-OV      ...
+G.)...COMMSPEC-OV .H.S.....SEED-OV     .T.i.....
+---- Screen 28 ----
+LISTICONS   .j...(...MOVE-OV      ...~.m...ENGINEER     .......D
+OCTOR      ...X.N...ORBIT-OV     .Y.h.....CAPTAIN      .i._ w...SC
+IENCE      .` "!C...NAVIGATR     .#!I!'...SHIPBUTTONS .J!."H...*MA
+P-OV      ..".#z...HYPER-OV     ..#>%3...ANALYZE-OV  .?%E%....LAUN
+CH-OV   .F%w%2...FLUX-EFFECT .x%.&!...OP-OV         ..&d&L...ITEMS
+-OV     .e&F(b...LSYSICON     .6(u(/...MSYSICON     .v(.(....SSYSIC
+ON      ..(.(....BEHAV-OV     ..(.#h...CMAP         ..#,#..@.INSTALL
+       .-#^#2...HEAL-OV      ._#!#C...REPAIR-OV    ."#o#N...GAME-OV
+      .p#(,9...PLSET-OV     .),)....MAPS-OV      .?,T-....VES-BLT
+     ..-;.<...STORM-OV     .<...K...HUM-PIC      ...$.....VEL-PIC
+    .%.?.....THR-PIC      .@.P.....ELO-PIC      .Q.v.&...AND-PIC
+   .w../....COMPOUNDS    ../../....IT-OV        ../../g...COMBAT-OV
+  ../.1....DAMAGE-OV    ..1[1H...<UNUSED>     .........<UNUSED>    .
+ ........<UNUSED>     .........<UNUSED>     .........<UNUSED>     ..
+ .......<UNUSED>     .........
+                                                        .Z@3
+---- Screen 29 ----
+( FILES - BLOCK 28 IS END   OF GENERATED DIRECTORY      3-1-85)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

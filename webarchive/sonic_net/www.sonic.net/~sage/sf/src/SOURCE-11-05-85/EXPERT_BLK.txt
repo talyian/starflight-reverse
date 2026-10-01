@@ -1,0 +1,241 @@
+==== Page 1 | 7-15-85  FILE: EXPERT.BLK  --  BINARY SYSTEMS | image EXPERT_BLK_p01 ====
+---- Screen 1 ----
+( EXPERT - Variables and constants                     2-26-85)
+
+V= COND-CNT
+
+  1 C= TRUE
+  0 C= FALSE
+255 C= UNKNOWN
+
+  0 C= RULELIM    ( addr of rule limit byte field)
+  0 C= CONDLIM    ( addr of condition limit byte field)
+  0 C= RULECNT    ( addr of rule count byte field)
+  0 C= RULEARR    ( addr of rule array)
+  0 C= CONDARR    ( addr of condition pfa array)
+  0 C= CFLGARR    ( addr of condition flag array)
+
+
+---- Screen 2 ----
+( EXPERT - XC@ C+! >EXPERT DISTRACT                    2-26-85)
+
+: XC@ ( addr -- 7/8b )  C@ 127 AND ;
+
+: C+! ( c addr -- \ byte +!) DUP C@ ROT + SWAP C! ;
+
+: >EXPERT ( pfa-expert -- \ set reference constants for expert)
+  >R I ' RULELIM !   I 1+ ' CONDLIM !  I 2+ ' RULECNT !
+  R> 3 + ' RULEARR !  RULELIM C@ 2* RULEARR + ' CONDARR !
+  CONDLIM C@ 2* CONDARR + ' CFLGARR ! ;
+
+: DISTRACT ( expert-pfa -- \ clear short-term memory of expert)
+  >EXPERT CFLGARR CONDLIM C@ UNKNOWN FILL ;
+
+
+
+---- Screen 3 ----
+( EXPERT - EXECUTE-RULE                                2-26-85)
+
+: EXECUTE-RULE ( addr -- f \ attempt to satisfy each predicate)
+  ( in the rule at addr and if satified execute the action and)
+  ( report rule satisfaction.)
+  >R TRUE                          ( t -- \ predicate accum)
+  I 3 + DUP I C@ + SWAP            ( for each predicate)
+  DO CFLGARR I XC@ + C@ DUP UNKNOWN =   ( t t/f ?unk --)
+   IF DROP CONDARR I XC@ 2* + @ EXECUTE NOT NOT
+      DUP CFLGARR I XC@ + C! THEN       ( t t/f --)
+   I C@ 128 AND NOT NOT   = AND         ( t --)
+   DUP 0= IF LEAVE THEN
+  I /LOOP DUP
+  IF >R I' 1+ @ EXECUTE R> THEN
+  R> DROP ;
+
+---- Screen 4 ----
+( EXPERT - EXPERT                                      2-26-85)
+
+: EXPERT ( #conditions #rules -- , <name> \ compile an expert)
+  ( Defined word leaves a truth value to indicate if any )
+  ( rules were satisfied when executed.)
+  COND-CNT OFF
+  CREATE HERE >R C, C, 0 C, R> >EXPERT
+  RULELIM C@ 2* CONDLIM C@ 3 * + ALLOT
+  DOES>
+   DUP >EXPERT >V
+   RULEARR DUP RULECNT C@ 2* + SWAP
+   DO I @ EXECUTE-RULE
+      IF V> DUP >EXPERT NOT >V LEAVE
+         I RULEARR - 2/ 2/ 2* RULEARR +
+         DUP @ I @ SWAP I ! SWAP ! THEN
+   2 /LOOP V> NOT ;
+---- Screen 5 ----
+( EXPERT - --> ?INDEX (transient words)                2-26-85)
+
+: --> ( <word-name> -- pfa \ search dictionary for pfa of word)
+ [COMPILE] ' ;
+
+: ?INDEX ( cond-pfa -- index or -1 \ search condition array )
+  ( for index number or flag failure.)
+  >R  -1                   ( null-index-marker -- cond-pfa)
+  COND-CNT @ 2* 0
+  DO CONDARR I + @ J =         ( search for condition)
+     IF DROP I 2/ LEAVE THEN
+  2 /LOOP R> DROP ;
+
+
+
+
+---- Screen 6 ----
+( EXPERT - CONDITION  (transient words)                2-26-85)
+
+: CONDITION ( <word-name> -- index OR -1 \ find condition)
+  ( index in condition array and possibly install a new  )
+  ( OR flag end of cond.)
+  --> >R                  ( -- pfa \ get pfa of next word)
+  I ' --> = NOT
+  IF CONDLIM C@ COND-CNT @ > NOT  ABORT" Condition overflow"
+     I ?INDEX           ( cond-index or -1 -- )
+     DUP 0<
+     IF DROP COND-CNT @ I OVER 2* CONDARR + ! ( install cond)
+        1 COND-CNT +! THEN
+  ELSE -1               ( indicate end of conditions)
+  THEN
+  R> DROP ;
+
+==== Page 2 | 7-15-85  FILE: EXPERT.BLK  --  BINARY SYSTEMS | image EXPERT_BLK_p02 ====
+---- Screen 7 ----
+( EXPERT - RULE:       (transient words)               2-26-85)
+: RULE: ( <cond> <T!F>, ...., <cond> <T!F> --> <action> \ )
+  ( compile a rule for the current expert)
+  RULELIM C@ RULECNT C@ > NOT  ABORT" Rule overflow"
+  HERE 0 C, ' NOP ,          ( lay down rule head place holders)
+  BEGIN
+    CONDITION DUP 0< NOT
+    IF [COMPILE] ' DUP ' TRUE = OVER ' FALSE = OR NOT
+       ABORT" TRUE or FALSE needed"
+       EXECUTE 128 * + C,     ( lay down predicate)
+       1 OVER C+!  0          ( increment predicate count)
+    THEN
+  UNTIL -->                   ( -- rule-pfa action-pfa)
+  OVER 1+ !                   ( store action pfa in rule)
+  RULECNT C@ 2* RULEARR + !   ( store rule-pfa in expert head)
+  1 RULECNT C+! ;
+---- Screen 8 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 9 ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 10 ----
+( ANIMAL EXPERT)
+exit \ 30 CONDITIONS 30 ACTIONS
+  30 30 EXPERT ZOOKEEPER
+: ZOO
+  ." WELCOME TO THE ZOO. CHOOSE AN ANIMAL & I'LL GUESS" CR
+  ." WHICH ONE IT IS :" CR
+  ." FROG  TURTLE CLAM CAT DOG PIG COW TIGER ZEBRA FLOUNDER " CR
+  ." ALLIGATOR SNAKE BIRD STRAWBERRY PLATYPUS SPEMIN " CR
+  ." CHAMELEON " CR
+  CR
+  BEGIN  ' ZOOKEEPER DISTRACT
+     ZOOKEEPER 0= IF CR ." I GIVE UP" THEN
+     CR CR ." PLAY AGAIN? (Y/N) "
+     KEY DUP EMIT 95 AND ASCII Y = CR NOT
+  UNTIL ;
+
+---- Screen 11 ----
+( ANIMAL EXPERT)
+exit
+: ?Y/N ( nfa -- t \ ask a yes/no question)
+  ID. ." ? (Y/N) "
+  KEY DUP EMIT 95 AND ASCII Y = CR ;
+
+: AT: ( <attribute> -- \ create and attribute predicate)
+  CREATE
+  DOES> NFA ?Y/N ;
+
+
+: AN: ( <animal> -- \ create an animal predicate)
+  CREATE DOES> ." IS IT A(N) " NFA ?Y/N CR
+  IF ." I knew it!" ELSE ." Your lying!" THEN ;
+
+
+---- Screen 12 ----
+( ANIMAL EXPERT)
+exit
+AT: FEATHERS  AT: SCALES  AT: NO.LEGS AT: WARM.BLOODED
+AT: LAYS.EGGS AT: HORNS   AT: FUR
+AT: SHELL     AT: TEETH   AT: LEAVES  AT: FLOWERS
+AT: FRUIT     AT: LIVES.IN.WATER AT: LIVES.ON.LAND
+AT: JUMPS     AT: PURRS   AT: HAS.STRIPES AT: EATS.MEAT
+AT: BARKS     AT: OINKS   AT: MIGRATORY.EYES
+AT: TAIL      AT: CAMOFLAGE
+AN: FROG    AN: TIGER      AN: PLATYPUS
+AN: TURTLE  AN: ZEBRA      AN: CHAMELEON
+AN: CLAM    AN: ALLIGATOR
+AN: CAT     AN: SNAKE
+AN: DOG     AN: BIRD
+AN: PIG     AN: STRAWBERRY
+AN: COW     AN: SPEMIN     AN: FLOUNDER
+==== Page 3 | 7-15-85  FILE: EXPERT.BLK  --  BINARY SYSTEMS | image EXPERT_BLK_p03 ====
+---- Screen 13 ----
+( ANIMAL EXPERT)
+exit
+RULE: FUR TRUE PURRS TRUE --> CAT
+RULE: FUR TRUE BARKS TRUE --> DOG
+RULE: FUR TRUE HORNS TRUE --> COW
+RULE: FUR TRUE HORNS FALSE EATS.MEAT FALSE HAS.STRIPES TRUE -->
+      ZEBRA
+RULE: FUR FALSE OINKS TRUE --> PIG
+RULE: HAS.STRIPES TRUE EATS.MEAT TRUE --> TIGER
+RULE: LEAVES TRUE FRUIT TRUE --> STRAWBERRY
+RULE: LAYS.EGGS TRUE FUR TRUE --> PLATYPUS
+RULE: LIVES.IN.WATER TRUE LIVES.ON.LAND TRUE SHELL FALSE
+      TEETH FALSE JUMPS TRUE --> FROG
+RULE: LIVES.IN.WATER TRUE LIVES.ON.LAND TRUE SHELL TRUE -->
+      TURTLE
+
+---- Screen 14 ----
+( ANIMAL EXPERT)
+exit
+
+RULE: LIVES.IN.WATER TRUE LIVES.ON.LAND FALSE SHELL TRUE -->
+      CLAM
+RULE: LIVES.IN.WATER TRUE LIVES.ON.LAND TRUE  SHELL FALSE
+      TEETH TRUE --> ALLIGATOR
+RULE: LIVES.IN.WATER TRUE LIVES.ON.LAND TRUE  SHELL FALSE
+      TEETH FALSE JUMPS FALSE --> SNAKE
+RULE: FEATHERS TRUE --> BIRD
+RULE: LAYS.EGGS FALSE MIGRATORY.EYES TRUE --> SPEMIN
+RULE: LAYS.EGGS TRUE MIGRATORY.EYES TRUE --> FLOUNDER
+RULE: CAMOFLAGE TRUE SCALES TRUE --> CHAMELEON
+
+\ END OF ANIMAL RULES
+

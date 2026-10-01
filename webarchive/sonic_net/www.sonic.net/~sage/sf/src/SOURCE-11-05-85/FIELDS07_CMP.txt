@@ -1,0 +1,547 @@
+==== Page  |  | image FIELDS07_CMP_p01 ====
+ 0 ( AFIELDS  VESSEL
+ 1 ( Sec Compiler: Constants
+ 2 ( AFIELDS  VESSEL
+ 3 ( AFIELDS  VESSEL
+ 4 ( AFIELDS  VESSEL
+ 5 SPECIES: 1          PERSONALITY: SPEMIN
+ 6 SPECIES: 2          PERSONALITY: SPEMIN
+ 7 SPECIES: 3          PERSONALITY: SPEMIN
+ 8 SPECIES: 4          PERSONALITY: MECHAN
+ 9 SPECIES: 5          PERSONALITY: ELOWAN
+10 SPECIES: 6          PERSONALITY: ELOWAN
+11 SPECIES: 7          PERSONALITY: ELOWAN
+12 SPECIES: 8          PERSONALITY: THRYNN
+13 SPECIES: 9          PERSONALITY: THRYNN
+14 SPECIES: 10         PERSONALITY: THRYNN
+15 SPECIES: 11         PERSONALITY: VELOX
+16 SPECIES: 12         PERSONALITY: VELOX
+17 SPECIES: 13         PERSONALITY: VELOX
+18 SPECIES: 14         PERSONALITY: GAZURTOID
+19 SPECIES: 15         PERSONALITY: GAZURTOID
+20 SPECIES: 16         PERSONALITY: UHLEK
+21 SPECIES: 17         PERSONALITY: UHLEK
+22 SPECIES: 18         PERSONALITY: VELOX-PROBE
+23 SPECIES: 19         PERSONALITY: NOMAD
+24 SPECIES: 20         PERSONALITY: MYSTERION
+25 SPECIES: 21         PERSONALITY: ENTERPRISE
+26 SPECIES: 22         PERSONALITY: MINSTREL
+27 SPECIES: 23         PERSONALITY: DERELICT
+28 SPECIES: 24         PERSONALITY: STARPORT
+
+==== Page 1 | 11-05-85 -- FIELDS07CMP -- Binary Systems | image FIELDS07_CMP_p02 ====
+---- Screen 0 ----
+( AFIELDS  VESSEL                                              )
+
+25  0  1 AFIELD VES-PERSONALITY 25  1  3 AFIELD VES-BLT
+25  4  1 AFIELD VES-CLASS       25  5  1 AFIELD VES-POWER
+25  6  1 AFIELD VES-ACCEL       25  7  2 AFIELD VES-MASS
+25  9  2 AFIELD VES-MTEMP       25 11  1 AFIELD VES-FIRERT
+25 12  2 AFIELD VES-ARMORPTS    25 14  2 AFIELD VES-SHIELDPTS
+25 16  1 AFIELD VES-?MISSILEHITS 25 17  1 AFIELD VES-?LASERHITS
+25 18  1 AFIELD VES-LASER       25 19  1 AFIELD VES-MISSILE
+25 20  1 AFIELD VES-PLASMA      25 21  1 AFIELD VES-ELEMENT1
+25 22  1 AFIELD VES-ELEMENT2    25 23  1 AFIELD VES-ELEMENT3
+25 24  1 AFIELD VES-DEBRISE     25 25  1 AFIELD VES-DEBRIS1
+25 26  1 AFIELD VES-DEBRIS2     25 27  1 AFIELD VES-DEBRIS3
+25 28  1 AFIELD VES-DIRECTIONAL 25 29 42 AFIELD VES-READINGS
+
+
+---- Screen 1 ----
+( Sec Compiler: Constants                                      )
+ 1 C= ELOWAN                  2 C= GAZURTOID
+ 3 C= MECHAN                  4 C= MYSTERION
+ 5 C= NOMAD                   6 C= SPEMIN
+ 7 C= THRYNN                  8 C= VELOX
+ 9 C= UHLEK                  10 C= VELOX-PROBE
+11 C= MINSTREL               12 C= CAPTAIN
+13 C= SCIENCE-OFFICER        14 C= NAVIGATOR
+15 C= ENGINEER               16 C= COMMUNICATIONS-OFFICER
+17 C= DOCTOR                 18 C= ENTERPRISE
+19 C= DERELICT               20 C= STARPORT
+
+ 0 C= UNDEFINED   1 C= TRANSPORT   2 C= SCOUT   3 C= WARSHIP
+ 0 C= FALSE       1 C= TRUE
+
+
+---- Screen 2 ----
+( AFIELDS  VESSEL                                              )
+ 1 C= ALUMINUM    2 C= ANTIMONY     3 C= CHROMIUM
+ 4 C= COBALT      5 C= COPPER       6 C= ENDURIUM
+ 7 C= GOLD        8 C= IRON         9 C= LEAD
+10 C= MAGNESIUM  11 C= MERCURY     12 C= MOLYBDENUM
+13 C= NICKEL     14 C= PLATINUM    15 C= PLUTONIUM
+16 C= PROMETHIUM 17 C= RODNIUM     18 C= SILVER
+19 C= TIN        20 C= TITANIUM    21 C= TUNGSTEN
+22 C= ZINC
+
+
+
+
+
+
+
+---- Screen 3 ----
+( AFIELDS  VESSEL                                              )
+
+: NEXT-NUMBER ( -- )  BL WORD NUMBER DROP ;
+: NEXT-WORD ( -- ) [COMPILE] ' EXECUTE ;
+
+: PERSONALITY: NEXT-WORD VES-PERSONALITY C! ;
+: BLT: ;
+: CLASS: NEXT-WORD VES-CLASS C! ;
+: POWER: NEXT-NUMBER VES-POWER C! ;
+: ACCELERATION: NEXT-NUMBER VES-ACCEL C! ;
+: MASS: NEXT-NUMBER VES-MASS ! ;
+: MAX-TEMP: NEXT-NUMBER VES-MTEMP ! ;
+: FIRING-RATE: NEXT-NUMBER VES-FIRERT C! ;
+: ARMOR-POINTS: NEXT-NUMBER VES-ARMORPTS ! ;
+: SHIELD-POINTS: NEXT-NUMBER VES-SHIELDPTS ! ;
+
+---- Screen 4 ----
+( AFIELDS  VESSEL                                              )
+
+: LASER-CLASS: NEXT-NUMBER VES-LASER C! ;
+: MISSILE-CLASS: NEXT-NUMBER VES-MISSILE C! ;
+: PLASMA: NEXT-WORD VES-PLASMA C! ;
+: ELEMENT1: NEXT-WORD VES-ELEMENT1 C! ;
+: ELEMENT2: NEXT-WORD VES-ELEMENT2 C! ;
+: ELEMENT3: NEXT-WORD VES-ELEMENT3 C! ;
+: ENDURIUM: NEXT-NUMBER VES-DEBRISE ! ;
+: DEBRIS1: NEXT-NUMBER VES-DEBRIS1 C! ;
+: DEBRIS2: NEXT-NUMBER VES-DEBRIS2 C! ;
+: DEBRIS3: NEXT-NUMBER VES-DEBRIS3 C! ;
+: DIRECTIONAL: NEXT-WORD VES-DIRECTIONAL C! ;
+: READINGS: 42 0 DO NEXT-NUMBER VES-READINGS I + C! LOOP ;
+: SPECIES: NEXT-NUMBER RECORD# ! 25 FILE# ! ;
+25 FILE# !
+---- Screen 5 ----
+SPECIES: 1           PERSONALITY: SPEMIN
+CLASS: TRANSPORT     ACCELERATION: 1      MASS: 800
+SHIELD-POINTS: 0     ARMOR-POINTS: 200    PLASMA: FALSE
+MISSILE-CLASS: 0     LASER-CLASS: 0       FIRING-RATE: 0
+MAX-TEMP: 1500       ENDURIUM: 3
+ELEMENT1: lead       ELEMENT2: iron       ELEMENT3: cobalt
+DEBRIS1: 11          DEBRIS2: 7           DEBRIS3: 2
+POWER: 0             BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1          1         11         13        2      0
+          1          1         36         11        2      0
+          1          1          4         35        2      0
+          0          1         30         28        4      0
+         -1          0          0          0        0      0
+         -1          0          0          0        0      0
+         -1          0          0          0        0      0
+==== Page 2 | 11-05-85 -- FIELDS07CMP -- Binary Systems | image FIELDS07_CMP_p03 ====
+---- Screen 6 ----
+SPECIES: 2           PERSONALITY: SPEMIN
+CLASS: SCOUT         ACCELERATION: 3      MASS: 400
+SHIELD-POINTS: 0     ARMOR-POINTS: 500    PLASMA: FALSE
+MISSILE-CLASS: 0     LASER-CLASS: 2       FIRING-RATE: 0
+MAX-TEMP: 1500       ENDURIUM: 1
+ELEMENT1: lead       ELEMENT2: iron       ELEMENT3: 0
+DEBRIS1: 6           DEBRIS2: 4           DEBRIS3: 0
+POWER: 5             BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1          1         14        27         4      0
+          0          1         28        27         4      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+---- Screen 7 ----
+SPECIES: 3           PERSONALITY: SPEMIN
+CLASS: WARSHIP       ACCELERATION: 5      MASS: 700
+SHIELD-POINTS: 0     ARMOR-POINTS: 1000   PLASMA: FALSE
+MISSILE-CLASS: 1     LASER-CLASS: 2       FIRING-RATE: 7
+MAX-TEMP: 1500       ENDURIUM: 5
+ELEMENT1: lead       ELEMENT2: iron       ELEMENT3: cobalt
+DEBRIS1: 10          DEBRIS2: 2           DEBRIS3: 2
+POWER: 10            BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1          1         21         5         2      0
+          1          1         10         8         2      0
+          1          1          8        35         2      0
+          1          1         18        47         2      0
+          1          1         29        45         2      0
+          1          1         36        18         2      0
+          0          1         20        26         4      0
+---- Screen 8 ----
+SPECIES: 4           PERSONALITY: MECHAN
+CLASS: SCOUT         ACCELERATION: 6      MASS: 200
+SHIELD-POINTS: 400   ARMOR-POINTS: 100    PLASMA: FALSE
+MISSILE-CLASS: 2     LASER-CLASS: 0       FIRING-RATE: 7
+MAX-TEMP: 1750       ENDURIUM: 3
+ELEMENT1: iron       ELEMENT2: magnesium  ELEMENT3: 0
+DEBRIS1: 10          DEBRIS2: 4           DEBRIS3: 0
+POWER: 200           BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 0          1         33        26         3      0
+          0          0         23        40        33     40
+          0          0         23        14        33     14
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+---- Screen 9 ----
+SPECIES: 5           PERSONALITY: ELOWAN
+CLASS: TRANSPORT     ACCELERATION: 9      MASS: 350
+SHIELD-POINTS: 600   ARMOR-POINTS: 10     PLASMA: FALSE
+MISSILE-CLASS: 0     LASER-CLASS: 0       FIRING-RATE: 0
+MAX-TEMP: 2200       ENDURIUM: 3
+ELEMENT1: nickel     ELEMENT2: molybdenum ELEMENT3: plutonium
+DEBRIS1: 5           DEBRIS2: 3           DEBRIS3: 2
+POWER: 0             BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1          0         14        20        17     19
+          1          0         10        27        17     26
+          1          0          5        34        17     33
+          0          0         23        11        35     10
+          0          0         16        44        28     43
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+---- Screen 10 ----
+SPECIES: 6           PERSONALITY: ELOWAN
+CLASS: SCOUT         ACCELERATION: 18     MASS: 50
+SHIELD-POINTS: 800   ARMOR-POINTS: 10     PLASMA: FALSE
+MISSILE-CLASS: 2     LASER-CLASS: 0       FIRING-RATE: 6
+MAX-TEMP: 2200       ENDURIUM: 1
+ELEMENT1: nickel     ELEMENT2: molybdenum ELEMENT3: plutonium
+DEBRIS1: 2           DEBRIS2: 1           DEBRIS3: 1
+POWER: 5             BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1          0          6        32        17     30
+          0          0         23        20        33     19
+          0          0         17        41        29     40
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+---- Screen 11 ----
+SPECIES: 7           PERSONALITY: ELOWAN
+CLASS: WARSHIP       ACCELERATION: 14     MASS: 150
+SHIELD-POINTS: 1000  ARMOR-POINTS: 10     PLASMA: FALSE
+MISSILE-CLASS: 3     LASER-CLASS: 0       FIRING-RATE: 5
+MAX-TEMP: 2700       ENDURIUM: 6
+ELEMENT1: nickel     ELEMENT2: molybdenum ELEMENT3: plutonium
+DEBRIS1: 4           DEBRIS2: 4           DEBRIS3: 2
+POWER: 15            BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1          0         13        18        23     17
+          1          0          4        33        17     31
+          0          0         22         9        34      8
+          0          0         15        42        27     41
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+==== Page 3 | 11-05-85 -- FIELDS07CMP -- Binary Systems | image FIELDS07_CMP_p04 ====
+---- Screen 12 ----
+SPECIES: 8           PERSONALITY: THRYNN
+CLASS: TRANSPORT     ACCELERATION: 3      MASS: 600
+SHIELD-POINTS: 200   ARMOR-POINTS: 300    PLASMA: FALSE
+MISSILE-CLASS: 0     LASER-CLASS: 2       FIRING-RATE: 0
+MAX-TEMP: 1750       ENDURIUM: 4
+ELEMENT1: copper     ELEMENT2: zinc       ELEMENT3: magnesium
+DEBRIS1: 8           DEBRIS2: 4           DEBRIS3: 2
+POWER: 8             BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1          0          8        36         9     22
+          0          0         22        16        36     15
+          0          0         22        33        36     32
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+---- Screen 13 ----
+SPECIES: 9           PERSONALITY: THRYNN
+CLASS: SCOUT         ACCELERATION: 6      MASS: 200
+SHIELD-POINTS: 400   ARMOR-POINTS: 400    PLASMA: FALSE
+MISSILE-CLASS: 0     LASER-CLASS: 5       FIRING-RATE: 0
+MAX-TEMP: 1750       ENDURIUM: 2
+ELEMENT1: copper     ELEMENT2: zinc       ELEMENT3: magnesium
+DEBRIS1: 4           DEBRIS2: 2           DEBRIS3: 1
+POWER: 15            BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1          1         12        27         4      0
+          0          0         16        10        31      9
+          0          0         16        35        31     34
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+---- Screen 14 ----
+SPECIES: 10          PERSONALITY: THRYNN
+CLASS: WARSHIP       ACCELERATION: 6      MASS: 400
+SHIELD-POINTS: 600   ARMOR-POINTS: 500    PLASMA: FALSE
+MISSILE-CLASS: 3     LASER-CLASS: 5       FIRING-RATE: 6
+MAX-TEMP: 2200       ENDURIUM: 7
+ELEMENT1: copper     ELEMENT2: zinc       ELEMENT3: magnesium
+DEBRIS1: 6           DEBRIS2: 3           DEBRIS3: 2
+POWER: 22            BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1          1         14        27         6      0
+          0          0         18         4        33      3
+          0          0         13        10        28      9
+          0          0         13        46        28     45
+          0          0         18        52        33     51
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+---- Screen 15 ----
+SPECIES: 11          PERSONALITY: VELOX
+CLASS: TRANSPORT     ACCELERATION: 7      MASS: 700
+SHIELD-POINTS: 400   ARMOR-POINTS: 200    PLASMA: FALSE
+MISSILE-CLASS: 0     LASER-CLASS: 1       FIRING-RATE: 0
+MAX-TEMP: 1750       ENDURIUM: 4
+ELEMENT1: cobalt     ELEMENT2: molybdenum ELEMENT3: 0
+DEBRIS1: 12          DEBRIS2: 4           DEBRIS3: 0
+POWER: 10            BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1          1          2        27         2      0
+          1          1         15        27         3      0
+          0          0         31         5        39      2
+          0          0         31        52        39     49
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+---- Screen 16 ----
+SPECIES: 12          PERSONALITY: VELOX
+CLASS: SCOUT         ACCELERATION: 13     MASS: 300
+SHIELD-POINTS: 600   ARMOR-POINTS: 100    PLASMA: FALSE
+MISSILE-CLASS: 2     LASER-CLASS: 0       FIRING-RATE: 5
+MAX-TEMP: 2200       ENDURIUM: 3
+ELEMENT1: cobalt     ELEMENT2: molybdenum ELEMENT3: 0
+DEBRIS1: 7           DEBRIS2: 2           DEBRIS3: 0
+POWER: 20            BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1          1          6        26         2      0
+          1          1         19        26         2      0
+          0          0         25        13        33     10
+          0          0         25        42        33     39
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+---- Screen 17 ----
+SPECIES: 13          PERSONALITY: VELOX
+CLASS: WARSHIP       ACCELERATION: 11     MASS: 500
+SHIELD-POINTS: 800   ARMOR-POINTS: 500    PLASMA: FALSE
+MISSILE-CLASS: 4     LASER-CLASS: 3       FIRING-RATE: 5
+MAX-TEMP: 2200       ENDURIUM: 8
+ELEMENT1: cobalt     ELEMENT2: molybdenum ELEMENT3: 0
+DEBRIS1: 10          DEBRIS2: 2           DEBRIS3: 0
+POWER: 25            BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1          1          2        27         2      0
+          1          1         19        27         3      0
+          0          0         19        13        28     11
+          0          0         31         6        39      3
+          0          0         19        43        28     41
+          0          0         31        51        39     48
+         -1          0          0         0         0      0
+==== Page 4 | 11-05-85 -- FIELDS07CMP -- Binary Systems | image FIELDS07_CMP_p05 ====
+---- Screen 18 ----
+SPECIES: 14          PERSONALITY: GAZURTOID
+CLASS: SCOUT         ACCELERATION: 8      MASS: 30000
+SHIELD-POINTS: 200   ARMOR-POINTS: 500    PLASMA: FALSE
+MISSILE-CLASS: 0     LASER-CLASS: 4       FIRING-RATE: 0
+MAX-TEMP: 2700       ENDURIUM: 10
+ELEMENT1: molybdenum ELEMENT2: tin        ELEMENT3: magnesium
+DEBRIS1: 12          DEBRIS2: 5           DEBRIS3: 2
+POWER: 80            BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1          1         21        16         2      0
+          1          1         13        26         3      0
+          1          0         16        35        17     34
+          1          1         21        39         3      0
+          1          0         26        29        27     28
+          1          0         24        21        25     19
+          0          1         21        27         4      0
+---- Screen 19 ----
+SPECIES: 15          PERSONALITY: GAZURTOID
+CLASS: WARSHIP       ACCELERATION: 6      MASS: 45000
+SHIELD-POINTS: 200   ARMOR-POINTS: 800    PLASMA: FALSE
+MISSILE-CLASS: 0     LASER-CLASS: 5       FIRING-RATE: 0
+MAX-TEMP: 3200       ENDURIUM: 15
+ELEMENT1: molybdenum ELEMENT2: tin        ELEMENT3: magnesium
+DEBRIS1: 13          DEBRIS2: 7           DEBRIS3: 4
+POWER: 120           BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1          0         15        22        16     20
+          1          1         13        31         3      0
+          1          1         18        41         3      0
+          1          1         29        34         3      0
+          1          1         29        17         2      0
+          1          1         23        14         3      0
+          0          1         22        27         5      0
+---- Screen 20 ----
+SPECIES: 16          PERSONALITY: UHLEK
+CLASS: SCOUT         ACCELERATION: 20     MASS: 1000
+SHIELD-POINTS: 1000  ARMOR-POINTS: 1000   PLASMA: FALSE
+MISSILE-CLASS: 5     LASER-CLASS: 0       FIRING-RATE: 4
+MAX-TEMP: 3200       ENDURIUM: 20
+ELEMENT1: aluminum   ELEMENT2: titanium   ELEMENT3: 0
+DEBRIS1: 14          DEBRIS2: 11          DEBRIS3: 0
+POWER: 256           BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1          1         18        23         4      0
+          1          1         18        31         4      0
+          0          1         28        27         4      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+---- Screen 21 ----
+SPECIES: 17          PERSONALITY: UHLEK
+CLASS: WARSHIP       ACCELERATION: 12     MASS: 5000
+SHIELD-POINTS: 1400  ARMOR-POINTS: 1000   PLASMA: TRUE
+MISSILE-CLASS: 5     LASER-CLASS: 0       FIRING-RATE: 3
+MAX-TEMP: 3200       ENDURIUM: 30
+ELEMENT1: aluminum   ELEMENT2: titanium   ELEMENT3: 0
+DEBRIS1: 19          DEBRIS2: 14          DEBRIS3: 0
+POWER: 256           BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1          1         28        16         4      0
+          1          1         26        27         4      0
+          1          1         28        38         4      0
+          0          1         35        27         4      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+---- Screen 22 ----
+SPECIES: 18          PERSONALITY: VELOX-PROBE
+CLASS: UNDEFINED     ACCELERATION: 15     MASS: 100
+SHIELD-POINTS: 1000  ARMOR-POINTS: 1000   PLASMA: FALSE
+MISSILE-CLASS: 3     LASER-CLASS: 3       FIRING-RATE: 3
+MAX-TEMP: 3200       ENDURIUM: 10
+ELEMENT1: cobalt     ELEMENT2: molybdenum ELEMENT3: 0
+DEBRIS1: 3           DEBRIS2: 1           DEBRIS3: 0
+POWER: 256           BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 0          1         17        26         3      0
+          0          1         23        26         3      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+---- Screen 23 ----
+SPECIES: 19          PERSONALITY: NOMAD
+CLASS: UNDEFINED     ACCELERATION: 2      MASS: 20
+SHIELD-POINTS: 0     ARMOR-POINTS: 5      PLASMA: FALSE
+MISSILE-CLASS: 0     LASER-CLASS: 0       FIRING-RATE: 0
+MAX-TEMP: 1500       ENDURIUM: 1
+ELEMENT1: iron       ELEMENT2: magnesium  ELEMENT3: 0
+DEBRIS1: 1           DEBRIS2: 1           DEBRIS3: 0
+POWER: 256           BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 0          1         15        30         4      0
+          0          0         36        34        37     26
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+==== Page 5 | 11-05-85 -- FIELDS07CMP -- Binary Systems | image FIELDS07_CMP_p06 ====
+---- Screen 24 ----
+SPECIES: 20          PERSONALITY: MYSTERION
+CLASS: UNDEFINED     ACCELERATION: 25     MASS: 62000
+SHIELD-POINTS: 30000 ARMOR-POINTS: 1000   PLASMA: FALSE
+MISSILE-CLASS: 0     LASER-CLASS: 0       FIRING-RATE: 0
+MAX-TEMP: 60000      ENDURIUM: 0
+ELEMENT1: rodnium    ELEMENT2: 0          ELEMENT3: 0
+DEBRIS1: 10          DEBRIS2: 0           DEBRIS3: 0
+POWER: 0             BLT: ( n/a )         DIRECTIONAL: FALSE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1          1         20        27         9      0
+          0          1         20        27         9      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+---- Screen 25 ----
+SPECIES: 21          PERSONALITY: ENTERPRISE
+CLASS: UNDEFINED     ACCELERATION: 17     MASS: 19000
+SHIELD-POINTS: 1000  ARMOR-POINTS: 1000   PLASMA: FALSE
+MISSILE-CLASS: 5     LASER-CLASS: 5       FIRING-RATE: 3
+MAX-TEMP: 3200       ENDURIUM: 0
+ELEMENT1: promethium ELEMENT2: tungsten   ELEMENT3: titanium
+DEBRIS1: 4           DEBRIS2: 4           DEBRIS3: 3
+POWER: 256           BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1          1          9        29         6      0
+          1          0         20        31        29     27
+          0          0         24        18        38     16
+          0          0         24        42        38     40
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+---- Screen 26 ----
+SPECIES: 22          PERSONALITY: MINSTREL
+CLASS: UNDEFINED     ACCELERATION: 1      MASS: 2
+SHIELD-POINTS: 0     ARMOR-POINTS: 5      PLASMA: FALSE
+MISSILE-CLASS: 0     LASER-CLASS: 0       FIRING-RATE: 0
+MAX-TEMP: 3200       ENDURIUM: 0
+ELEMENT1: 0          ELEMENT2: 0          ELEMENT3: 0
+DEBRIS1: 0           DEBRIS2: 0           DEBRIS3: 0
+POWER: 0             BLT: ( n/a )         DIRECTIONAL: FALSE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1          1         20        29         5      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+[handwritten: FALSE struck out, TRUE written above; also a scribble near DEBRIS3/ELEMENT3 (near lines 5-7)]
+---- Screen 27 ----
+SPECIES: 23          PERSONALITY: DERELICT
+CLASS: TRANSPORT     ACCELERATION: 0      MASS: 2000
+SHIELD-POINTS: 0     ARMOR-POINTS: 100    PLASMA: FALSE
+MISSILE-CLASS: 0     LASER-CLASS: 0       FIRING-RATE: 0
+MAX-TEMP: 3200       ENDURIUM: 0
+ELEMENT1: iron       ELEMENT2: magnesium  ELEMENT3: 0
+DEBRIS1: 5           DEBRIS2: 2           DEBRIS3: 0
+POWER: 0             BLT: ( n/a )         DIRECTIONAL: TRUE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS:-1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+         -1          0          0         0         0      0
+---- Screen 28 ----
+SPECIES: 24          PERSONALITY: STARPORT
+CLASS: UNDEFINED     ACCELERATION: 0      MASS: 40000
+SHIELD-POINTS: 1000  ARMOR-POINTS: 1000   PLASMA: FALSE
+MISSILE-CLASS: 5     LASER-CLASS: 0       FIRING-RATE: 0
+MAX-TEMP: 3200       ENDURIUM: 250
+ELEMENT1: promethium ELEMENT2: titanium   ELEMENT3: aluminum
+DEBRIS1: 50          DEBRIS2: 46          DEBRIS3: 44
+POWER: 256           BLT: ( n/a )         DIRECTIONAL: FALSE
+      ( ?life ) ( ?circle ) ( x/ctr ) ( y/ctr ) ( x/r ) ( y )
+READINGS: 1         31         38         2         0      0
+          1         31         26         2         0      0
+          1         10         28         2         0      0
+          1         10         26         2         0      0
+          1         20          6         2         0      0
+          1         20         48         2         0      0
+         -1          0          0         0         0      0
+---- Screen 29 ----
+FORGET VES-PERSONALITY
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
