@@ -1,0 +1,221 @@
+( Converted from COMBLTA.CMP: 14 blocks of 16 x 64 )
+
+---- Screen 0 ----
+( COMBLTA - VARIABLES                                  9-12-85)
+\ EMPTY CR ." NOTICE! EMPTY EXECUTED IN COMBLT.CMP "
+V= #FRAMES
+V= FRAMEOFF               ( frame offset pointer)
+( V= LFRAME )
+V= BIT-COUNT
+CREATE FILENAME 15 ALLOT
+2V= DPVA                  ( allocation pointer within VESBLT)
+23040 C= INITIAL-DPB      ( start vsa of b disk)
+CREATE BLTCOLORS 16 ALLOT ( flags showing color exists in blt)
+
+
+
+
+
+
+
+---- Screen 1 ----
+( COMBLT - ?COLORS HFRAMELEN                           9-12-85)
+
+: ?COLORS ( -- \ set blt color flags based on contents of blt)
+  BLTCOLORS 16 0 FILL
+  LBLT @ 0 DO
+  WBLT @ 0 DO YBLT @ J - XBLT @ I + L@PIXEL
+              BLTCOLORS + 1 SWAP C!
+           LOOP LOOP ;
+
+
+: HFRAMELEN ( -- \ compute the length of a hybrid blt frame)
+  ( [framelen][color][image/run][image] )
+  LBLT @ WBLT @ * 15 + 16/ 2* 4 + LFRAME ! ;
+
+
+
+
+---- Screen 2 ----
+( COMBLT - BLTFRAME                                    9-12-85)
+: BLTFRAME ( -- \ build a blt image for the current color)
+  ( relative to bltseg & frameoff)
+  BIT-COUNT OFF  FRAMEOFF @ DUP >R 4 + ABLT !  BLTSEG @ >R
+  LFRAME @ I I' L!  COLOR @ I I' 2+ LC!  0 R> R> 3+ LC!
+  0
+  LBLT @ 0 DO
+  WBLT @ 0 DO YBLT @ J - XBLT @ I + L@PIXEL
+              COLOR @ 15 AND =  SHL-BIT  1 BIT-COUNT +!
+              BIT-COUNT @ 16 =
+              IF BLTSEG @ ABLT @ L!  2 ABLT +! 0. BIT-COUNT !
+              THEN
+           LOOP LOOP
+  BIT-COUNT @ ?DUP IF 16 SWAP DO 2* LOOP BLTSEG @ ABLT @ L!
+                   ELSE DROP THEN ;
+
+
+---- Screen 3 ----
+( COMBLT - >RUNBIT                                     9-12-85)
+HEX
+CREATE >RUNBIT ( source dest len -- \ bit wise run length )
+  ( encoder using word size fetching; BLT compatible)
+  HERE DUP 2- ! 59 C, D1 C, E1 C, D1 C, E1 C, D1 C, E1 C,
+  58 C, 5A C, 57 C, 56 C, 55 C, 50 C, 40 C, 40 C, 8B C, F8 C,
+  8B C, F2 C, BA C, 00 C, 01 C, 33 C, DB C, 33 C, ED C, 0A C,
+  DB C, 75 C, 04 C, AD C, BB C, 10 C, 00 C, 32 C, FF C, D1 C,
+  D0 C, D0 C, D7 C, FE C, CB C, 3A C, F7 C, 75 C, 04 C, FE C,
+  C2 C, EB C, 10 C, 88 C, 15 C, 47 C, 45 C, 0A C, F6 C, 75 C,
+  04 C, FE C, C6 C, EB C, 02 C, FE C, CE C, B2 C, 01 C, 80 C,
+  FA C, FF C, 75 C, 10 C, 88 C, 15 C, 47 C, 45 C, 32 C, D2 C,
+  0A C, F6 C, 75 C, 04 C, FE C, C6 C, EB C, 02 C, FE C, CE C,
+  E2 C, C1 C, 88 C, 15 C, 45 C, 5F C, 89 C, 2D C, 5D C, 5E C,
+  5F C, AD C, 8B C, D8 C, FF C, 27 C,
+DECIMAL
+
+---- Screen 4 ----
+( COMBLT - PACKHYBRID                                  9-12-85)
+: PACKHYBRID ( xblt yblt lblt wblt seg -- \ make packed blt)
+  ( data record at seg using hybrid packing)
+  BLTSEG ! WBLT ! LBLT ! YBLT ! XBLT !
+  >DISPLAY #FRAMES OFF  HFRAMELEN  5 FRAMEOFF !  ?COLORS
+  16 1 DO I 16* I + COLOR !  I BLTCOLORS + C@
+          IF BLTFRAME  LFRAME @ 4 - >R  1 #FRAMES +!
+             BLTSEG @ FRAMEOFF @ 4 + @DS PAD I LCMOVE
+             PAD PAD I + I >RUNBIT  PAD I + @ 2+ I <
+             IF @DS PAD I + DUP @ 2+ >R  BLTSEG @ FRAMEOFF @
+                4 + I LCMOVE
+                I 4 + BLTSEG @ FRAMEOFF @ L! ( adjust framelen)
+                1 BLTSEG @ FRAMEOFF @ 3 + LC!  R> R> DROP >R
+             THEN  R> 4 + FRAMEOFF +! THEN LOOP  BLTSEG @ >R
+  FRAMEOFF @ I 0 L!  LBLT @ I 2 LC!  WBLT @ I 3 LC!
+  #FRAMES  @ R> 4 LC! ;
+
+---- Screen 5 ---- (blank)
+
+---- Screen 6 ----
+( COMBLT - SAVEFILE GETSLIDE                           9-12-85)
+: SAVEFILE ( -- \ save current dos file name)
+  FILENAME 15 BL FILL
+  FILENAME
+  8 0 DO I DOS NAM + C@ DUP BL =
+        IF DROP LEAVE ELSE OVER C! 1+ THEN LOOP
+  ASCII . OVER C!  1+
+  3 0 DO I DOS TYP + C@ DUP BL =
+        IF DROP LEAVE ELSE OVER C! 1+ THEN LOOP DROP ;
+
+: GETSLIDE ( addr count -- \ get slide in file referred to by)
+  ( the stack, send it to the display buffer and reopen the )
+  ( current file)
+  >IN @ >R BLK @ >R SAVEFILE >LORES >DISPLAY
+  >TIB BLK OFF USING 0 BLK>BUFFER
+  FILENAME 15 >TIB USING R> BLK ! R> >IN ! ;
+
+---- Screen 7 ---- (blank)
+
+---- Screen 8 ----
+( COMBLT - .RUNBIT                                     9-12-85)
+HEX
+CREATE .RUNBIT ( seg off -- \ given location of run encoded)
+  ( string and XBLT, YBLT, WBLT, LBLT and COLOR set, plot BLT)
+  HERE DUP 2- ! FA C, FF C, 36 C, XBLT , 8F C, 06 C, X1 ,
+  FF C, 36 C, YBLT , 8F C, 06 C, Y1 , 5B C, 07 C, 26 C, 8B C,
+  0F C, 06 C, 8F C, 06 C, BLTSEG , 56 C, 57 C, 83 C, C3 C, 02 C,
+  89 C, 1E C, X2 , 8B C, 06 C, XBLT , 03 C, 06 C, WBLT , 89 C,
+  06 C, Y2 , 51 C, 33 C, C9 C, FF C, 36 C, BLTSEG , 07 C, 26 C,
+  8A C, 0F C, 43 C, 0B C, C9 C, 74 C, 7C C, 8B C, C3 C, 48 C,
+  2B C, 06 C, X2 , 25 C, 01 C, 00 C, 75 C, 52 C, FF C, 36 C,
+  BUF-SEG , 07 C, 8B C, 16 C, Y1 , D1 C, E2 C, 8B C, 06 C, X1 ,
+  03 C, 16 C, YTABL , 8B C, FA C, D1 C, E8 C, BA C, F0 C, 00 C,
+  73 C, 02 C, B2 C, 0F C, 03 C, 05 C, 8B C, F8 C, 26 C, 8A C,
+  05 C, 8A C, 36 C, COLOR , 22 C, F2 C, F6 C, D2 C, 22 C, C2 C,
+  0A C, C6 C, 26 C, 88 C, 05 C, FF C, 06 C, X1 , 8B C, 06 C,
+
+---- Screen 9 ----
+( COMBLT - .RUNBIT                                     9-12-85)
+HEX
+  X1 , 3B C, 06 C, Y2 , 75 C, 0C C, FF C, 36 C, XBLT , 8F C,
+  06 C, X1 , FF C, 0E C, Y1 , E2 C, B5 C, EB C, 1E C, 01 C,
+  0E C, X1 , 8B C, 06 C, X1 , 3B C, 06 C, Y2 , 78 C, 0C C,
+  2B C, 06 C, WBLT , FF C, 0E C, Y1 , EB C, F0 C, EB C, 04 C,
+  89 C, 06 C, X1 , 59 C, 49 C, 74 C, 03 C, E9 C, 6D C, FF C,
+  5F C, 5E C, 1E C, 07 C, FB C, AD C, 8B C, D8 C, FF C, 27 C,
+DECIMAL
+
+
+
+
+
+
+
+
+---- Screen 10 ----
+( COMBLT - .HYBRID                                     9-12-85)
+
+: .HYBRID ( seg -- \ plot a hybrid packed blt at seg: assumes)
+  ( xblt, yblt are set)
+  DUP BLTSEG ! >R  5 ABLT !
+  I 2 LC@ LBLT !  I 3 LC@ WBLT !
+  R> 4 LC@ 0 DO ABLT @ >R BLTSEG @ >R  4 ABLT +!
+                I I' 2+ LC@ COLOR !  R> R> 3 + LC@
+                IF   BLTSEG @ ABLT @ .RUNBIT
+                ELSE {BLT}
+                THEN
+                BLTSEG @ ABLT @ 4 - L@ 4 - ABLT +!
+             LOOP ;
+
+
+
+
+---- Screen 11 ----
+( COMBLT - measure length of communication blts        9-12-85)
+EXIT
+: LENRUN ( x y l w addr cnt -- \ )
+  (                         given file name string compress )
+  ( ship blt and display length of compress string)
+  >TIB USING >LORES >DISPLAY 0 BLK>BUFFER
+  HBUF-SEG @ PACKHYBRID DARK
+  HBUF-SEG @ .HYBRID KEY DROP
+  >ALPHA HBUF-SEG @ 0 L@ U. KEY DROP ;
+: test   0  99 100 160 " STARPORT.PIC" LENRUN
+         0 199 100 160 " STARPORT.PIC" LENRUN
+         4 191 120 72 " ELOWAN.PIC" lenrun
+         4 191 120 72 " SPEMIN.PIC" lenrun
+         4 191 120 72 " THRYNN.PIC" lenrun
+         4 191 120 72 " VELOX.PIC"  lenrun ;
+
+
+---- Screen 12 ----
+( COMBLT - measure length of communication blts        4-24-86)
+: CMPBLT3 ( dir# x y l w addr cnt -- \ given file name string)
+  ( compress communications image and save on disk)
+  getslide
+  HBUF-SEG @ PACKHYBRID DARK
+  HBUF-SEG @ .HYBRID HBUF-SEG @ SWAP >FILE >ALPHA ;
+exit
+: test
+         2 194 120 72 " MYSTER.PIC" lenrun
+         4 191 120 72 " GAZURT.PIC" lenrun
+         4 191 120 72 " MECHAN.PIC" lenrun
+         4 191 120 72 " NOMAD.PIC" lenrun
+         4 191 120 72 " VPROBE.PIC" lenrun
+         4 191 120 72 " MINSTREL.PIC" lenrun ;
+
+
+
+---- Screen 13 ----
+( COMBLT - CMPBLT3                                     4-24-86)
+
+  6 4 191 120  72 " ELOWAN.PIC"   CMPBLT3
+ 31 4 191 120  72 " SPEMIN.PIC"   CMPBLT3
+ 33 4 191 120  72 " THRYNN.PIC"   CMPBLT3
+ 37 4 191 120  72 " VELOX.PIC"    CMPBLT3
+ 21 2 194 120  72 " MYSTER.PIC"   CMPBLT3
+  8 4 191 120  72 " GAZURT.PIC"   CMPBLT3
+  9 4 191 120  72 " MECHAN.PIC"   CMPBLT3
+ 30 4 191 120  72 " NOMAD.PIC"    CMPBLT3
+ 38 4 191 120  72 " VPROBE.PIC"   CMPBLT3
+ 39 4 191 120  72 " MINSTREL.PIC" CMPBLT3
+ 60 4 191 120  72 " MEDAL.PIC"    CMPBLT3
+
+FORGET #FRAMES
+

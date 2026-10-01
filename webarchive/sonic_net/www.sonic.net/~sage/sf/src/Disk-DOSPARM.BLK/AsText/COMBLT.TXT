@@ -1,0 +1,129 @@
+( Converted from COMBLT.CMP: 8 blocks of 16 x 64 )
+
+---- Screen 0 ----
+( COMBLT - VARIABLES                                   9-12-85)
+EMPTY CR ." NOTICE! EMPTY EXECUTED IN COMBLT.CMP "
+V= #FRAMES
+V= FRAMEOFF               ( frame offset pointer)
+( V= LFRAME )
+V= BIT-COUNT
+CREATE FILENAME 15 ALLOT
+2V= DPVA                  ( allocation pointer within VESBLT)
+23040 C= INITIAL-DPB      ( start vsa of b disk)
+CREATE BLTCOLORS 16 ALLOT ( flags showing color exists in blt)
+
+
+
+
+
+
+
+---- Screen 1 ----
+( COMBLT - ?COLORS HFRAMELEN                           9-12-85)
+
+: ?COLORS ( -- \ set blt color flags based on contents of blt)
+  BLTCOLORS 16 0 FILL
+  LBLT @ 0 DO
+  WBLT @ 0 DO YBLT @ J - XBLT @ I + L@PIXEL
+              BLTCOLORS + 1 SWAP C!
+           LOOP LOOP ;
+
+
+: HFRAMELEN ( -- \ compute the length of a hybrid blt frame)
+  ( [framelen][color][image/run][image] )
+  LBLT @ WBLT @ * 15 + 16/ 2* 4 + LFRAME ! ;
+
+
+
+
+---- Screen 2 ----
+( COMBLT - BLTFRAME                                    9-12-85)
+: BLTFRAME ( -- \ build a blt image for the current color)
+  ( relative to bltseg & frameoff)
+  BIT-COUNT OFF  FRAMEOFF @ DUP >R 4 + ABLT !  BLTSEG @ >R
+  LFRAME @ I I' L!  COLOR @ I I' 2+ LC!  0 R> R> 3+ LC!
+  0
+  LBLT @ 0 DO
+  WBLT @ 0 DO YBLT @ J - XBLT @ I + L@PIXEL
+              COLOR @ 15 AND =  SHL-BIT  1 BIT-COUNT +!
+              BIT-COUNT @ 16 =
+              IF BLTSEG @ ABLT @ L!  2 ABLT +! 0. BIT-COUNT !
+              THEN
+           LOOP LOOP
+  BIT-COUNT @ ?DUP IF 16 SWAP DO 2* LOOP BLTSEG @ ABLT @ L!
+                   ELSE DROP THEN ;
+
+
+---- Screen 3 ----
+( COMBLT - >RUNBIT                                     9-12-85)
+HEX
+CREATE >RUNBIT ( source dest len -- \ bit wise run length )
+  ( encoder using word size fetching; BLT compatible)
+  HERE DUP 2- ! 59 C, D1 C, E1 C, D1 C, E1 C, D1 C, E1 C,
+  58 C, 5A C, 57 C, 56 C, 55 C, 50 C, 40 C, 40 C, 8B C, F8 C,
+  8B C, F2 C, BA C, 00 C, 01 C, 33 C, DB C, 33 C, ED C, 0A C,
+  DB C, 75 C, 04 C, AD C, BB C, 10 C, 00 C, 32 C, FF C, D1 C,
+  D0 C, D0 C, D7 C, FE C, CB C, 3A C, F7 C, 75 C, 04 C, FE C,
+  C2 C, EB C, 10 C, 88 C, 15 C, 47 C, 45 C, 0A C, F6 C, 75 C,
+  04 C, FE C, C6 C, EB C, 02 C, FE C, CE C, B2 C, 01 C, 80 C,
+  FA C, FF C, 75 C, 10 C, 88 C, 15 C, 47 C, 45 C, 32 C, D2 C,
+  0A C, F6 C, 75 C, 04 C, FE C, C6 C, EB C, 02 C, FE C, CE C,
+  E2 C, C1 C, 88 C, 15 C, 45 C, 5F C, 89 C, 2D C, 5D C, 5E C,
+  5F C, AD C, 8B C, D8 C, FF C, 27 C,
+DECIMAL
+
+---- Screen 4 ----
+( COMBLT - PACKHYBRID                                  9-12-85)
+: PACKHYBRID ( xblt yblt lblt wblt seg -- \ make packed blt)
+  ( data record at seg using hybrid packing)
+  BLTSEG ! WBLT ! LBLT ! YBLT ! XBLT !
+  >DISPLAY #FRAMES OFF  HFRAMELEN  5 FRAMEOFF !  ?COLORS
+  16 1 DO I 16* I + COLOR !  I BLTCOLORS + C@
+          IF BLTFRAME  LFRAME @ 4 - >R  1 #FRAMES +!
+             BLTSEG @ FRAMEOFF @ 4 + @DS PAD I LCMOVE
+             PAD PAD I + I >RUNBIT  PAD I + @ 2+ I <
+             IF @DS PAD I + DUP @ 2+ >R  BLTSEG @ FRAMEOFF @
+                4 + I LCMOVE
+                I 4 + BLTSEG @ FRAMEOFF @ L! ( adjust framelen)
+                1 BLTSEG @ FRAMEOFF @ 3 + LC!  R> R> DROP >R
+             THEN  R> 4 + FRAMEOFF +! THEN LOOP  BLTSEG @ >R
+  FRAMEOFF @ I 0 L!  LBLT @ I 2 LC!  WBLT @ I 3 LC!
+  #FRAMES  @ R> 4 LC! ;
+
+---- Screen 5 ---- (blank)
+
+---- Screen 6 ----
+( fun for tim)
+
+: randplots ( n -- \ plot n random dots in white)
+  white !color
+  0 do 0 159 rrnd 0 199 rrnd lplot loop ;
+
+: horswap ( x y -- \ swap dots at y+-1 if dot at x y set)
+  2dup swap l@pixel if 2dup 1+ swap l@pixel >r
+                       2dup 1- swap l@pixel
+                       if white else black then !color
+                       2dup 1+ lplot
+                       r>
+                       if white else black then !color
+                       1- lplot
+                    else 2drop then ;
+
+
+---- Screen 7 ----
+( COMBLT - >TIB                                        9-12-85)
+
+: >TIB ( addr count -- \ move the string referred to by the )
+  ( stack to the terminal input buffer and append a null)
+  >IN OFF  2DUP  TIB @  SWAP  CMOVE
+  TIB @ + 0 SWAP ! DROP ;
+
+
+
+
+
+
+
+
+
+

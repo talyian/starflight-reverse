@@ -1,0 +1,19 @@
+( Converted from ASIG.CMP: 1 blocks of 16 x 64 )
+
+---- Screen 0 ----
+\ ASIG.CMP - ADD 'A' FILE SIGNATURE IN INITIAL STATE
+
+VERSION @       :VERSION !
+TIMESTAMP @     :TIMESTAMP !
+ALOVSA          :SIGNATURE !
+AHIVSA          :SIGNATURE 2+ !
+0               :SAVE !
+
+
+
+
+
+
+
+
+

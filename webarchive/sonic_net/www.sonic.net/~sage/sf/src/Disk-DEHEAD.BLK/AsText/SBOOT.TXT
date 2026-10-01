@@ -1,0 +1,163 @@
+( Converted from SBOOT.CMP: 9 blocks of 16 x 64 )
+
+---- Screen 0 ----
+( BOOT - .#LINES                                       7-23-85)
+: .#LINES ( -- \ plot current string as center formated)
+  #YBLT
+  $ADDR @ SUB$ADDR !
+  BEGIN
+    SUB$ADDR @ CPL @ + DUP
+    $ADDR @ $LEN @ + U<
+  WHILE
+    ?BL<-                     ( address.of.linebreak.blank --)
+    SUB$ADDR @ -
+    SUB$LEN ! .SUB$
+    CHARHEIGHT @ LINESPACING @ + NEGATE YBLT +!
+    SUB$LEN @ 1+ SUB$ADDR +!
+  REPEAT DROP
+  $ADDR @ $LEN @ + SUB$ADDR @ - SUB$LEN ! .SUB$ ;
+
+
+---- Screen 1 ----
+( BOOT - .FORMAT  BORDERMARGINS                        7-23-85)
+
+: .FORMAT ( addr count -- \ plot center formated string)
+  !$ #CPL #LPS
+  .#LINES ;
+
+: BORDERMARGINS
+  20 LMARG ! 140 RMARG !
+  40 BMARG ! 150 TMARG !
+  3 LINESPACING !
+  9 CHARHEIGHT !  6 CHARWIDTH ! ;
+
+
+
+
+
+
+---- Screen 2 ----
+( BOOT - ERASEWIND  ERASELINE  .PAGE                   8-28-85)
+6 WIDTH !
+: ERASEWIND ( -- \ erase text in display window)
+  COLOR @ 150 20 40 140 BLACK POLY-WINDOW-FILL !COLOR ;
+
+: ERASELINE ( -- \ erase text below display window)
+  COLOR @ 17 20 5 159 BLACK POLY-WINDOW-FILL !COLOR ;
+: .PAGE BORDERMARGINS ERASEWIND >2FONT .FORMAT ;
+5 WIDTH !
+
+
+
+
+
+
+
+
+---- Screen 3 ----
+( BOOT - BORDER                                        7-23-85)
+
+: BORDER ( -- \ display standard interface border with )
+  ( Interstel logo)
+  WHITE !COLOR
+    5 155  10 160 LLINE  10 160 150 160 LLINE
+  150 160 155 155 LLINE 155 155 155  25 LLINE
+  155  25 150  20 LLINE 150  20  20  20 LLINE
+   20  20  17  23 LLINE  17  23  17  30 LLINE
+   17  30  14  33 LLINE  14  33   8  33 LLINE
+    8  33   5  36 LLINE   5  36   5 155 LLINE
+    5  29 COLOR @ .1LOGO ;
+
+
+
+
+
+---- Screen 4 ----
+( BOOT - PRESSANY                                      7-23-85)
+
+: PRESSANY ( -- \ display message below border)
+  >2FONT 20 17 POS. ERASELINE
+  ." PRESS ANY KEY TO CONTINUE" >0FONT KEY DROP ;
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 5 ----
+( BOOT - INIT$PTR APPEND$                              4-23-86)
+
+
+V: $PTR V: $LEN
+HEAD: INIT$PTR ( addr -- ) T: $PTR ! $LEN OFF T;
+HEAD: APPEND$  ( addr cnt -- )
+T: $PTR @ $LEN @ + SWAP DUP $LEN +! CMOVE T;
+
+
+
+
+
+
+
+
+
+
+---- Screen 6 ----
+( BOOT - [ASKMOUNT]                                    4-23-86)
+
+HEAD: [ASKMOUNT] ( -- )
+\ Request user to mount disk with file on drive specified
+\ in current FCB.
+T: PAD 50 + INIT$PTR BORDER
+   " LOAD DISK CONTAINING FILE " APPEND$
+   NAM 8 -TRAILING APPEND$
+   ASCII . PAD C!  TYP PAD 1+ 3 CMOVE
+   PAD 4 APPEND$
+   "  INTO " APPEND$
+   DRV C@ ?DUP IF " DRIVE " PAD SWAP CMOVE ASCII @ +
+                  PAD 7 + C! PAD 7
+               ELSE " ANY DRIVE" THEN
+   APPEND$
+   $PTR @ $LEN @ .PAGE PRESSANY T;
+
+---- Screen 7 ----
+( BOOT - [VERSIONERROR]                                4-23-86)
+
+HEAD: [VERSIONERROR] ( addr ct -- )
+\ Warn user if correct file not loaded.
+T: PAD 50 + INIT$PTR BORDER
+   " LOAD DISK CONTAINING THE CORRECT " APPEND$
+   APPEND$ "  FILE" APPEND$
+   $PTR @ $LEN @ .PAGE PRESSANY T;
+
+HEAD: VECTORERRORS T: ASKMOUNT @ 'VERSIONERR @
+  ' [VERSIONERROR] 'VERSIONERR !  ' [ASKMOUNT] ASKMOUNT ! T;
+
+HEAD: RESTOREERRORS T: 'VERSIONERR ! ASKMOUNT ! T;
+
+
+
+
+---- Screen 8 ----
+( BOOT - LET-THERE-BE-STARFLIGHT                       5-02-86)
+: LET-THERE-BE-STARFLIGHT ( -- \ game initialization word)
+  STARTER            \ preliminary configuration
+  RELAXTIME ON VECTORERRORS >LORES >DISPLAY DARK
+  MOUNTA             \ mount STARFLIT.A
+  TADA               \ splash screen until key or time out
+  MOUNTB             \ mount STARFLIT.B
+  RESTOREERRORS      \ put back original vectors
+  :TIMESTAMP @       \ check to see if game in progress
+  IF LOADGAME        \ load & jump to game in progress
+  ELSE FIGET         \ or start a new game
+  THEN ; DISPOSE
+' LET-THERE-BE-STARFLIGHT BOOT-HOOK ! ( execute on boot)
+:TIMESTAMP OFF FLUSH \ init game in progress flag
+1000 TONE BEEPON 250 MS 2000 TONE 250 MS 1500 TONE 250 MS
+BEEPOFF

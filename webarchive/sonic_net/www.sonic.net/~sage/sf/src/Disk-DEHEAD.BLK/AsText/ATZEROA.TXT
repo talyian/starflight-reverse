@@ -1,0 +1,39 @@
+( Converted from ATZEROA.CMP: 3 blocks of 16 x 64 )
+
+---- Screen 0 ----
+( LOAD 251- END OF FILE                                4-24-86)
+251 FILESIZE 2@ SWAP 1024 M/ SWAP DROP 1- THRU
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+( INSTALL /0 VECTOR FOR AT)
+
+HEX
+( CODE 0/ 0 POP 0 INC 0 PUSH )
+(  29 C, C0 C, 29 C, D2 C, CF C, NEXT )
+DECIMAL
+\ : >ATMODE ' 0/ 0 0 L! ( install vector) ;
+
+\ >ATMODE FORGET >ATMODE
+
+HEX                              \ speed up by removing
+\ FFFC MSGFLAGS @ AND MSGFLAGS !  \ "Not Unique" search
+DECIMAL                          \
+
+
+
+
+---- Screen 2 ---- (blank)

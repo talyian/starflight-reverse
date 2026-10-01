@@ -1,0 +1,21 @@
+( Converted from DOSPARM.BLK: 2 blocks of 16 x 64 )
+
+---- Screen 0 ---- (blank)
+
+---- Screen 1 ----
+( DOSPARM - Parameter passing from dos to forthought   9-26-85)
+
+: >TIB ( addr count -- \ move the sting referred to by the )
+  ( stack to the terminal input buffer and append a null.)
+  >IN OFF  2DUP TIB @ SWAP CMOVE  TIB @ + OFF DROP ;
+
+HEX
+: DOSPARM ( -- \ interpret parameters passed from dos)
+  81 80 C@   ( addr count --)
+  >TIB INTERPRET ;
+DECIMAL
+
+
+
+
+

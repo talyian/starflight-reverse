@@ -1,0 +1,761 @@
+( Converted from MOVE-OV.CMP: 44 blocks of 16 x 64 )
+
+---- Screen 0 ----
+( OVERLAY PREFIX: MOVE-OV MOVEMENT OVERLAY -------( rfg28may86)
+
+9 width !
+ vocabulary move-voc immediate
+ 97 open-overlay
+ move-voc definitions
+1500 trans-allot
+newt-dp
+
+
+
+
+
+
+
+
+
+---- Screen 1 ----
+\ window erase for the current window             ( rfg28may86)
+head: ?newdate
+   t: ?new-hour if TIME D@ LAST-UPDATE D!
+                   1 star-hr +! star-hr @ 24 =
+                  if star-hr off 1 stardate +! then then t;
+head: tvtwindow
+t:   64 3 7 38 window -1 wbottom +! >TVCT t;
+
+head: werase \ using current window
+t:  color @
+  wtop @  wleft @  wbottom @ 1- wright @ 1+
+  black poly-window-fill !color t;
+
+head: whead \ top of text window, clear it
+ t: tvtwindow werase white !color
+    wleft @ 1+ wtop @ 1- pos. t;
+
+---- Screen 2 ----
+\ absolute>degrees conversion for display         ( rfg28may86)
+head: >flag t: 0= 0= t;
+
+head: abs>deg \ y,x --- xdegree,ydegree
+t:  480 - 10 53 */ swap
+  1152 - 10 64 */ swap t;
+
+head: ?east \ xdegree --- print W if negative, else E
+t:  ?dup if  0< if ." W" else ." E" then
+       else      ."  " then t;
+
+head: ?south \ ydegree --- print S if negative, else N
+t: ?dup if   0< if ." S" else ." N" then
+     else       ."  "  then t;
+
+
+
+---- Screen 3 ----
+\ tvxy xy! @xy                                    ( rfg07mar86)
+
+head: @xy \ --- x,y | of current object
+   t: inst-x @ inst-y @ t;
+
+head: tvxy \ --- x y of terrain vehicle
+t:  tvehicle @>c+s @xy iclose t;
+
+head: xy! \ x y --- | store into object's x,y field
+t:  inst-y ! inst-x ! t;
+
+head: @xyabs \ --- xabs,yabs
+   t: xabs @ yabs @ t;
+
+
+
+
+---- Screen 4 ----
+\ loc-cursor .where                               ( rfg03apr86)
+17 23 3 ifield: navig   16 27 1 ifield: ^nav
+
+head: ?nav
+t: *assign-crew >c+s navig @>c+s ^nav c@
+cdrop iclose  199 > t;
+
+head: loc-cursor
+t: >r 197 12 193 68  r> poly-window-fill t;
+
+head: .where
+t: #storm @ dup 4 < swap 11 > or ?nav or
+  if white !color  tvxy abs>deg 16 197 pos.
+     dup dup 0< if negate then 4 .r ?south ."  * "
+     dup dup 0< if negate then 0 .r ?east then t;
+
+
+---- Screen 5 ----
+\ ?sea test : are we on land ??                   ( rfg02jul86)
+\ assumes we're talking about contour map
+
+head: conoffset
+t: ' contour setlarray xabs @ xcon @ 1+ - yabs @ ycon @  - t;
+\ fudged with 1+
+
+head: ?sea \ --- t if at sea
+t: conoffset acelladdr a@ 16 < t;
+
+: set-speed
+  conoffset acelladdr a@ dup 16 <
+  if drop -170 ( -500 )
+  else  3 2 */  negate
+  then e/m ! ;
+
+
+---- Screen 6 ----
+( PLAN-OV    VIS-REGION-LL 2X2CONTOUR             ( rfg28may86)
+
+head: VIS-REGION-LL ( -- xll yll \ compute)
+  ( the lower left coordinate for the)
+  ( currently visible region)
+t:  XVIS @ XCON @ -
+  YVIS @ YCON @ -  t;
+
+
+
+
+
+
+
+
+
+
+---- Screen 7 ----
+( PLAN-OV  CBLT CBLTP                                  8-16-85)
+
+BINARY
+CREATE CBLT ( corner smoothing blt)
+  0110011011111111 , 0110011000000000 ,
+HEX
+CREATE CBLTP ( bx by -- \ set parms for corner blt)
+  HERE DUP 2- !  58 C, 05 C, 03 C, 00 C, 89 C, 06 C, YBLT ,
+  58 C, 05 C, 06 C, 00 C, 89 C, 06 C, XBLT , C7 C, 06 C,
+  WBLT , 04 C, 00 C, C7 C, 06 C, LBLT , 06 C, 00 C,
+  C7 C, 06 C, ABLT , CBLT ,
+  1e c,  8f c, 06 c, bltseg ,
+  AD C, 8B C, D8 C, FF C, 27 C,
+DECIMAL
+
+
+
+---- Screen 8 ----
+( PLAN-OV    CORNER-RUF                           (rfg26oct85)
+HEAD: CORNER-RUF ( -- \ smooth inside corners if diagonals)
+T: ( are same color) BLTSEG @
+  14 0 DO 8 0 DO
+       XLL @ I +  YLL @ J +
+       2DUP CELLCOLOR COLOR @ >R
+       2DUP 1+ SWAP 1+ SWAP CELLCOLOR COLOR @ I = NOT
+       IF R> NOT >R THEN     ( x y -- clr1 or 0)
+       2DUP 1+ CELLCOLOR COLOR @ >R
+       2DUP SWAP 1+ SWAP CELLCOLOR COLOR @ I = NOT
+       IF R> NOT >R THEN     ( x y -- clr2 clr1)
+       I I' OR
+       IF I I' = NOT
+          IF I 0> IF I ELSE I' THEN COLOR <!>
+             2DUP 3 3 BUFFERXY CBLTP BLT THEN
+       THEN R> R> 2DROP 2DROP LOOP LOOP BLTSEG ! T;
+
+---- Screen 9 ----
+( PLAN-OV    8X8CONTOUR                           ( rfg30jan86)
+head: 8X8CONTOUR ( -- \ plot the visible)
+  ( portion of the contour map using)
+  ( 8X8 cells into the current display.)
+t:  ' CONTOUR SETLARRAY
+\  ' .8X8CELL '.CELL <!>
+\  0. xlldest <!> ylldest <!>
+  VIS-REGION-LL
+  22 + SWAP 13 + SWAP
+  OVER 8 + OVER 14 + SETREGION
+  .REGION  CORNER-RUF t;
+
+
+
+
+
+
+---- Screen 10 ----
+\ ?injure | for tasker test                       ( rfg28apr86)
+32 17 2 afield: atmo.activity
+
+head: ?injure \ --- flag | true if in bad storm and should injur
+  t: #storm @ 6 11 within
+       if 0 3 rrnd 0=
+         if 'injure @ module then
+       then t;
+
+create %storm \ probability table, 0<=index<=4
+0 , 20 ( 3) , 40 ( 6)  , 60 ( 15)  , 85 ( 30) ,
+\ index is atmo.activity
+
+head: ?.storm
+  t:  #storm @ 3 > If ' .storm module then t;
+
+
+---- Screen 11 ----
+\ storm stuff                                     ( rfg28apr86)
+
+HEAD: ?storm
+T:  atmo @
+  if storm @
+     if -1 storm +! ?.storm \ print if storm
+     else (planet) @>c+s atmo.activity @
+          %storm over + + @   1 100 rrnd >  \ likelihood
+       if   'storm @ module   \ choose storm for planet
+       else 1 4 rrnd #storm ! ' .storm module
+            1 atmo.activity @ 5 swap - 3* rrnd
+       12 min 0 max storm !
+       then iclose
+     then  ?injure
+  else #storm off storm off
+  then T;
+
+---- Screen 12 ----
+\ .stardate                                       ( rfg11jun86)
+
+head: .stardate \ print current stardate
+t: xormode @ xormode off
+ 116 178 pos. 10 black poly-erase-text
+ white !color stardate @
+ 300 /mod 4620 + swap 30 /mod 1+ swap 1+
+ dup 10 < if ." 0" then 0 .r ." -"
+ dup 10 < if ." 0" then 0 .r ." -" 0 .r
+xormode ! t;
+
+head: ?flare
+   t:   stardate @ (flare) @ =
+         if 'flare @ execute then t;
+
+
+
+---- Screen 13 ----
+( PLANET - DXABS DYABS DXVIS DYVIS DXCON DYCON    (rfg06sep85)
+V: DXABS  ( x change to reference point this iteration)
+          ( -# = left{west}, +# = right{east})
+V: DYABS  ( y change to reference point this iteration)
+          ( -# = down{south}, +# = up{north})
+2000 c: reserve
+68 144 2 afield: icon
+
+EXIT     IN KERNEL
+V= DXCON  ( x change to XCON point this iteration)
+V= DYCON  ( y change to YCON point this iteration)
+
+
+
+
+
+
+---- Screen 14 ----
+( PLANET - XYCONINIT  XYVISINIT                   (rfg26oct85)
+
+head: XYCONINIT \ --| set global coordinates for the lower left
+t:  ( corner of the CONTOUR altitude array based on the location
+  ( of the reference point {xabs,yabs}. The lower left corner)
+  ( of CONTOUR cooresponds to {0,0} in the array.)
+  XABS @ 100 + 24 - 12 / 12 * 100 - XCON <!> DXCON <OFF>
+  YABS @ 100 + 40 - 20 / 20 * 100 - YCON <!> DYCON <OFF> t;
+
+head: XYVISINIT \ --| set global coordinates for the lower left
+  ( corner of the viewing frame to center on the reference )
+  ( point and NOT cross the boundaries of CONTOUR.)
+t: XABS @ 18 - XVIS <!> DXVIS <OFF>
+   YABS @ 30 - YVIS <!> DYVIS <OFF> t;
+
+
+
+---- Screen 15 ----
+( PLANET - ?REFVIS  ?VISONCON ***                 ( rfg30jan86)
+
+head: TVXY-INIT \ set tv location to xabs,yabs
+t:  TVEHICLE @>C+S
+  XABS @ YABS @ xy! ICLOSE t;
+
+head: ?REFVIS ( -- t \ is the reference point visible?)
+  ( Works for all scales.)
+t:  XABS @ YABS @ ?invis t;
+
+head: ?VISONCON \ -- t  is the viewing frame entirely within
+t:  ( area that is covered by the CONTOUR array?)
+  XVIS @  XCON @ 1- DUP 27 + WITHIN
+  YVIS @  YCON @ 1- DUP 43 + WITHIN AND t;
+
+
+
+---- Screen 16 ----
+exit \ clip and wrap xabs/yabs
+
+: xwrap \ variable --- revised variable
+  dup @ dup 0<
+      if 2303 +
+      else 2304 mod
+      then swap ! ;
+
+: ywrap \ variable --- revised variable
+  dup @ dup 0<
+     if 959 +
+     else 960 mod
+     then swap ! ;
+
+\ wraps coordinates to spherical
+
+
+---- Screen 17 ----
+( PLANET - NEWVIS                                 (rfg26oct85)
+
+head: NEWVIS ( -- \ move {xvis,yvis} to keep reference point )
+  ( visible. Assumes reference point is on blt clipping )
+  ( boundary.)
+t:   DXABS @ DUP DXVIS <!> XVIS <+!>
+     DYABS @ DUP DYVIS <!> YVIS <+!> t;
+
+
+
+
+
+
+
+
+
+
+---- Screen 18 ----
+( PLANET - NEWCON                                 (rfg26oct85)
+
+head: NEWCON ( -- \ move {xcon,ycon} to keep viewing frame  )
+  ( visible. Assumes {xvis,yvis} is within legal region )
+  ( or adjacent to legal region. Only checked if {xvis,yvis})
+  ( has been changed.)
+t:  XVIS @ XCON @ 2 -  = IF -12 DUP DXCON <!> XCON <+!> THEN
+    XVIS @ XCON @ 26 + = IF  12 DUP DXCON <!> XCON <+!> THEN
+    YVIS @ YCON @ 2 -  = IF -20 DUP DYCON <!> YCON <+!> THEN
+    YVIS @ YCON @ 42 + = IF  20 DUP DYCON <!> YCON <+!> THEN
+\   xvis xwrap yvis ywrap xcon xwrap ycon ywrap
+    dxcon @ dycon @ or
+ if  ' SCRLCON MODULE  dxcon <off> dycon <off>
+ then t;
+\ can the test be sped up?? at least two phrase are redundant
+\ each time around
+
+---- Screen 19 ----
+\ move-.icon                                      ( rfg16apr86)
+
+head: difind t: 2dup ifind t;
+head: ?2dup t: 2dup or if 2dup then t;
+head: reorg t: -5000 dup anchor 2! orglist t;
+
+head: move-.icon \  iaddr -- }|update coords DOESN'T PLOT!!
+t: >c set-current
+   ci ?icon=iaddr
+   if point>icon
+      @xy !iy !ix
+   then
+   iclose t;
+\ assumes icon in display list
+head: invisicon t: inst-x @ inst-y @ 254 default-ic ci t;
+
+
+---- Screen 20 ----
+\ crit>icons, absq , !boxy                        ( rfg07mar86)
+head: (s>i) t: @inst-class 27 =
+if invisicon else ' icon-parm module then +icon t;
+
+head: crit>icons \ {creaturebox --- same}
+t:  iopen ?null not
+      if ' (s>i) all -5000 dup anchor 2! orglist
+      then iclose t; \ add icons
+
+ head: absq \ x,y --- x rounded,y rounded to mini-box size
+ t:    30 / 30 * swap 18 / 18 * swap t;
+
+head: !conseed t: inst-x @ inst-y @ !xyseed t;
+head: !boxy \ { (s),cb --- } store rounded xabs,y into box
+   t: @xyabs absq xy! t;
+
+
+---- Screen 21 ----
+\ MOVE  ?reseed make-region                       ( rfg07mar86)
+head: make-region \ --- iaddr | of creature box
+t:    11 11 icreate 2dup (planet) 1.5@  iinsert
+    2dup this-region 1.5!
+    2dup >c set-current !boxy !conseed  \ seed for creation seq.
+    0 inst-qty ! ( count of creatures) iclose t;
+
+head: ?reseed \ --- 0 if current creature box ok, 1 if not
+t:  this-region 1.5@ ?2dup or \ creature container
+ if >c+s  \ this-region exists (set to 0. on embark)
+    @xyabs absq \ get the rounded coords
+    @xy d=  \ see ifcreature box matches
+   if 0 else 1 then  iclose
+ else 1 \ didn't exist, must create ( or try to find)
+ then t;
+\ consider cache'ing regionx,y to eliminate obkect access
+
+---- Screen 22 ----
+\ ?visited: have we been here before              ( rfg07mar86)
+
+head: ?visited \ --- iaddr of old box or 0 0
+t:  @xyabs absq \ get the rounded coords
+   NULL (planet) @>c+s iopen
+   begin 2dup or 0= ?last not and while
+    @inst-class 11 =
+    @inst-species 11 = and
+    if 2drop 2dup @xy d=
+       if ci else 0. then
+    then inext repeat >r >r 2drop r> r>
+  cdrop iclose t;
+\ { planet,child --- planet,child }
+
+
+
+
+---- Screen 23 ----
+\ set the viswindow boundaries after each move    ( rfg30jan86)
+
+head: 1map
+t: xvis @ 14 + \ left edge
+ yvis @ 22 + \ bottom
+ xvis @ 22 + \ right edge
+ yvis @ 41 + \ top
+ !viswindow t; \ x,yvis set initially xyvisinit,
+              \ maintained by scrolling
+
+head: ?inlist \ box-iaddr --- box-iaddr | may add crit to iconli
+t:  2dup >c set-current iopen
+ ci ?icon=iaddr 0=
+ if iclose crit>icons iopen else drop then cdrop iclose t;
+
+
+
+---- Screen 24 ----
+\ ?popula: do we populate this region             ( rfg26nov85)
+: ?popula \ maybe add life to this contour region
+?reseed if ?new on
+           ?visited 2dup or 0=
+         if  2drop make-region (planet) @>c+s iopen cdrop >c+s
+    moved @ if whead ." SCANNING NEW TERRAIN "  \ 'explain' dela
+            then     ' popula module   \ create box+critters+++
+           crit>icons cdrop iclose     \ add to display list
+    moved @ if werase then
+        else ?inlist this-region 1.5!  \ reuse a region
+        then then ;
+
+
+
+
+
+
+---- Screen 25 ----
+( PLANET - TVMOVE                                 ( rfg11jun86)
+
+head: (TVMOVE) ( -- \ move terrain vehicle based on arrow key )
+t:   pink loc-cursor .where  ?new on moved on
+  DUP DXABS <!> XABS <+!> \ xabs xwrap
+  DUP DYABS <!> YABS <+!> \ yabs ywrap
+  NEWVIS  ( check/adjust viewing frame)
+  NEWCON  ( check/adjust contour map)
+  ?popula
+ >mainview vclipset 1map \ adjust world window
+  tvxy-init tvehicle 1.5@  move-.icon reorg
+    8x8contour  .local-icons  v>display >display
+ dclipset  green loc-cursor .where ?newdate ?flare t;
+
+
+
+
+---- Screen 26 ----
+\ delta-xy  computes what to add to reduce/increas( rfg07mar86)
+
+head: delta-xy \ x,y x1,y1 --- x,y deltax,deltay (XY move)
+t:   2over  rot swap - dup
+     if dup abs / then >r
+    - dup
+    if dup abs / then r> t;
+
+head: make-debris \ creates tvdebris, puts in this-region
+   t: ( ##artifact) 28  51 icreate 2dup
+        this-region 1.5@ iinsert
+         >c+s @xyabs  xy!
+         3000 dup art-vol ! inst-qty ! iclose t;
+
+
+
+
+---- Screen 27 ---- (blank)
+
+---- Screen 28 ---- (blank)
+
+---- Screen 29 ----
+( CASE STATEMENT BY CHARLES EAKER )
+DECIMAL transient  trace @ trace off
+\ : (2OF) 2OVER D= ;
+: 2OF  4 ?PAIRS COMPILE 2over compile d=
+       COMPILE 0BRANCH HERE 0 , COMPILE 2DROP 5 ; IMMEDIATE
+: !CSP SP@ CSP ! ;
+: ECASE          ?COMP CSP @ !CSP 4 ; IMMEDIATE
+
+: ENDOF         5 ?PAIRS COMPILE BRANCH HERE 0 ,
+                SWAP 2 [COMPILE] THEN  4 ; IMMEDIATE
+
+: ENDCASE       4 ?PAIRS COMPILE DROP BEGIN SP@
+                CSP @ = 0= WHILE 2 [COMPILE]
+                THEN  REPEAT CSP ! ; IMMEDIATE
+ resident  trace !
+
+
+---- Screen 30 ----
+\ 'angle' to text phrase case statement             rfg12apr85
+\ not very space efficient, but it works!
+
+head: angle>text \ deltax,deltay --- prints direction
+t: ecase
+  0 1 2of ." NORTH" endof
+  1 1 2of ." NORTHEAST" endof
+  1 0 2of ." EAST" endof
+  1 -1 2of ." SOUTHEAST" endof
+  0 -1 2of ." SOUTH" endof
+  -1 -1 2of ." SOUTHWEST" endof
+  -1 0 2of ." WEST" endof
+  -1 1 2of ." NORTHWEST" endof
+    drop ( extra parameter ) endcase t;
+
+
+
+---- Screen 31 ----
+\ get-distance                                    ( rfg04jul86)
+
+head: get-distance \ --- tv distance from ship | { --- ship }
+t:  *ship >c+s
+@xyabs   inst-y @ - abs dup u*
+  rot inst-x @ - abs dup u*  d+ sqrt t;
+
+head: ?newhr \ true if pastime has gone into a new hour
+   t: oldhr @ star-hr @ - dup
+      if star-hr @ oldhr ! then t; \ for storms
+exit
+
+
+
+
+
+
+---- Screen 32 ----
+\ .distance                                       ( rfg03apr86)
+head: -storm t:  #storm @ dup 4 < swap 11 > or t;
+
+head: ?show t: -storm ?nav or t;
+
+head: .distance \ prints KM. from ship  + direction
+t: >display 116 150 pos. 7 black poly-erase-text
+   white !color
+  ?show if get-distance 5 .r ." KM." else ." LOST!" then
+  116 143 pos. 09 black poly-erase-text
+   white !color
+ ?show if @xyabs  @xy iclose  \ close ship, from get-distance
+  delta-xy 2swap 2drop angle>text then t;
+
+
+
+
+---- Screen 33 ----
+\ (remove)                                        ( rfg28apr86)
+
+head: (remove) \ dx,dy --- | move us towards ship
+  t: dup dyabs <!>  yabs <+!>
+  dup dxabs <!>  xabs <+!>
+  newvis newcon set-speed .distance
+  0 5  rrnd 0=
+     IF ' (ROLE) MODULE
+        >display 'injure @ module
+     THEN
+\ trace @ if   >0FONT .S >1FONT then
+  >mainview vclipset 1map nop   reorg
+  8x8contour  .local-icons  v>display  dclipset t;
+
+
+
+
+---- Screen 34 ----
+\ retreat                                         ( rfg11jun86)
+
+head: retreat
+  t: whead ." OUT OF FUEL " gcr 1 xblt +!
+        ." RETURNING TO SHIP ON FOOT " 1000 ms beepoff
+  ' >debris module ?tv <off> make-debris
+  lcolor off black loc-cursor .where
+  *ship >c+s @xy  iclose
+  begin @xyabs 2over delta-xy 2dup
+        null d= not
+  while  (remove) 2drop
+  repeat 2drop 2drop 2drop
+\ trace @ if   >0FONT .S >1FONT then
+  tvehicle @>c+s -icon iclose
+  FTRIG <ON>  TVXY-INIT   t;
+
+
+---- Screen 35 ----
+\ .energy (other stuff) for terrain vehicle       ( rfg07mar86)
+
+head: erase-energy \ erase energy reading
+   t: 116 171 pos. 7  black poly-erase-text t;
+
+head: .energy \ print % of full tank
+ t: erase-energy tvehicle @>c+s
+ inst-qty @ iclose  \ get amt in tank (full=32767)
+   white !color
+   reserve - 100 30767 */ dup 0> not  \ is it zero percent
+    if drop color @ pink !color ." RESERVE" !color
+    else 3 .r ." %"
+    then 116 164 pos. 3 black poly-erase-text
+   %eff @ 100 e/m @ 3* negate */
+   99 min 3 .r ." %" t;
+
+
+---- Screen 36 ----
+\ PLANET - TVMOVE bob's routine                   ( rfg07mar86)
+
+
+head: .stats
+ t: ( xormode @ >r xormode off) .energy .distance .where
+         ( r> xormode <!>) t;
+
+head: deplete \ subtract movement energy from TV
+t:  e/m @ 100 %eff @ */   \ storms cost more fuel
+    tvehicle @>c+s
+    inst-qty +! iclose t;
+
+
+head: ?empty  \ --- flag | true if out of fuel
+   t: tvehicle @>c+s inst-qty @ iclose 0> not t;
+
+
+---- Screen 37 ----
+\ PLANET - TVMOVE bob's routine                   ( rfg23apr86)
+head: move-setup
+t: xormode off green loc-cursor .where t;
+
+head: move-finish
+t: black loc-cursor .where t;
+
+head: ?cruise \ dx,dy --- dx1,dy1 | may modify to provide cruise
+   t: lkey @ dup 338 = swap 0= or
+        if ftrig off 2drop skey @ (xyscan) then t;
+
+head: do-retreat \ dx,dy
+    t:  erase-energy yellow !color ." NONE" 2drop retreat t;
+
+
+
+
+---- Screen 38 ----
+\ tv-tasks                                        ( rfg30jan86)
+head: move-tasks \ install vectors for tasker
+t: ' ?newhr  'vehicle-cycle <!>  ' ?storm 'repair <!>
+' .stats  '.vehicle-status <!>  \ vehicle update, every hour
+'simulate @ 'external-events <!> \ lifeform simulation goes here
+' beep 'ending <!> \ KLUDGE for testing endgame=no fuel
+' .stardate '.date <!>          \ date in auxwindow
+ time-passing on t;             \ activate these routines
+\ assume below are still set and runnable
+( ' obits  'death ! ) \ executes when there is an attack
+( ' .vits '.vital-signs !  '  heal 'treatment ! )
+
+head: Move-init
+   t: ?trig drop move-setup move-tasks green lcolor !
+       -1 TONE BEEPON t;
+
+
+---- Screen 39 ----
+\ tv-tasks                                        ( rfg26feb86)
+
+head: move-untasks \ uses forward patch to behave-ov
+t:  'tvt @ module time-passing off t;
+\ also prevents words in behave-ov from executing too early
+
+head: move-cleanup
+t: move-untasks move-finish black lcolor ! BEEPOFF t;
+
+head: do.move
+t:   (tvmove) set-speed deplete .stats t;
+
+head: ?key \ dx,dy --- dx,dy,flag| true if a move key
+t:     2dup or ftrig @ 0= and t;
+
+
+
+---- Screen 40 ----
+\ ?key move-key                                   ( rfg28apr86)
+head: move-key
+t: (xyscan) ?key
+       if  ?empty
+         if do-retreat
+         else  do.move
+           begin xyscan ?cruise ?key ?empty not and
+           while  do.move
+           repeat 2drop
+         ?empty if 0. ( dummy parms) do-retreat then
+         then
+       else 2drop
+       then
+ ?trig if drop 0 time-passing off
+       then t; \ flip task active flag, prevent display
+
+
+---- Screen 41 ----
+\ tv-move                                         (rfg30dec85)
+
+
+: tv-move
+  ' move-cleanup ' move-key  ' move-init dotasks
+   time-passing on ;
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 42 ----
+\ approach: choosing a landing site for debugging ( rfg28apr86)
+32 7 2 afield: plan-tseed
+\ 32 2 2 afield plan-mass
+
+: approach
+  >lores dark
+ (planet) 1.5@ >c set-current
+ @inst-species 18 < if ci drop else plan-tseed @ then
+ dup ' mercator-gen module ship-console
+ ' (.merc) module  .region ' (getsite) module
+( plan-mass @ 4 / 10 max 120 min ) #clrmap @ swap ( rot )
+ ' init-orbit module ' showsite module
+ ' descend module
+ >display white !color dclipset
+  context-id# off  iclose ;
+
+
+---- Screen 43 ----
+( OVERLAY SUFFIX: MOVE-OV MOVEMENT OVERLAY -------( rfg28apr86)
+ dispose
+close-overlay
+97  overlay move-ov
+move-ov
+forth definitions
+
+: tvmove move-ov move-voc tv-move ;
+: ?popula move-ov move-voc ?popula ;
+: !E/M MOVE-OV MOVE-VOC SET-SPEED ;
+ov-cancel 31 WIDTH !
+
+
+
+
+

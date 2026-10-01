@@ -1,0 +1,721 @@
+( Converted from FILES.CMP: 40 blocks of 16 x 64 )
+
+---- Screen 0 ---- (blank)
+
+---- Screen 1 ----
+( FILES - LOAD BLOCK                                   4-28-86)
+\ Compiles the starflight file directory.
+\ Assumes the use of kernel.com as kernel
+2 28 THRU ( load file compiler & data)
+
+INSTALL-FILES ( allocate disk space)
+
+BLOVSA  :SIGNATURE      !
+BHIVSA  :SIGNATURE 2+   ! ( add b signature to directory)
+
+SAVE-BUFFERS
+
+FORGET DIRBASE
+
+
+
+
+---- Screen 2 ----
+( FILES - CONSTANTS & VARIABLES                         3-1-85)
+
+29 C= DIRBASE ( base block of directory)
+141 C= #DIRS        \ number of directory entries
+DIRBASE  DIRBLK !  \ set directory base
+DIRBASE 2+ ' SIGBLK ! \ set signature base
+ALOVSA 192 +
+  C= INITIAL-DPA  \ initial freespace pointer for disk a
+BLOVSA 192 +
+  C= INITIAL-DPB  \ initial freespace pointer for disk b
+AHIVSA C= FINAL-DPA    \ end of freespace on disk a
+BHIVSA C= FINAL-DPB    \ end of freespace on disk b
+
+V= DPA                \ disk a free space pointer
+V= DPB                \ disk b free space pointer
+
+
+---- Screen 3 ----
+( FILES - INIT-DIR                                      3-1-85)
+: INIT-DIR ( -- \ initialize disk file directory)
+  #DIRS 0 DO I FILE-NAME 12 BL FILL
+             I FILE-TYPE  9  0 FILL LOOP ;
+: .RJ ( n -- \ right justify) 0 5 D.R SPACE ;
+: DIR ( start -- \ display directory from start to end)
+  CR ." dir#                disk  #rec   rlen   slen"
+  ."   start   end " #DIRS SWAP
+  DO  CR ?TERMINAL IF LEAVE THEN
+      I .RJ
+      I FILE-NAME 12 TYPE
+      I FILE-TYPE C@ .RJ
+      I FILE-#REC  @ .RJ
+      I FILE-RLEN C@ .RJ
+      I FILE-SLEN C@ .RJ
+      I FILE-START @ .RJ I FILE-END @ .RJ LOOP ;
+
+---- Screen 4 ----
+( FILES - GET# DISK-CODE                               4-28-86)
+
+: GET# ( <number> -- n \ get number from input stream)
+  BL WORD NUMBER DROP ;
+
+CASE DISK-CODE ( c -- n)
+\ Parse disk allocation code.
+  ASCII A IS 1
+  ASCII B IS 2
+  ASCII X IS 3
+  ASCII Y IS 4
+OTHERS 0
+
+
+
+
+
+---- Screen 5 ----
+( FILES - FILE                                          3-1-85)
+
+: FILE ( file# <name> disk #rec rlen slen -- \)
+       ( enter a file in the file directory)
+  GET# >R BL WORD COUNT  I FILE-NAME SWAP CMOVE
+  BL WORD COUNT DROP C@  DISK-CODE I FILE-TYPE C!
+  GET# I FILE-#REC !     GET# I FILE-RLEN  C!
+  GET# I FILE-SLEN C! R> DROP ;
+
+
+
+
+
+
+
+
+
+---- Screen 6 ----
+( FILES - INIT-DPAB .FREE-SPACE BYTES>BLOCKEND         4-28-86)
+
+: INIT-DPAB ( -- \ set initial free space pointers)
+  INITIAL-DPA DPA !    INITIAL-DPB DPB ! ;
+
+: .FREE-SPACE ( -- \ display amount of free space on the disks)
+  FINAL-DPA DPA @ - CR ." DISK A = " U. ."  FREE SEGS"
+  FINAL-DPB DPB @ - CR ." DISK B = " U. ."  FREE SEGS" ;
+
+: BYTES>BLOCKEND ( vsa -- n \ compute number of bytes to end)
+  ( of block)
+  0 64 U/MOD DROP NEGATE 64 + 16* ;
+
+
+
+
+
+---- Screen 7 ----
+( FILES - SEG1STBLK                                     3-4-85)
+
+: SEG1STBLK ( dp-vsa -- dp-vsa #segs1stblk #r1stb #rec rlen)
+  ( \ given a freespace address and the current file in )
+  ( file#, calc some parameters)
+  DUP BYTES>BLOCKEND      ( dp-vsa c>eob --)
+  FILE# @ FILE-RLEN C@    ( dp-vsa c>eob rlen -- )
+  2DUP < IF >R DROP DUP BYTES>BLOCKEND 16/ + 1024 R> THEN
+  >R I /                  ( dp-vsa recs>eob -- rlen)
+  FILE# @ FILE-#REC @ >R I MIN
+                          ( dp-vsa #recs1stblk -- #rec rlen)
+  >R I J * 16 /MOD SWAP IF 1+ THEN
+         ( dp-vsa #segs1stblk -- #r1stblk #rec rlen)
+  I I' = NOT IF OVER BYTES>BLOCKEND 16/ MAX THEN
+  R> R> R> ;
+
+
+---- Screen 8 ----
+( FILES - FILE-START/END                                3-4-85)
+
+: FILE-START/END ( dp-vsa -- start-vsa end-vsa \ given a)
+  ( freespace address and the current file in file#, compute)
+  ( the adjusted freespace pointer and the start & end vsas.)
+  SEG1STBLK ( dp-vsa #segs1stblk #r1stb #rec rlen --)
+  >R SWAP - ( dp-vsa #segs1stblk #rec' -- rlen )
+  1024 I /  ( dp-vsa #segs1stblk #rec' rec/blk -- rlen )
+  /MOD 64 * ( dp-vsa #segs1stblk remrec sblk -- rlen )
+  SWAP R> * ( dp-vsa #segs1stblk sblk #rbytes -- )
+  16 /MOD SWAP IF 1+ THEN + + ( dp-vsa vsa-len --)
+  OVER + 1- ;
+
+
+
+
+
+---- Screen 9 ---- (blank)
+
+---- Screen 10 ----
+( FILES - INCVERSION                                   4-28-86)
+
+: INCVERSION ( -- )
+\ Increment version number each time executed.
+  :VERSION @ 1+ DUP :VERSION !
+  CR ." VERSION: " . ;
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 11 ----
+( FILES - 0-START/END A-START/END B-START/END          9-09-85)
+
+: 0-START/END 0 0 ;
+
+: A-START/END ( -- start-vsa end-vsa \ allocate space on diska)
+  DPA @ FILE-START/END
+  DUP 1+ DUP FINAL-DPA U< NOT IF UNRAVEL THEN DPA ! ;
+
+: B-START/END ( -- start-vsa end-vsa \ allocate space on diskb)
+  DPB @ FILE-START/END
+  DUP 1+ DUP FINAL-DPB U< NOT IF UNRAVEL THEN DPB ! ;
+
+
+
+
+
+
+---- Screen 12 ----
+( FILES - X-START/END Y-START/END FILE-CASES           9-09-85)
+
+: X-START/END ( -- start-vsa end-vsa \ allocate space on diskb)
+  ( and block align) DPB @ BYTES>BLOCKEND 16/ DUP 64 = NOT
+  IF DPB +! ELSE DROP THEN B-START/END ;
+
+: Y-START/END ( -- start-vsa end-vsa \ allocate space on diska)
+  ( and block align) DPA @ BYTES>BLOCKEND 16/ DUP 64 = NOT
+  IF DPA +! ELSE DROP THEN A-START/END ;
+
+CASE FILE-CASES ( file-type -- start end \ find disk space)
+  0 IS 0-START/END  1 IS A-START/END  2 IS B-START/END
+  3 IS X-START/END  4 IS Y-START/END
+OTHERS UNRAVEL
+
+
+
+---- Screen 13 ----
+( FILES - INSTALL-FILES                                 3-4-85)
+
+: INSTALL-FILES ( -- \ allocate space for files)
+\ 3k at start of each dos file is set aside for directory and
+\ signature.
+  INIT-DPAB
+  #DIRS 1 DO I 43 = NOT IF I DUP FILE# !
+                         FILE-TYPE C@ FILE-CASES
+                         I FILE-END ! I FILE-START !
+                      ELSE 40 FILE-START @ 43 FILE-START !
+                           40 FILE-END   @ 43 FILE-END   !
+                      THEN \ cr i . .free-space
+          LOOP
+  INCVERSION               \ increment version #
+  .FREE-SPACE 3000 MS ;
+
+
+---- Screen 14 ----
+( FILES - DIRECTORY RECORDS 000 - 009                  9-12-85)
+INIT-DIR
+(    dir#  name       disk  #rec   rlen  slen)
+
+FILE 000  DIRECTORY     0    140    21     0
+FILE 001  INSTANCE      B   9408    16     0
+FILE 002  IROOT         0      0     0     0
+FILE 003  ISYSTEM       0      0     0     0
+FILE 004  INACTIVE      0      0     0     0
+FILE 005  FRAGMENT      0      0     0     0
+FILE 006  ELO-CPIC      A    301    16     0
+FILE 007  IAPPLICATION  0      0     0     0
+FILE 008  GAZ-CPIC      A    195    16     0
+FILE 009  MEC-CPIC      A    178    16     0
+
+
+
+---- Screen 15 ----
+( FILES - DIRECTORY RECORDS 010 - 019                   3-1-85)
+
+(    dir#  name       disk  #rec   rlen  slen)
+
+FILE 010  BOOT/KERNEL   0   8192    16     0 \ on a disk
+FILE 011  BOX           B     64    16     8
+FILE 012  STARPORT      0      0     0     0
+FILE 013  BANK          0      0     0     9
+FILE 014  BANK-TRANS    B      7    19     6
+FILE 015  PERSONNEL     0      0     0     0
+FILE 016  CREWMEMBER    B      6    20    24
+FILE 017  ASSIGN-CREW   0      0     0    24
+FILE 018  SHIP-CONFIG   0      0     0     0
+FILE 019  TRADE-DEPOT   0      0     0     0
+
+
+
+---- Screen 16 ----
+( FILES - DIRECTORY RECORDS 020 - 029                  10/31/85)
+
+(    dir#  name       disk  #rec   rlen  slen)
+
+FILE 020  SHIP          0      0     0    75
+FILE 021  MYS-CPIC      A    379    16     0
+FILE 022  TIME          0      0     0     4
+FILE 023  STARSYSTEM    0      0     0     8
+FILE 024  STAR          0      0     0     6
+FILE 025  VESSEL        B     26    73    16
+FILE 026  ELEMENT       B     23    23     6
+FILE 027  MESSAGE       0      0     0    17
+FILE 028  ARTIFACT      B     53    30     6
+FILE 029  PROJECTILE    0      0     0     8
+
+
+
+---- Screen 17 ----
+( FILES - DIRECTORY RECORDS 030 - 039                  3/23/85)
+
+(    dir#  name       disk  #rec   rlen  slen)
+
+FILE 030  NOM-CPIC      A     71    16     0
+FILE 031  SPE-CPIC      A    118    16     0
+FILE 032  PLANET        B     61    22     0
+FILE 033  THR-CPIC      A    155    16     0
+FILE 034  OPERATIONS    0      0     0     0
+FILE 035  NOTICE        0      0     0     1
+FILE 036  EVALUATION    0      0     0    25
+FILE 037  VEL-CPIC      A    292    16     0
+FILE 038  VPR-CPIC      A     78    16     0
+FILE 039  MIN-CPIC      A    131    16     0
+
+
+
+---- Screen 18 ----
+( FILES - DIRECTORY RECORDS 040 - 049                   3-1-85)
+
+(    dir#  name       disk  #rec   rlen  slen)
+
+FILE 040  SPECIMEN      B     28    16    13
+FILE 041  RUIN          0      0     0     7
+FILE 042  TVEHICLE      0      0     0     7
+FILE 043  BIO-DATA      0     28    16    13 ( use specimen ca)
+FILE 044  TPORT-PIC     B    146    16     0 \ NEW
+FILE 045  FLUX-NODE     0      0     0     8
+FILE 046  NEBULA        0      0     0     6
+FILE 047  CAPT-LOG      0      0     0    36
+FILE 048  STRING        0      0     0     0
+FILE 049  BPORT-PIC     B    216    16     0 \ NEW
+
+
+
+---- Screen 19 ----
+( FILES - DIRECTORY RECORDS 050 - 059                  1/27/86)
+
+(    dir#  name       disk  #rec   rlen  slen)
+
+FILE 050  PHRASECONTRL  0      0     0     6
+FILE 051  SUBJECT       0      0     0     0
+FILE 052  ORIGINATOR    0      0     0    19
+FILE 053  MESSAGE'      0      0     0     2
+FILE 054  SPLASH        A   1024    16     0
+FILE 055  TEXT          0      0     0    40
+FILE 056  SCROLL-TEXT   0      0     0    44
+FILE 057  ANALYZE-TEXT  B     16   190     0
+FILE 058  BUTTONS       B     12    73     0
+FILE 059  BLT-HEAD      0      0     0    18
+
+
+
+---- Screen 20 ----
+( FILES - DIRECTORY RECORDS 060 - 069                   3-1-85)
+
+(    dir#  name       disk  #rec   rlen  slen)
+
+FILE 060  MED-PIC       A    128    16     0
+FILE 061  ENCOUNTER     0      0     0    17
+FILE 062  ICON1:1       B     50    18     0
+FILE 063  ICON1:2       B     50    18     0
+FILE 064  ICON1:4       B     50    18     0
+FILE 065  ICON-NAME     B     27    27     0
+FILE 066  DPART-OV      B     92    16     0
+FILE 067  REGIONS       B      6    28     2
+FILE 068  CREATURE      B    100   156    17
+FILE 069  PHAZES        A    384    16     0
+
+
+
+---- Screen 21 ----
+( FILES - DIRECTORY RECORDS 070 - 079                  3/01/86)
+
+(    dir#  name       disk  #rec   rlen  slen   compressed )
+
+FILE 070  CHKFLIGHT-OV  B     65    16     0   \ [+]
+FILE 071  FRACT-OV      B    276    16     0   \ [ ]
+FILE 072  ICONP-OV      B     52    16     0   \ [ ]
+FILE 073  SITE-OV       B    100    16     0   \ [ ]
+FILE 074  HYPERMSG-OV   B    175    16     0   \ [+]
+FILE 075  GPOLY         B     89     4     0   \ [ ]
+FILE 076  FACET         B     72     4     0   \ [ ]
+FILE 077  VERTEX        B    134     3     0   \ [ ]
+FILE 078  BLT-OV        B     29    16     0   \ [+]
+FILE 079  MISC-OV       B     86    16     0   \ [+]
+
+
+
+---- Screen 22 ----
+( FILES - DIRECTORY RECORDS 080 - 089                   3-1-85)
+
+(    dir#  name       disk  #rec   rlen  slen   compressed )
+
+FILE 080  BANK-OV       B     97    16     0   \ [+]
+FILE 081  ASSCREW-OV    B    160    16     0   \ [+]
+FILE 082  PERSONNEL-OV  B    257    16     0   \ [+]
+FILE 083  SHIPGRPH-OV   B    134    16     0   \ [+]
+FILE 084  CONFIG-OV     B    182    16     0   \ [+]
+FILE 085  TDEPOT-OV     B    262    16     0   \ [+]
+\ FILE 086  EDIT-OV       B    115    16     0   \ [ ]
+FILE 086  EDIT-OV       0      0     0     0   \ [ ]
+FILE 087  PORTMENU-OV   B    161    16     0   \ [+]
+FILE 088  VITA-OV       B    222    16     0   \ [+] 250
+FILE 089  HP-OV         B    302    16     0   \ [+] 325
+
+
+---- Screen 23 ----
+( FILES - DIRECTORY RECORDS 090 - 099                 10-06-85)
+
+(    dir#  name       disk  #rec   rlen  slen   compressed )
+
+FILE 090  LP-OV         B    327    16     0   \ [+] 340
+FILE 091  SENT-OV       B    299    16     0   \ [+]
+FILE 092  TV-OV         B    260    16     0   \ [ ] 275
+FILE 093  COMM-OV       B    483    16     0   \ [+]
+FILE 094  COMMSPEC-OV   B    148    16     0   \ [+]
+FILE 095  SEED-OV       B    150    16     0   \ [ ]
+FILE 096  LISTICONS     B     45    16     0   \ [ ]
+FILE 097  MOVE-OV       B    237    16     0   \ [ ]
+FILE 098  ENGINEER      B    137    16     0   \ [+]
+FILE 099  DOCTOR        B     77    16     0   \ [+]
+
+
+
+---- Screen 24 ----
+( FILES - DIRECTORY RECORDS 100 - 109                 10-06-85)
+
+(    dir#  name       disk  #rec   rlen  slen   compressed )
+
+FILE 100  ORBIT-OV      B    414    16     0   \ [+]
+FILE 101  CAPTAIN       B    392    16     0   \ [+]
+FILE 102  SCIENCE       B    240    16     0   \ [ ]
+FILE 103  NAVIGATR      B     50    16     0   \ [ ]
+FILE 104  SHIPBUTTONS   B    125    16     0   \ [ ] 214
+FILE 105  *MAP-OV       B    260    16     0   \ [ ] 150+stk
+FILE 106  HYPER-OV      B    480    16     0   \ [ ]
+FILE 107  ANALYZE-OV    B    163    16     0   \ [+]
+FILE 108  LAUNCH-OV     B     70    16     0   \ [+]
+FILE 109  FLUX-EFFECT   B     29    16     0   \ [ ]
+
+
+
+---- Screen 25 ----
+( FILES - DIRECTORY RECORDS 110 - 119                   3-1-85)
+
+(    dir#  name       disk  #rec   rlen  slen   compressed )
+
+FILE 110  OP-OV         B    261    16     0   \ [+]
+FILE 111  ITEMS-OV      B    375    16     0   \ [ ]
+FILE 112  LSYSICON      B     47    16     0   \ [ ]
+FILE 113  MSYSICON      B     28    16     0   \ [ ]
+FILE 114  SSYSICON      B     11    16     0   \ [ ]
+FILE 115  BEHAV-OV      B    360    16     0   \ [ ]
+FILE 116  CMAP          B     10    64     0   \ [ ]
+FILE 117  INSTALL       B     50    16     0   \ [ ]
+FILE 118  HEAL-OV       B     75    16     0   \ [ ]
+FILE 119  REPAIR-OV     B    100    16     0   \ [ ]
+
+
+
+---- Screen 26 ----
+( FILES - DIRECTORY RECORDS 120 - 129                  9-09-85)
+
+(    dir#  name       disk  #rec   rlen  slen   compressed )
+
+FILE 120  GAME-OV       B    313    16     0   \ [ ]
+FILE 121  PLSET-OV      B    150    16     0   \ [+]
+FILE 122  MAPS-OV       B    140    16     0   \ [+] 150
+FILE 123  VES-BLT       X    268    16     0
+FILE 124  STORM-OV      B     85    16     0   \ [ ]
+FILE 125  HUM-PIC       B     30    16     0
+FILE 126  VEL-PIC       B     27    16     0
+FILE 127  THR-PIC       B     17    16     0
+FILE 128  ELO-PIC       B     38    16     0
+FILE 129  AND-PIC       B     27    16     0
+
+
+
+---- Screen 27 ----
+( FILES - DIRECTORY RECORDS 130 - 139                 10/15/85)
+
+(    dir#  name       disk  #rec   rlen  slen   compressed )
+
+FILE 130  COMPOUNDS     B     23     7     0
+FILE 131  IT-OV         B     81    16     0
+FILE 132  COMBAT-OV     B    400    16     0
+FILE 133  DAMAGE-OV     B    170    16     0    ( 200 )
+FILE 134  LAND-OV       B     90    16     0
+FILE 135  PSTATS        B      5    11     0
+FILE 136  SAVE          Y   7744    16     0 \ save game data
+FILE 137  MUSIC         0      0     0     0 \ to be determined
+FILE 138  EARTH         A     72    16     0 \ Earth merc. map
+FILE 139  <UNUSED>      0      0     0     0
+
+
+
+---- Screen 28 ----
+( FILES - DIRECTORY RECORDS 140 - 141                  4-28-86)
+
+(    dir#  name       disk  #rec   rlen  slen   compressed )
+
+FILE 140  <UNUSED>      0      0     0     0
+FILE 141  <UNUSED>      0      0     0     0
+FILE 142  <UNUSED>      0      0     0     0
+( END)
+
+
+
+
+
+
+
+
+
+---- Screen 29 ---- (binary data, hex dump)
+0000  44 49 52 45 43 54 4F 52 59 20 20 20 00 00 00 00  DIRECTORY   ....
+0010  00 8C 00 15 00 49 4E 53 54 41 4E 43 45 20 20 20  .....INSTANCE   
+0020  20 02 40 49 FF 6D C0 24 10 00 49 52 4F 4F 54 20   .@I.m.$..IROOT 
+0030  20 20 20 20 20 20 00 00 00 00 00 00 00 00 00 49        .........I
+0040  53 59 53 54 45 4D 20 20 20 20 20 00 00 00 00 00  SYSTEM     .....
+0050  00 00 00 00 49 4E 41 43 54 49 56 45 20 20 20 20  ....INACTIVE    
+0060  00 00 00 00 00 00 00 00 00 46 52 41 47 4D 45 4E  .........FRAGMEN
+0070  54 20 20 20 20 00 00 00 00 00 00 00 00 00 45 4C  T    .........EL
+0080  4F 2D 43 50 49 43 20 20 20 20 01 C0 00 EC 01 2D  O-CPIC    .....-
+0090  01 10 00 49 41 50 50 4C 49 43 41 54 49 4F 4E 00  ...IAPPLICATION.
+00A0  00 00 00 00 00 00 00 00 47 41 5A 2D 43 50 49 43  ........GAZ-CPIC
+00B0  20 20 20 20 01 ED 01 AF 02 C3 00 10 00 4D 45 43      .........MEC
+00C0  2D 43 50 49 43 20 20 20 20 01 B0 02 61 03 B2 00  -CPIC    ...a...
+00D0  10 00 42 4F 4F 54 2F 4B 45 52 4E 45 4C 20 00 00  ..BOOT/KERNEL ..
+00E0  00 00 00 00 20 10 00 42 4F 58 20 20 20 20 20 20  .... ..BOX      
+00F0  20 20 20 02 00 6E 3F 6E 40 00 10 08 53 54 41 52     ..n?n@...STAR
+0100  50 4F 52 54 20 20 20 20 00 00 00 00 00 00 00 00  PORT    ........
+0110  00 42 41 4E 4B 20 20 20 20 20 20 20 20 00 00 00  .BANK        ...
+0120  00 00 00 00 00 09 42 41 4E 4B 2D 54 52 41 4E 53  ......BANK-TRANS
+0130  20 20 02 40 6E 48 6E 07 00 13 06 50 45 52 53 4F    .@nHn....PERSO
+0140  4E 4E 45 4C 20 20 20 00 00 00 00 00 00 00 00 00  NNEL   .........
+0150  43 52 45 57 4D 45 4D 42 45 52 20 20 02 49 6E 50  CREWMEMBER  .InP
+0160  6E 06 00 14 18 41 53 53 49 47 4E 2D 43 52 45 57  n....ASSIGN-CREW
+0170  20 00 00 00 00 00 00 00 00 18 53 48 49 50 2D 43   .........SHIP-C
+0180  4F 4E 46 49 47 20 00 00 00 00 00 00 00 00 00 54  ONFIG .........T
+0190  52 41 44 45 2D 44 45 50 4F 54 20 00 00 00 00 00  RADE-DEPOT .....
+01A0  00 00 00 00 53 48 49 50 20 20 20 20 20 20 20 20  ....SHIP        
+01B0  00 00 00 00 00 00 00 00 4B 4D 59 53 2D 43 50 49  ........KMYS-CPI
+01C0  43 20 20 20 20 01 62 03 DC 04 7B 01 10 00 54 49  C    .b...{...TI
+01D0  4D 45 20 20 20 20 20 20 20 20 00 00 00 00 00 00  ME        ......
+01E0  00 00 04 53 54 41 52 53 59 53 54 45 4D 20 20 00  ...STARSYSTEM  .
+01F0  00 00 00 00 00 00 00 08 53 54 41 52 20 20 20 20  ........STAR    
+0200  20 20 20 20 00 00 00 00 00 00 00 00 06 56 45 53      .........VES
+0210  53 45 4C 20 20 20 20 20 20 02 51 6E C9 6E 1A 00  SEL      .Qn.n..
+0220  49 10 45 4C 45 4D 45 4E 54 20 20 20 20 20 02 CA  I.ELEMENT     ..
+0230  6E EB 6E 17 00 17 06 4D 45 53 53 41 47 45 20 20  n.n....MESSAGE  
+0240  20 20 20 00 00 00 00 00 00 00 00 11 41 52 54 49     .........ARTI
+0250  46 41 43 54 20 20 20 20 02 EC 6E 50 6F 35 00 1E  FACT    ..nPo5..
+0260  06 50 52 4F 4A 45 43 54 49 4C 45 20 20 00 00 00  .PROJECTILE  ...
+0270  00 00 00 00 00 08 4E 4F 4D 2D 43 50 49 43 20 20  ......NOM-CPIC  
+0280  20 20 01 DD 04 23 05 47 00 10 00 53 50 45 2D 43    ...#.G...SPE-C
+0290  50 49 43 20 20 20 20 01 24 05 99 05 76 00 10 00  PIC    .$...v...
+02A0  50 4C 41 4E 45 54 20 20 20 20 20 20 02 51 6F A5  PLANET      .Qo.
+02B0  6F 3D 00 16 00 54 48 52 2D 43 50 49 43 20 20 20  o=...THR-CPIC   
+02C0  20 01 9A 05 34 06 9B 00 10 00 4F 50 45 52 41 54   ...4.....OPERAT
+02D0  49 4F 4E 53 20 20 00 00 00 00 00 00 00 00 00 4E  IONS  .........N
+02E0  4F 54 49 43 45 20 20 20 20 20 20 00 00 00 00 00  OTICE      .....
+02F0  00 00 00 01 45 56 41 4C 55 41 54 49 4F 4E 20 20  ....EVALUATION  
+0300  00 00 00 00 00 00 00 00 19 56 45 4C 2D 43 50 49  .........VEL-CPI
+0310  43 20 20 20 20 01 35 06 58 07 24 01 10 00 56 50  C    .5.X.$...VP
+0320  52 2D 43 50 49 43 20 20 20 20 01 59 07 A6 07 4E  R-CPIC    .Y...N
+0330  00 10 00 4D 49 4E 2D 43 50 49 43 20 20 20 20 01  ...MIN-CPIC    .
+0340  A7 07 29 08 83 00 10 00 53 50 45 43 49 4D 45 4E  ..).....SPECIMEN
+0350  20 20 20 20 02 A6 6F C1 6F 1C 00 10 0D 52 55 49      ..o.o....RUI
+0360  4E 20 20 20 20 20 20 20 20 00 00 00 00 00 00 00  N        .......
+0370  00 07 54 56 45 48 49 43 4C 45 20 20 20 20 00 00  ..TVEHICLE    ..
+0380  00 00 00 00 00 00 07 42 49 4F 2D 44 41 54 41 20  .......BIO-DATA 
+0390  20 20 20 00 A6 6F C1 6F 1C 00 10 0D 54 50 4F 52     ..o.o....TPOR
+03A0  54 2D 50 49 43 20 20 20 02 C2 6F 52 70 91 00 10  T-PIC   ..oRp...
+03B0  00 46 4C 55 58 2D 4E 4F 44 45 20 20 20 00 00 00  .FLUX-NODE   ...
+03C0  00 00 00 00 00 08 4E 45 42 55 4C 41 20 20 20 20  ......NEBULA    
+03D0  20 20 00 00 00 00 00 00 00 00 06 43 41 50 54 2D    .........CAPT-
+03E0  4C 4F 47 20 20 20 20 00 00 00 00 00 00 00 00 24  LOG    ........$
+03F0  20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20                  
+
+---- Screen 30 ---- (binary data, hex dump)
+0000  53 54 52 49 4E 47 20 20 20 20 20 20 00 00 00 00  STRING      ....
+0010  00 00 00 00 00 42 50 4F 52 54 2D 50 49 43 20 20  .....BPORT-PIC  
+0020  20 02 53 70 EB 70 99 00 10 00 50 48 52 41 53 45   .Sp.p....PHRASE
+0030  43 4F 4E 54 52 4C 00 00 00 00 00 00 00 00 06 53  CONTRL.........S
+0040  55 42 4A 45 43 54 20 20 20 20 20 00 00 00 00 00  UBJECT     .....
+0050  00 00 00 00 4F 52 49 47 49 4E 41 54 4F 52 20 20  ....ORIGINATOR  
+0060  00 00 00 00 00 00 00 00 13 4D 45 53 53 41 47 45  .........MESSAGE
+0070  27 20 20 20 20 00 00 00 00 00 00 00 00 02 53 50  '    .........SP
+0080  4C 41 53 48 20 20 20 20 20 20 01 2A 08 29 0C 00  LASH      .*.)..
+0090  04 10 00 54 45 58 54 20 20 20 20 20 20 20 20 00  ...TEXT        .
+00A0  00 00 00 00 00 00 00 28 53 43 52 4F 4C 4C 2D 54  .......(SCROLL-T
+00B0  45 58 54 20 00 00 00 00 00 00 00 00 2C 41 4E 41  EXT ........,ANA
+00C0  4C 59 5A 45 2D 54 45 58 54 02 EC 70 BF 71 10 00  LYZE-TEXT..p.q..
+00D0  BE 00 42 55 54 54 4F 4E 53 20 20 20 20 20 02 C0  ..BUTTONS     ..
+00E0  71 F6 71 0C 00 49 00 42 4C 54 2D 48 45 41 44 20  q.q..I.BLT-HEAD 
+00F0  20 20 20 00 00 00 00 00 00 00 00 12 4D 45 44 2D     .........MED-
+0100  50 49 43 20 20 20 20 20 01 2A 0C A9 0C 80 00 10  PIC     .*......
+0110  00 45 4E 43 4F 55 4E 54 45 52 20 20 20 00 00 00  .ENCOUNTER   ...
+0120  00 00 00 00 00 11 49 43 4F 4E 31 3A 31 20 20 20  ......ICON1:1   
+0130  20 20 02 F7 71 2F 72 32 00 12 00 49 43 4F 4E 31    ..q/r2...ICON1
+0140  3A 32 20 20 20 20 20 02 30 72 68 72 32 00 12 00  :2     .0rhr2...
+0150  49 43 4F 4E 31 3A 34 20 20 20 20 20 02 69 72 A1  ICON1:4     .ir.
+0160  72 32 00 12 00 49 43 4F 4E 2D 4E 41 4D 45 20 20  r2...ICON-NAME  
+0170  20 02 A2 72 D0 72 1B 00 1B 00 44 50 41 52 54 2D   ..r.r....DPART-
+0180  4F 56 20 20 20 20 02 D1 72 2C 73 5C 00 10 00 52  OV    ..r,s\...R
+0190  45 47 49 4F 4E 53 20 20 20 20 20 02 2D 73 37 73  EGIONS     .-s7s
+01A0  06 00 1C 02 43 52 45 41 54 55 52 45 20 20 20 20  ....CREATURE    
+01B0  02 40 73 66 77 64 00 9C 11 50 48 41 5A 45 53 20  .@sfwd...PHAZES 
+01C0  20 20 20 20 20 01 AA 0C 29 0E 80 01 10 00 43 48       ...).....CH
+01D0  4B 46 4C 49 47 48 54 2D 4F 56 02 67 77 A7 77 41  KFLIGHT-OV.gw.wA
+01E0  00 10 00 46 52 41 43 54 2D 4F 56 20 20 20 20 02  ...FRACT-OV    .
+01F0  A8 77 BB 78 14 01 10 00 49 43 4F 4E 50 2D 4F 56  .w.x....ICONP-OV
+0200  20 20 20 20 02 BC 78 EF 78 34 00 10 00 53 49 54      ..x.x4...SIT
+0210  45 2D 4F 56 20 20 20 20 20 02 F0 78 53 79 64 00  E-OV     ..xSyd.
+0220  10 00 48 59 50 45 52 4D 53 47 2D 4F 56 20 02 54  ..HYPERMSG-OV .T
+0230  79 02 7A AF 00 10 00 47 50 4F 4C 59 20 20 20 20  y.z....GPOLY    
+0240  20 20 20 02 03 7A 19 7A 59 00 04 00 46 41 43 45     ..z.zY...FACE
+0250  54 20 20 20 20 20 20 20 02 1A 7A 2B 7A 48 00 04  T       ..z+zH..
+0260  00 56 45 52 54 45 58 20 20 20 20 20 20 02 2C 7A  .VERTEX      .,z
+0270  45 7A 86 00 03 00 42 4C 54 2D 4F 56 20 20 20 20  Ez....BLT-OV    
+0280  20 20 02 46 7A 62 7A 1D 00 10 00 4D 49 53 43 2D    .Fzbz....MISC-
+0290  4F 56 20 20 20 20 20 02 63 7A B8 7A 56 00 10 00  OV     .cz.zV...
+02A0  42 41 4E 4B 2D 4F 56 20 20 20 20 20 02 B9 7A 19  BANK-OV     ..z.
+02B0  7B 61 00 10 00 41 53 53 43 52 45 57 2D 4F 56 20  {a...ASSCREW-OV 
+02C0  20 02 1A 7B B9 7B A0 00 10 00 50 45 52 53 4F 4E   ..{.{....PERSON
+02D0  4E 45 4C 2D 4F 56 02 BA 7B BA 7C 01 01 10 00 53  NEL-OV..{.|....S
+02E0  48 49 50 47 52 50 48 2D 4F 56 20 02 BB 7C 40 7D  HIPGRPH-OV ..|@}
+02F0  86 00 10 00 43 4F 4E 46 49 47 2D 4F 56 20 20 20  ....CONFIG-OV   
+0300  02 41 7D F6 7D B6 00 10 00 54 44 45 50 4F 54 2D  .A}.}....TDEPOT-
+0310  4F 56 20 20 20 02 F7 7D FC 7E 06 01 10 00 45 44  OV   ..}.~....ED
+0320  49 54 2D 4F 56 20 20 20 20 20 00 00 00 00 00 00  IT-OV     ......
+0330  00 00 00 50 4F 52 54 4D 45 4E 55 2D 4F 56 20 02  ...PORTMENU-OV .
+0340  FD 7E 9D 7F A1 00 10 00 56 49 54 41 2D 4F 56 20  .~......VITA-OV 
+0350  20 20 20 20 02 9E 7F 7B 80 DE 00 10 00 48 50 2D      ...{.....HP-
+0360  4F 56 20 20 20 20 20 20 20 02 7C 80 A9 81 2E 01  OV       .|.....
+0370  10 00 4C 50 2D 4F 56 20 20 20 20 20 20 20 02 AA  ..LP-OV       ..
+0380  81 F0 82 47 01 10 00 53 45 4E 54 2D 4F 56 20 20  ...G...SENT-OV  
+0390  20 20 20 02 F1 82 1B 84 2B 01 10 00 54 56 2D 4F     .....+...TV-O
+03A0  56 20 20 20 20 20 20 20 02 1C 84 1F 85 04 01 10  V       ........
+03B0  00 43 4F 4D 4D 2D 4F 56 20 20 20 20 20 02 20 85  .COMM-OV     . .
+03C0  02 87 E3 01 10 00 43 4F 4D 4D 53 50 45 43 2D 4F  ......COMMSPEC-O
+03D0  56 20 02 03 87 96 87 94 00 10 00 53 45 45 44 2D  V .........SEED-
+03E0  4F 56 20 20 20 20 20 02 97 87 2C 88 96 00 10 00  OV     ...,.....
+03F0  20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20                  
+
+---- Screen 31 ---- (binary data, hex dump)
+0000  4C 49 53 54 49 43 4F 4E 53 20 20 20 02 2D 88 59  LISTICONS   .-.Y
+0010  88 2D 00 10 00 4D 4F 56 45 2D 4F 56 20 20 20 20  .-...MOVE-OV    
+0020  20 02 5A 88 46 89 ED 00 10 00 45 4E 47 49 4E 45   .Z.F.....ENGINE
+0030  45 52 20 20 20 20 02 47 89 CF 89 89 00 10 00 44  ER    .G.......D
+0040  4F 43 54 4F 52 20 20 20 20 20 20 02 D0 89 1C 8A  OCTOR      .....
+0050  4D 00 10 00 4F 52 42 49 54 2D 4F 56 20 20 20 20  M...ORBIT-OV    
+0060  02 1D 8A B6 8B 9A 01 10 00 43 41 50 54 41 49 4E  .........CAPTAIN
+0070  20 20 20 20 20 02 B7 8B 3E 8D 88 01 10 00 53 43       ...>.....SC
+0080  49 45 4E 43 45 20 20 20 20 20 02 3F 8D 2E 8E F0  IENCE     .?....
+0090  00 10 00 4E 41 56 49 47 41 54 52 20 20 20 20 02  ...NAVIGATR    .
+00A0  2F 8E 60 8E 32 00 10 00 53 48 49 50 42 55 54 54  /.`.2...SHIPBUTT
+00B0  4F 4E 53 20 02 61 8E DD 8E 7D 00 10 00 2A 4D 41  ONS .a...}...*MA
+00C0  50 2D 4F 56 20 20 20 20 20 02 DE 8E E1 8F 04 01  P-OV     .......
+00D0  10 00 48 59 50 45 52 2D 4F 56 20 20 20 20 02 E2  ..HYPER-OV    ..
+00E0  8F C1 91 E0 01 10 00 41 4E 41 4C 59 5A 45 2D 4F  .......ANALYZE-O
+00F0  56 20 20 02 C2 91 64 92 A3 00 10 00 4C 41 55 4E  V  ...d.....LAUN
+0100  43 48 2D 4F 56 20 20 20 02 65 92 AA 92 46 00 10  CH-OV   .e...F..
+0110  00 46 4C 55 58 2D 45 46 46 45 43 54 20 02 AB 92  .FLUX-EFFECT ...
+0120  C7 92 1D 00 10 00 4F 50 2D 4F 56 20 20 20 20 20  ......OP-OV     
+0130  20 20 02 C8 92 CC 93 05 01 10 00 49 54 45 4D 53    .........ITEMS
+0140  2D 4F 56 20 20 20 20 02 CD 93 43 95 77 01 10 00  -OV    ...C.w...
+0150  4C 53 59 53 49 43 4F 4E 20 20 20 20 02 44 95 72  LSYSICON    .D.r
+0160  95 2F 00 10 00 4D 53 59 53 49 43 4F 4E 20 20 20  ./...MSYSICON   
+0170  20 02 73 95 8E 95 1C 00 10 00 53 53 59 53 49 43   .s.......SSYSIC
+0180  4F 4E 20 20 20 20 02 8F 95 99 95 0B 00 10 00 42  ON    .........B
+0190  45 48 41 56 2D 4F 56 20 20 20 20 02 9A 95 01 97  EHAV-OV    .....
+01A0  68 01 10 00 43 4D 41 50 20 20 20 20 20 20 20 20  h...CMAP        
+01B0  02 02 97 29 97 0A 00 40 00 49 4E 53 54 41 4C 4C  ...)...@.INSTALL
+01C0  20 20 20 20 20 02 2A 97 5B 97 32 00 10 00 48 45       .*.[.2...HE
+01D0  41 4C 2D 4F 56 20 20 20 20 20 02 5C 97 A6 97 4B  AL-OV     .\...K
+01E0  00 10 00 52 45 50 41 49 52 2D 4F 56 20 20 20 02  ...REPAIR-OV   .
+01F0  A7 97 0A 98 64 00 10 00 47 41 4D 45 2D 4F 56 20  ....d...GAME-OV 
+0200  20 20 20 20 02 0B 98 43 99 39 01 10 00 50 4C 53      ...C.9...PLS
+0210  45 54 2D 4F 56 20 20 20 20 02 44 99 D9 99 96 00  ET-OV    .D.....
+0220  10 00 4D 41 50 53 2D 4F 56 20 20 20 20 20 02 DA  ..MAPS-OV     ..
+0230  99 65 9A 8C 00 10 00 56 45 53 2D 42 4C 54 20 20  .e.....VES-BLT  
+0240  20 20 20 03 80 9A 8B 9B 0C 01 10 00 53 54 4F 52     .........STOR
+0250  4D 2D 4F 56 20 20 20 20 02 8C 9B E0 9B 55 00 10  M-OV    .....U..
+0260  00 48 55 4D 2D 50 49 43 20 20 20 20 20 02 E1 9B  .HUM-PIC     ...
+0270  FE 9B 1E 00 10 00 56 45 4C 2D 50 49 43 20 20 20  ......VEL-PIC   
+0280  20 20 02 FF 9B 19 9C 1B 00 10 00 54 48 52 2D 50    .........THR-P
+0290  49 43 20 20 20 20 20 02 1A 9C 2A 9C 11 00 10 00  IC     ...*.....
+02A0  45 4C 4F 2D 50 49 43 20 20 20 20 20 02 2B 9C 50  ELO-PIC     .+.P
+02B0  9C 26 00 10 00 41 4E 44 2D 50 49 43 20 20 20 20  .&...AND-PIC    
+02C0  20 02 51 9C 6B 9C 1B 00 10 00 43 4F 4D 50 4F 55   .Q.k.....COMPOU
+02D0  4E 44 53 20 20 20 02 6C 9C 76 9C 17 00 07 00 49  NDS   .l.v.....I
+02E0  54 2D 4F 56 20 20 20 20 20 20 20 02 77 9C C7 9C  T-OV       .w...
+02F0  51 00 10 00 43 4F 4D 42 41 54 2D 4F 56 20 20 20  Q...COMBAT-OV   
+0300  02 C8 9C 57 9E 90 01 10 00 44 41 4D 41 47 45 2D  ...W.....DAMAGE-
+0310  4F 56 20 20 20 02 58 9E 01 9F AA 00 10 00 4C 41  OV   .X.......LA
+0320  4E 44 2D 4F 56 20 20 20 20 20 02 02 9F 5B 9F 5A  ND-OV     ...[.Z
+0330  00 10 00 50 53 54 41 54 53 20 20 20 20 20 20 02  ...PSTATS      .
+0340  5C 9F 5F 9F 05 00 0B 00 53 41 56 45 20 20 20 20  \._.....SAVE    
+0350  20 20 20 20 04 40 0E 7F 2C 40 1E 10 00 4D 55 53      .@..,@...MUS
+0360  49 43 20 20 20 20 20 20 20 00 00 00 00 00 00 00  IC       .......
+0370  00 00 45 41 52 54 48 20 20 20 20 20 20 20 01 80  ..EARTH       ..
+0380  2C C7 2C 48 00 10 00 3C 55 4E 55 53 45 44 3E 20  ,.,H...<UNUSED> 
+0390  20 20 20 00 00 00 00 00 00 00 00 00 3C 55 4E 55     .........<UNU
+03A0  53 45 44 3E 20 20 20 20 00 00 00 00 00 00 00 00  SED>    ........
+03B0  00 3C 55 4E 55 53 45 44 3E 20 20 20 20 00 00 00  .<UNUSED>    ...
+03C0  00 00 00 00 00 00 3C 55 4E 55 53 45 44 3E 20 20  ......<UNUSED>  
+03D0  20 20 00 20 20 20 20 00 00 00 00 20 20 20 20 20    .    ....     
+03E0  20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20                  
+03F0  80 48 00 A1 20 20 20 20 20 20 0B 00 20 20 20 20  .H..      ..    
+
+---- Screen 32 ----
+( FILES - BLOCK 31 IS END   OF GENERATED DIRECTORY      3-1-85)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---- Screen 33 ---- (blank)
+
+---- Screen 34 ---- (blank)
+
+---- Screen 35 ---- (blank)
+
+---- Screen 36 ---- (blank)
+
+---- Screen 37 ---- (blank)
+
+---- Screen 38 ---- (blank)
+
+---- Screen 39 ---- (blank)
